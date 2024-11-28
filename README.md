@@ -1,50 +1,37 @@
-# React + TypeScript + Vite
+<div align="center">
+<img src="https://github.com/user-attachments/assets/8acfcd39-6028-4c82-b871-d59f10c30b69" width="200" />
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Web Rich Painter in React🎨
 
-Currently, two official plugins are available:
+[Painter機能](https://github.com/user-attachments/assets/8b17c822-145f-4f95-96fd-ba266de453b4)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[Storybook](https://react-rich-painter.vercel.app)
 
-## Expanding the ESLint configuration
+React Rich Painterは、Reactで統合可能なPainterライブラリです。
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## ショーケース
 
-- Configure the top-level `parserOptions` property like this:
+(準備中)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 特徴🌴
+* マウス入力 / タッチ入力 / ペン入力🚀
+* Webでの本格的でなめらかな線👥
+* レイヤー機能 / ブラシ機能 / スポイト機能 などの豊富な機能拡張📱
+* 最適化された軽量なライブラリ💥
+* NextJS / Vite などReactに統合可能なTSの柔軟なライブラリ🤖
+
+### ビルドファイルをReactで読み込み💡
+
+```bash
+npm install react-rich-painter
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+```tsx
+import { ReactRichPainter } from "react-rich-painter";
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+function App() {
+  return (
+    <ReactRichPainter />
+  );
+}
 ```
