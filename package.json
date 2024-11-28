@@ -1,0 +1,85 @@
+{
+  "name": "react-rich-painter",
+  "private": false,
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "ShoOsaka"
+  },
+  "license": "MIT",
+  "description": "React + Painter Library",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foasho/react-rich-painter.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "module",
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "components",
+    "painter"
+  ],
+  "scripts": {
+    "prebuild": "rimraf dist && npm run typegen",
+    "prepublishOnly": "npm run build && npm version patch",
+    "dev": "vite",
+    "build": "vite build && tsc",
+    "eslint": "eslint --fix .",
+    "eslint:ci": "eslint .",
+    "prettier": "prettier --check .",
+    "prettier-fix": "prettier --write .",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false --strict --jsx react",
+    "typegen": "tsc",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@storybook/addon-essentials": "^8.4.5",
+    "@storybook/addon-interactions": "^8.4.5",
+    "@storybook/addon-links": "^8.4.5",
+    "@storybook/addon-onboarding": "^8.4.5",
+    "@storybook/blocks": "^8.4.5",
+    "@storybook/react": "^8.4.5",
+    "@storybook/react-vite": "^8.4.5",
+    "@storybook/testing-library": "^0.2.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.20",
+    "chromatic": "^11.19.0",
+    "eslint": "^9.15.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.14.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "eslint-plugin-storybook": "^0.11.1",
+    "globals": "^15.12.0",
+    "storybook": "^8.4.5",
+    "storybook-react-i18next": "^3.1.7",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.15.0",
+    "vite": "^6.0.1"
+  }
+}
