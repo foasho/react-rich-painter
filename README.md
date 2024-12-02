@@ -13,6 +13,8 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 
 (準備中)
 
+</div>
+
 ## 特徴🌴
 * マウス入力 / タッチ入力 / ペン入力🚀
 * Webでの本格的でなめらかな線👥
