@@ -1,11 +1,11 @@
 import React from "react";
-import { Button } from "./lib";
+import { ReactRichPainter } from "./lib";
 
 function App() {
 
   return (
     <>
-      <Button primary backgroundColor="" size="small" label="test" />
+      <ReactRichPainter width={800} height={600} />
     </>
   )
 }

@@ -1,1 +1,1 @@
-export { Button } from "./Button";
+export { ReactRichPainter } from "./Painter";

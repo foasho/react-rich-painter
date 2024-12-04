@@ -2,6 +2,8 @@
  * PainterLib
  */
 
+import { Brush } from "./Brush";
+
 type RichPainterProps = {
   undoLimit?: number;
   initSize?: { width: number, height: number };
@@ -22,6 +24,7 @@ class RichPainter {
   private size: { width: number, height: number } = { width: 0, height: 0 };
   private isDrawing = false;
   private isStabilizing = false;
+  private brush: Brush | null = null;
 
   /**
    * レイヤー系の変数
@@ -306,7 +309,7 @@ class RichPainter {
     return this.getLayerCanvas(index).getContext("2d")!;
   }
 
-  private addLayer(index: number | null = null): HTMLElement {
+  public addLayer(index: number | null = null): HTMLElement {
     const _index = (index == null) ? this.layers.length : index;
     const layer = document.createElement("div");
     layer.className = "croquis-layer";
@@ -439,6 +442,13 @@ class RichPainter {
     context.fillRect(0, 0, width, height);
   }
 
+  public getDOMElement(): HTMLElement {
+    return this.domElement;
+  }
+
+  public setBrush(brush: Brush): void {
+    this.brush = brush;
+  }
   
 }
 

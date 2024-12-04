@@ -1,2 +1,2 @@
 
-export { Button } from "./components";
+export { ReactRichPainter } from "./components";
