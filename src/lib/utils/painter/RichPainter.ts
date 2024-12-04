@@ -31,6 +31,9 @@ class RichPainter {
   private paintingCanvas = document.createElement("canvas");
   private paintingContext = this.paintingCanvas.getContext("2d");
   private renderDirtyRect = false;
+  private domElement: HTMLElement = document.createElement("div");
+  private dirtyRectDisplay: HTMLCanvasElement = document.createElement("canvas");
+  private dirtyRectDisplayContext = this.dirtyRectDisplay.getContext("2d")!;
 
   constructor({ undoLimit = 30, initSize = { width: 300, height: 300 } }: RichPainterProps) {
     this.undoLimit = undoLimit;
@@ -141,9 +144,9 @@ class RichPainter {
       let temp = type == "opacity" ? _this.getLayerOpacity(index) : _this.getLayerVisible(index);
       _this.layerIndex = index;
       if (type == "opacity") {
-        _this.setLayerOpacity(snapshot, index);
+        _this.setLayerOpacity(snapshot as number, index);
       } else {
-        _this.setLayerVisible(snapshot, index);
+        _this.setLayerVisible(snapshot as boolean, index);
       }
       snapshot = temp;
       _this.unlockHistory();
@@ -270,23 +273,172 @@ class RichPainter {
     this.pushUndo(rollback);
   }
 
-  public getLayerOpacity(index: number): any {}
+  public getLayerOpacity(index: number | null = null): number {
+    const _index = (index == null) ? this.layerIndex : index;
+    const opacityStr = this.layers[_index].style.getPropertyValue("opacity");
+    const opacity = parseFloat(opacityStr);
+    return isNaN(opacity) ? 1 : opacity;
+  }
 
-  public setLayerOpacity(opacity: number, index: number): void {}
+  public setLayerOpacity(opacity: number, index: number | null = null): void {
+    const _index = (index == null) ? this.layerIndex : index;
+    this.pushLayerOpacityUndo(_index);
+    this.layers[_index].style.opacity = opacity.toString();
+  }
 
-  public getLayerVisible(index: number): any {}
+  public getLayerVisible(index: number | null = null): boolean {
+    const _index = (index == null) ? this.layerIndex : index;
+    const visibility = this.layers[_index].style.getPropertyValue("visibility");
+    return visibility !== "hidden";
+  }
 
-  public setLayerVisible(visible: boolean, index: number): void {}
+  public setLayerVisible(visible: boolean, index: number | null = null): void {
+    const _index = (index == null) ? this.layerIndex : index;
+    this.pushLayerVisibleUndo(_index);
+    this.layers[_index].style.visibility = visible ? "visible" : "hidden";
+  }
   
-  private getLayerContext(index: number): any {}
+  private getLayerCanvas(index: number): HTMLCanvasElement {
+    return this.layers[index].getElementsByClassName("croquis-layer-canvas")[0] as HTMLCanvasElement;
+  }
 
-  private addLayer(index: number): void {}
+  public getLayerContext(index: number): CanvasRenderingContext2D {
+    return this.getLayerCanvas(index).getContext("2d")!;
+  }
 
-  private removeLayer(index: number): void {}
+  private addLayer(index: number | null = null): HTMLElement {
+    const _index = (index == null) ? this.layers.length : index;
+    const layer = document.createElement("div");
+    layer.className = "croquis-layer";
+    layer.style.visibility = "visible";
+    layer.style.opacity = '1';
+    const canvas = document.createElement("canvas");
+    canvas.className = "croquis-layer-canvas";
+    canvas.width = this.size.width;
+    canvas.height = this.size.height;
+    canvas.style.position = "absolute";
+    layer.appendChild(canvas);
+    this.domElement.appendChild(layer);
+    this.layers.splice(_index, 0, layer);
+    return layer;
+  }
 
-  private drawDirtyRect(x: number, y: number, width: number, height: number): void {}
+  public removeLayer(index: number | null = null): void {
+    const _index = (index == null) ? this.layerIndex : index;
+    this.pushRemoveLayerUndo(_index);
+    this.domElement.removeChild(this.layers[_index]);
+    this.layers.splice(_index, 1);
+    if (this.layerIndex == this.layers.length) {
+      this.selectLayer(this.layerIndex - 1);
+    }
+    this.sortLayers();
+  }
 
-  public setCanvasSize(width: number, height: number, offsetX: number, offsetY: number): void {}
+  private sortLayers(): void {
+    while (this.domElement.firstChild) {
+      this.domElement.removeChild(this.domElement.firstChild);
+    }
+    for (let i = 0; i < this.layers.length; ++i) {
+      let layer = this.layers[i];
+      this.domElement.appendChild(layer);
+    }
+    this.domElement.appendChild(this.dirtyRectDisplay);
+  }
+
+  public selectLayer(index: number): void {
+    const latestLayerIndex = this.layers.length - 1;
+    if (index > latestLayerIndex) {
+      index = latestLayerIndex;
+    }
+    this.layerIndex = index;
+    if (this.paintingCanvas.parentElement != null) {
+      this.paintingCanvas.parentElement.removeChild(this.paintingCanvas);
+    }
+    this.layers[index].appendChild(this.paintingCanvas);
+  }
+
+  public getCurrentLayerIndex(): number {
+    return this.layerIndex;
+  }
+
+  private drawDirtyRect(x: number, y: number, w: number, h: number): void {
+    const context = this.dirtyRectDisplayContext;
+    context.fillStyle = "#f00";
+    context.globalCompositeOperation = "source-over";
+    context.fillRect(x, y, w, h);
+    if ((w > 2) && (h > 2)) {
+      context.globalCompositeOperation = "destination-out";
+      context.fillRect(x + 1, y + 1, w - 2, h - 2);
+    }
+  }
+
+  public setCanvasSize(width: number, height: number, offsetX: number = 0, offsetY: number = 0): void {
+    this.pushCanvasSizeUndo(width, height, offsetX, offsetY);
+    width = Math.floor(width);
+    height = Math.floor(height);
+    this.size.width = width;
+    this.size.height = height;
+    this.paintingCanvas.width = width;
+    this.paintingCanvas.height = height;
+    this.dirtyRectDisplay.width = width;
+    this.dirtyRectDisplay.height = height;
+    this.domElement.style.width = width + "px";
+    this.domElement.style.height = height + "px";
+    for (let i = 0; i < this.layers.length; ++i) {
+      let canvas = this.getLayerCanvas(i);
+      let context = this.getLayerContext(i);
+      let imageData = context.getImageData(0, 0, width, height);
+      canvas.width = width;
+      canvas.height = height;
+      context.putImageData(imageData, offsetX, offsetY);
+    }
+  }
+
+  public getCanvasSize(): { width: number, height: number } {
+    return { width: this.size.width, height: this.size.height };
+  }
+
+  public getCanvasWidth(): number {
+    return this.size.width;
+  }
+
+  public setCanvasWidth(width: number, offsetX: number = 0): void {
+    this.setCanvasSize(width, this.size.height, offsetX, 0);
+  }
+
+  public getCanvasHeight(): number {
+    return this.size.height;
+  }
+
+  public setCanvasHeight(height: number, offsetY: number = 0): void {
+    this.setCanvasSize(this.size.width, height, 0, offsetY);
+  }
+
+  public getLayers(): HTMLElement[] {
+    return this.layers.slice(); // clone layers
+  }
+
+  public getLayerCount(): number {
+    return this.layers.length;
+  }
+
+  public clearLayer(index: number | null = null): void {
+    const _index = (index == null) ? this.layerIndex : index;
+    this.pushContextUndo(_index);
+    const context = this.getLayerContext(_index);
+    const { width, height } = this.size;
+    context.clearRect(0, 0, width, height);
+  }
+
+  public fillLayer(fillColor: string, index: number | null = null): void {
+    const _index = (index == null) ? this.layerIndex : index;
+    this.pushContextUndo(_index);
+    const context = this.getLayerContext(_index);
+    const { width, height } = this.size;
+    context.fillStyle = fillColor;
+    context.fillRect(0, 0, width, height);
+  }
+
   
 }
 
