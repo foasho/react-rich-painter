@@ -29,45 +29,27 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
   }, [width, height]);
 
   return (
-    <DraggableContainer>
-      <DndContext>
-        <div
-          ref={canvasContainerRef}
-          style={{ 
-            width: size.width, 
-            height: size.height, 
-            backgroundColor: 'black',
-            backgroundImage: `
-              linear-gradient(white 1px, transparent 1px),
-              linear-gradient(90deg, white 1px, transparent 1px)
-            `,
-            backgroundSize: '10px 10px', // タイルのサイズ
-            touchAction: 'none' 
-          }}
-        >
-          {painter && <Brush painter={painter} />}
-          
-            {toolbar && <Toolbar />}
-            {brushbar && <Brushbar />}
-        </div>
-      </DndContext>
-    </DraggableContainer>
-  );
-};
-
-type DraggableContainerProps = {
-  children: React.ReactNode;
-};
-const DraggableContainer = memo(({ children }: DraggableContainerProps) => {
-  const {setNodeRef} = useDroppable({
-    id: 'rich_painter',
-  });
-  return (
-    
-      <div ref={setNodeRef}>
-        {children}
+    <DndContext>
+      <div
+        ref={canvasContainerRef}
+        style={{ 
+          width: size.width, 
+          height: size.height, 
+          backgroundColor: 'black',
+          backgroundImage: `
+            linear-gradient(white 1px, transparent 1px),
+            linear-gradient(90deg, white 1px, transparent 1px)
+          `,
+          backgroundSize: '10px 10px', // タイルのサイズ
+          touchAction: 'none' 
+        }}
+      >
+        {painter && <Brush painter={painter} />}
+        {toolbar && <Toolbar />}
+        {brushbar && <Brushbar />}
       </div>
+    </DndContext>
   );
-});
+};
 
 export { ReactRichPainter };
