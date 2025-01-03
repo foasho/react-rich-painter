@@ -1,8 +1,22 @@
 import React from 'react';
+import { LuLasso } from "react-icons/lu";
 
-const Lasso = () => {
+type LassoProps = {
+  size?: number;
+}
 
-  return <></>
+const Lasso = (
+  { size=20 }: LassoProps
+) => {
+
+  const style: React.CSSProperties = {
+    width: size,
+    height: size
+  }
+
+  return <>
+    <LuLasso style={style} />
+  </>
 }
 
 export { Lasso };

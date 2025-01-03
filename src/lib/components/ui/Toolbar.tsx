@@ -1,26 +1,53 @@
 import React from 'react';
-import { Config, Lasso, RectSelect, PenType, BrushType, Eraser, Layer } from "./toolbars";
-import { Wrapper } from './Wrapper';
+import { Config, Lasso, RectSelect, PenType, BrushType, Eraser, Layer, HandMove } from "./toolbars";
+import { WrapperContext } from './WrapperContext';
 
-const Toolbar = () => {
+type ToolbarProps = {
+  linePx?: number;
+}
+
+const Toolbar = (
+  { linePx = 40 }: ToolbarProps
+) => {
 
   return (
-    <Wrapper>
-      {/** Left */}
-      <div>
-        test
-        <Config />
-        <Lasso />
-        <RectSelect />
-        <PenType />
+    <WrapperContext
+      withHandle={true} // ハンドルを有効にする
+      draggableId="toolbar" // 一意なIDを設定
+      style={{ top: '10px', left: '100px' }} // 初期位置
+      linePx={linePx} // ドラッグ時の移動量
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        {/** Left */}
+        <div
+          style={{
+            display: 'flex',
+            // flexDirection: 'column',
+            alignItems: 'center', // アイコンを中央揃え
+            gap: '10px', // アイコン間のスペースを設定
+          }}
+        >
+          <Config />
+          <Lasso />
+          <RectSelect />
+          <PenType />
+        </div>
+        {/** Right */}
+        <div
+          style={{
+            display: 'flex',
+            // flexDirection: 'column',
+            alignItems: 'center', // アイコンを中央揃え
+            gap: '10px', // アイコン間のスペースを設定
+          }}
+        >
+          <BrushType />
+          <Eraser />
+          <HandMove />
+          <Layer />
+        </div>
       </div>
-      {/** Right */}
-      <div>
-        <BrushType />
-        <Eraser />
-        <Layer />
-      </div>
-    </Wrapper>
+    </WrapperContext>
   );
 }
 

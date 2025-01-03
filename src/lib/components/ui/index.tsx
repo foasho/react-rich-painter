@@ -1,3 +1,5 @@
 export * from "./Toolbar";
-export * from "./Brushbar";
+export * from "./BrushBar";
 export * from "./toolbars";
+export * from "./Wrapper";
+export * from "./WrapperContext";

@@ -1,7 +1,9 @@
 <div align="center">
 <img src="https://github.com/user-attachments/assets/8acfcd39-6028-4c82-b871-d59f10c30b69" width="200" />
 
-# Web Rich Painter in React🎨
+# [WIP] Web Rich Painter in React🎨
+
+## This project is Work In Progress now.
 
 [Painter機能](https://github.com/user-attachments/assets/8b17c822-145f-4f95-96fd-ba266de453b4)
 
@@ -15,6 +17,9 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 
 </div>
 
+- Node22
+- React19
+
 ## 特徴🌴
 * マウス入力 / タッチ入力 / ペン入力🚀
 * Webでの本格的でなめらかな線👥
@@ -26,6 +31,10 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 
 ```bash
 npm install react-rich-painter
+# or
+yarn add react-rich-painter
+# or
+pnpm install react-rich-painter
 ```
 
 ```tsx

@@ -1,8 +1,22 @@
 import React from 'react';
+import { LuLayers } from "react-icons/lu";
 
-const Layer = () => {
+type LayerProps = {
+  size?: number;
+}
 
-  return <></>
+const Layer = (
+  { size=20 }: LayerProps
+) => {
+
+  const style: React.CSSProperties = {
+    width: size,
+    height: size
+  }
+
+  return <>
+    <LuLayers style={style} />
+  </>
 }
 
 export { Layer };
