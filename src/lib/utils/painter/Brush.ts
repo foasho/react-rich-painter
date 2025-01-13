@@ -1,3 +1,7 @@
+
+// pen: 描画, eraser: 消しゴム, dripper: スポイト, rect: 選択, move: キャンバス移動
+type BrushToolType = "pen" | "eraser" | "dripper" | "rect" | "move";
+
 class Brush {
   private context: CanvasRenderingContext2D | null = null;
   private color: string = "#000";
@@ -7,6 +11,8 @@ class Brush {
   private angle: number = 0;
   private minimumSize: number = 0;
   private userDevice: string = "pc";
+  private toolType: BrushToolType = "pen";
+  private isDrawTool: boolean = false;//描画系のツールかどうか
   private isFinger: boolean = false;
   private isMerge: boolean = true;
   private merge: number = 0.2;
@@ -100,6 +106,22 @@ class Brush {
 
   public setUserDevice(device: string): void {
     this.userDevice = device;
+  }
+
+  public getToolType(): BrushToolType {
+    return this.toolType;
+  }
+
+  public setToolType(tool: BrushToolType): void {
+    this.toolType = tool;
+  }
+
+  public getIsDrawTool(): boolean {
+    return this.isDrawTool;
+  }
+
+  public setIsDrawTool(drawTool: boolean): void {
+    this.isDrawTool = drawTool;
   }
 
   public getIsFinger(): boolean {

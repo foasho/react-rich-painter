@@ -17,6 +17,7 @@ type WrapperProps = {
   children: React.ReactNode;
   position: { x: number; y: number };
   withHandle?: boolean;
+  wrapperBgColor?: string;
 } & WrapperStyleProps;
 
 const Wrapper = ({
@@ -29,7 +30,8 @@ const Wrapper = ({
   width = '250px', // デフォルト幅
   height = '200px', // デフォルト高さ
   // padding = '10px',
-  backgroundColor = '#333',
+  backgroundColor = '#121212',
+  wrapperBgColor = '#FFFFFF88',
 }: WrapperProps) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: draggableId,
@@ -52,7 +54,7 @@ const Wrapper = ({
     // padding: padding,
     zIndex: 100,
     backgroundColor,
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+    boxShadow: `${wrapperBgColor} 0px 2px 8px 0px`,
     borderRadius: '25px',
     color: 'white',
     position: 'absolute',

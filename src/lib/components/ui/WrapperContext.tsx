@@ -17,6 +17,7 @@ type WrapperStyleProps = {
   linePx?: number;
   padding?: string;
   backgroundColor?: string;
+  wrapperBgColor?: string;
 };
 
 type WrapperContextProps = {
@@ -35,6 +36,7 @@ const WrapperContext = (
     linePx = 40,
     // padding = '10px',
     backgroundColor = '#121212',
+    wrapperBgColor = '#FFFFFF88',
     style = {},
   }: WrapperContextProps
 ) => {
@@ -73,6 +75,7 @@ const WrapperContext = (
           height={fixedHeight}
           // padding={padding}
           backgroundColor={backgroundColor}
+          wrapperBgColor={wrapperBgColor}
         >
           {children}
         </Wrapper>
