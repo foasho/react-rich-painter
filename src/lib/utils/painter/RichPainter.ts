@@ -2,6 +2,7 @@
  * PainterLib
  */
 import { Stabilizer } from "./Stabilizer";
+import { Brush } from "./Brush";
 
 type RichPainterProps = {
   undoLimit?: number;
@@ -54,6 +55,8 @@ class RichPainter {
   ) => void;
   public onTicked?: () => void;
 
+  private brush: Brush | null = null;
+
   constructor({
     undoLimit = 30,
     initSize = { width: 300, height: 300 },
@@ -61,6 +64,7 @@ class RichPainter {
   }: RichPainterProps) {
     this.undoLimit = undoLimit;
     this.size = initSize;
+    this.brush = new Brush();
 
     // ドラッグ不可スタイルを適用
     this.domElement.style.userSelect = "none";
@@ -1109,7 +1113,9 @@ class RichPainter {
   }
 
   private _move(x: number, y: number, pressure: number): void {
-    // ここで this.brush?.move(...) など呼び出す想定
+    if (this.brush) {
+      this.brush.move(this.paintingContext!, x, y, pressure);
+    }
     if (this.onMoved) {
       this.onMoved(x, y, pressure);
     }
@@ -1130,6 +1136,10 @@ class RichPainter {
     this.drawPaintingCanvas();
     // paintingCanvas をクリア
     this.paintingContext?.clearRect(0, 0, this.size.width, this.size.height);
+
+    if (this.brush) {
+      this.brush.up(this.paintingContext!, x, y, this.size.width);
+    }
 
     if (this.onUpped) {
       this.onUpped(x, y, pressure, {
@@ -1247,6 +1257,10 @@ class RichPainter {
       x: absoluteX - rect.left,
       y: absoluteY - rect.top,
     };
+  }
+
+  public getBrush(): Brush | null {
+    return this.brush;
   }
 }
 

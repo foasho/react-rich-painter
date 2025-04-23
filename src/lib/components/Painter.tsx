@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useMemo, ReactNode } from 'react';
 import { RichPainter } from '../utils';
 import { Toolbar, Brushbar } from "./ui";
 import { Brush } from './Brush';
+import { canvasPointerDown, canvasPointerMove, canvasPointerUp } from '../utils/canvas';
 
 type ReactRichPainterProps = {
   width: number;
@@ -72,21 +73,21 @@ const PaintCanvas = (
   }: PaintCanvasProps
 ) => {
 
-  const [init, setInit] = useState(false);
+  const initRef = useRef(false);
   const canvasAreaRef = useRef<HTMLDivElement | null>(null);
   const srcLayerRef = useRef<HTMLCanvasElement | null>(null);
   const srcLayerCtx = useRef<CanvasRenderingContext2D | null>(null);
   const painterCanvasRef = useRef<HTMLDivElement | null>(null);
   
   useEffect(() => {
-    if (!init && canvasAreaRef.current) {
+    if (!initRef.current && canvasAreaRef.current) {
+      initRef.current = true;
       painter.lockHistory();
       painter.setCanvasSize(width, height);
       painter.addLayer();
       painter.addLayer();//もう一枚追加する
       painter.selectLayer(1);
       painter.unlockHistory();
-      setInit(true);
       if (canvasAreaRef.current && painterCanvasRef.current) {
         const alreadyPainterDom = document.getElementById("main_canvas_area");
         if (alreadyPainterDom) {
@@ -95,16 +96,30 @@ const PaintCanvas = (
         const _painterDom = painter.getDOMElement();
         _painterDom.id = "main_canvas_area";
         canvasAreaRef.current.appendChild(_painterDom);
-        _painterDom.addEventListener('pointerdown', (e: PointerEvent) => {});//最初の発火
-        painterCanvasRef.current.addEventListener('touchstart', (event)=>{
-          event.preventDefault();
-          // if (userDevice==='ios' && select_input_type==='pen'){
-          //   const touches = event.changedTouches;
-          //   if ( touches.length === 2 ) {
-          //     croquis.undo();
-          //   }
-          // }
+        
+        // イベントリスナーの設定を整理
+        _painterDom.addEventListener('pointerdown', (e: PointerEvent) => {
+          console.log('pointerdown');
+          canvasPointerDown({e, painter, brush: painter.getBrush()!});
         });
+        
+        _painterDom.addEventListener('pointermove', (e: PointerEvent) => {
+          canvasPointerMove({
+            e, 
+            painter, 
+            brush: painter.getBrush()!
+          });
+        });
+        
+        _painterDom.addEventListener('pointerup', (e: PointerEvent) => {
+          canvasPointerUp({e, painter, brush: painter.getBrush()!, isDrawStatus: true, userSelectInputType: 'pen', canvasArea: canvasAreaRef.current! });
+        });
+        
+        // touchstartイベントは削除（pointerdownで代用可能）
+        // painterCanvasRef.current.addEventListener('touchstart', (event)=>{
+        //   event.preventDefault();
+        //   alert('touchstart');
+        // });
       }
     }
   }, []);
@@ -146,16 +161,18 @@ const PaintCanvas = (
     height: '100%',
     touchAction: 'none',
   };
+
   const canvasStyle: React.CSSProperties = {
     backgroundColor,
     boxShadow: `${backgroundColor} 0px 2px 8px 0px`,
+    position: 'absolute',
   };
 
   return (
     <div id="canvas_area" className="paint-canvas-area" style={PaintCanvasAreaStyle} ref={canvasAreaRef} onContextMenu={() => false}>
-      <canvas id="src_layer" ref={srcLayerRef} className="paint-canvas" style={{ display: "none", ...canvasStyle }}></canvas>
-      <div id="painter-canvas" className="paint-canvas" ref={painterCanvasRef}></div>
-      <canvas id="default_layer" className="paint-canvas"></canvas>
+      <canvas id="src_layer" ref={srcLayerRef} className="paint-canvas" style={canvasStyle}></canvas>
+      <div id="painter-canvas" className="paint-canvas" ref={painterCanvasRef} style={canvasStyle}></div>
+      <canvas id="default_layer" className="paint-canvas" style={canvasStyle}></canvas>
     </div>
   )
 }

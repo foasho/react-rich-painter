@@ -18,7 +18,9 @@ const canvasPointerDown = (
     brush,
   }: CanvasPointerDownProps
 ) => {
-  setPointerEvent(e);
+  const newEvent = setPointerEvent(e);
+  const pointerPosition = painter.getRelativePosition(newEvent.clientX, newEvent.clientY);
+  painter.down(pointerPosition.x, pointerPosition.y, newEvent.pressure);
 }
 
 
@@ -26,23 +28,23 @@ type CanvasPointerMoveProps = {
   e: PointerEvent;
   painter: RichPainter;
   brush: Brush;
-  userSelectInputType: UserSelectInputType;
 }
 const canvasPointerMove = ({
   e,
   painter,
   brush,
-  userSelectInputType,
 }: CanvasPointerMoveProps) => {
+  
+  setPointerEvent(e);
   
   // 選択した入力タイプかどうかチェック
   if (e.pressure > 0){
-    if(userSelectInputType !== e.pointerType){
+    console.log("test2", brush.getUserSelectInputType(), e.pointerType);
+    if(brush.getUserSelectInputType() !== e.pointerType){
       return false;
     }
   }
 
-  setPointerEvent(e);
   const pointerPosition = painter.getRelativePosition(e.clientX, e.clientY);
   switch (brush.getToolType()) {
     case "pen":
@@ -92,7 +94,7 @@ function canvasPointerUp(
   //     return false;
   // }
   setPointerEvent(e);
-  // var pointerPosition = getRelativePosition(e.clientX, e.clientY);
+  const pointerPosition = painter.getRelativePosition(e.clientX, e.clientY);
   if (isDrawStatus) {
       canvasArea.style.setProperty('cursor', 'crosshair');
       // painter.up(pointerPosition.x, pointerPosition.y, e.pointerType === "pen" ? e.pressure : 1);
@@ -104,25 +106,35 @@ function canvasPointerUp(
       //  カラーヒストリーに保存する
       const hex = brush.getColor();
   }
+  painter.up(pointerPosition.x, pointerPosition.y, e.pointerType === "pen" ? e.pressure : 1);
 }
 
 
 
-const setPointerEvent = (e: PaintPointerEvent): void => {
+const setPointerEvent = (e: PaintPointerEvent): PaintPointerEvent => {
   // Wacomタブレットの場合はpointerTypeをpenに変更
   if (e.pointerType !== "pen" && Tablet.pen() && Tablet.pen().pointerType) {
-      // ペンの場合はpointerTypeをpenに変更
-      e.pointerType = "pen";
-      // 筆圧を追加
-      e.pressure = Tablet.pressure();
-      if (Tablet.isEraser()) {
-          Object.defineProperties(e, {
-              "button": { value: 5 },
-              "buttons": { value: 32 }
-          });
-      }
+    // 新しいイベントオブジェクトを作成
+    const newEvent = new PointerEvent(e.type, {
+      ...e,
+      pointerType: "pen",
+      pressure: Tablet.pressure(),
+      buttons: Tablet.isEraser() ? 32 : e.buttons,
+      button: Tablet.isEraser() ? 5 : e.button
+    });
+    return newEvent as PaintPointerEvent;
   } else {
-      // ペン以外の場合は筆圧を1に設定
-      e.pressure = 1;
+    // ペン以外の場合は筆圧を1に設定
+    const newEvent = new PointerEvent(e.type, {
+      ...e,
+      pressure: 1
+    });
+    return newEvent as PaintPointerEvent;
   }
+}
+
+export {
+  canvasPointerDown,
+  canvasPointerMove,
+  canvasPointerUp,
 }
