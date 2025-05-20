@@ -2,12 +2,12 @@ import React from 'react';
 import { Config, Lasso, RectSelect, PenType, BrushType, Eraser, Layer, HandMove } from "./toolbars";
 import { WrapperContext } from './WrapperContext';
 
-type ToolbarProps = {
+type ToolBarProps = {
   linePx?: number;
 }
 
-const Toolbar = (
-  { linePx = 40 }: ToolbarProps
+const ToolBar = (
+  { linePx = 40 }: ToolBarProps
 ) => {
 
   return (
@@ -51,4 +51,4 @@ const Toolbar = (
   );
 }
 
-export { Toolbar };
+export { ToolBar };

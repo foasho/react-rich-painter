@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo, ReactNode } from 'react';
 import { RichPainter } from '../utils';
-import { Toolbar, Brushbar } from "./ui";
+import { ToolBar, BrushBar } from "./ui";
 import { Brush } from './Brush';
 import { canvasPointerDown, canvasPointerMove, canvasPointerUp } from '../utils/canvas';
 
@@ -52,8 +52,8 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
         />
       }
       {painter && <Brush painter={painter} />}
-      {toolbar && <Toolbar />}
-      {brushbar && <Brushbar />}
+      {toolbar && <ToolBar />}
+      {brushbar && <BrushBar />}
     </div>
   );
 };

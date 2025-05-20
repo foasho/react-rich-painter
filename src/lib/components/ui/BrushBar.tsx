@@ -2,13 +2,13 @@ import React from 'react';
 import { WrapperContext } from './WrapperContext';
 import { ColorPallet, Opacity, Sizer } from './brushbars';
 
-type BrushbarProps = {
+type BrushBarProps = {
   linePx?: number;
   height?: number;
 }
 
-const Brushbar = (
-  { linePx = 40, height = 350 }: BrushbarProps
+const BrushBar = (
+  { linePx = 40, height = 350 }: BrushBarProps
 ) => {
 
   const _height = height + 'px';
@@ -37,4 +37,4 @@ const Brushbar = (
   );
 }
 
-export { Brushbar };
+export { BrushBar };

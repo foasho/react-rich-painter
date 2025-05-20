@@ -725,7 +725,7 @@ class RichPainter {
       const r = imageData.data[0];
       const g = imageData.data[1];
       const b = imageData.data[2];
-      const a = imageData.data[3];
+      // const a = imageData.data[3]; // スポイトは見た目上色を採用のため、透明度は不要
       const rgb = `rgb(${r}, ${g}, ${b})`;
       const hex = this.rgb2hex(rgb);
       // this.brush?.setColor(hex);
@@ -1115,6 +1115,8 @@ class RichPainter {
   private _move(x: number, y: number, pressure: number): void {
     if (this.brush) {
       this.brush.move(this.paintingContext!, x, y, pressure);
+      // 移動中の描画を即時反映
+      this.drawPaintingCanvas();
     }
     if (this.onMoved) {
       this.onMoved(x, y, pressure);
