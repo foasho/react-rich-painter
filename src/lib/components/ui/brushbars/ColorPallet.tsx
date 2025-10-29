@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { usePainter } from '../../PainterContext';
 
 type ColorPalletProps = {
   size?: number;
@@ -13,10 +14,26 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
 }) => {
   const [color, setColor] = useState<string>(initialColor);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { painter } = usePainter();
+
+  // 初回マウント時にBrushの色を初期色に設定
+  React.useEffect(() => {
+    const brush = painter.getBrush();
+    if (brush) {
+      brush.setColor(initialColor);
+    }
+  }, [painter, initialColor]);
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = event.target.value;
     setColor(newColor);
+
+    // Brushの色を更新
+    const brush = painter.getBrush();
+    if (brush) {
+      brush.setColor(newColor);
+    }
+
     if (onColorChange) {
       onColorChange(newColor);
     }

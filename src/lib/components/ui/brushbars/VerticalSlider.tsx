@@ -83,20 +83,38 @@ type VerticalSliderProps = {
   sliderId?: string; // スライダーのID
   width?: number; // スライダーの厚み
   sliderLength?: number; // スライダーの長さ
+  min?: number; // 最小値
+  max?: number; // 最大値
+  defaultValue?: number; // デフォルト値
+  onChange?: (value: number) => void; // 値変更時のコールバック
 };
 
-const VerticalSlider: React.FC<VerticalSliderProps> = ({ width = 20, sliderLength = 150, sliderId="vertical-slider" }) => {
+const VerticalSlider: React.FC<VerticalSliderProps> = ({
+  width = 20,
+  sliderLength = 150,
+  sliderId = "vertical-slider",
+  min = 0,
+  max = 100,
+  defaultValue = 50,
+  onChange,
+}) => {
   useEffect(() => {
     // 初期値のスタイル設定
     const slider = document.getElementById(sliderId) as HTMLInputElement;
     if (slider) {
       slider.style.setProperty("--value", `${(slider.valueAsNumber / Number(slider.max)) * 100}%`);
     }
-  }, []);
+  }, [sliderId]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const slider = event.target;
-    slider.style.setProperty("--value", `${(slider.valueAsNumber / Number(slider.max)) * 100}%`);
+    const value = slider.valueAsNumber;
+    slider.style.setProperty("--value", `${(value / Number(slider.max)) * 100}%`);
+
+    // コールバックを呼び出す
+    if (onChange) {
+      onChange(value);
+    }
   };
 
   return (
@@ -104,9 +122,9 @@ const VerticalSlider: React.FC<VerticalSliderProps> = ({ width = 20, sliderLengt
       <StyledSlider
         id={sliderId}
         type="range"
-        min="0"
-        max="100"
-        defaultValue="50"
+        min={min}
+        max={max}
+        defaultValue={defaultValue}
         sliderWidth={width}
         sliderLength={sliderLength}
         onInput={handleInput}

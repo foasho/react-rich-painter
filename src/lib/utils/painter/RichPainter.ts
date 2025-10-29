@@ -66,6 +66,10 @@ class RichPainter {
     this.size = initSize;
     this.brush = new Brush();
 
+    // paintingCanvasの初期化（描画中のプレビュー用）
+    this.paintingCanvas.style.opacity = this.paintingOpacity.toString();
+    this.paintingCanvas.style.position = "absolute";
+
     // ドラッグ不可スタイルを適用
     this.domElement.style.userSelect = "none";
     this.domElement.style.webkitUserSelect = "none";
@@ -562,7 +566,7 @@ class RichPainter {
   // ------------------------------------------------------------------------
   // レイヤーの情報取得
   // ------------------------------------------------------------------------
-  private getLayerCanvas(index: number): HTMLCanvasElement {
+  public getLayerCanvas(index: number): HTMLCanvasElement {
     return this.layers[index].getElementsByClassName(
       "croquis-layer-canvas"
     )[0] as HTMLCanvasElement;
@@ -1038,8 +1042,10 @@ class RichPainter {
   }
   public setPaintingKnockout(knockout: boolean): void {
     this.paintingKnockout = knockout;
-    // knockout時はpaintCanvasを隠すなどのロジック
-    this.paintingCanvas.style.visibility = knockout ? "hidden" : "visible";
+    // knockout時もpaintingCanvasは表示する（描画中のプレビューを見せるため）
+    // レイヤーへの転写時にdestination-outを使って消しゴム効果を適用
+    // 旧実装では隠していたが、これではプレビューが見えないので常に表示する
+    this.paintingCanvas.style.visibility = "visible";
   }
 
   public getPaintingClipping(): boolean {
@@ -1115,8 +1121,9 @@ class RichPainter {
   private _move(x: number, y: number, pressure: number): void {
     if (this.brush) {
       this.brush.move(this.paintingContext!, x, y, pressure);
-      // 移動中の描画を即時反映
-      this.drawPaintingCanvas();
+      // 描画中はpaintingCanvasに描画するだけで、レイヤーには転写しない
+      // paintingCanvas.style.opacityで透明度のプレビューは表示される
+      // レイヤーへの転写は_up()で1回だけ行う
     }
     if (this.onMoved) {
       this.onMoved(x, y, pressure);
@@ -1152,7 +1159,8 @@ class RichPainter {
       });
     }
 
-    clearInterval(this.knockoutTick);
+    // knockoutTickは使用しないのでクリア不要
+    // clearInterval(this.knockoutTick);
     clearInterval(this.tick);
   }
 
@@ -1179,15 +1187,16 @@ class RichPainter {
       this.stabilizer = new Stabilizer(
         // down
         (xx, yy, pp) => {
-          // ここでブラシ等のdown処理があれば呼ぶ
-          // e.g. this.brush?.down(xx, yy, pp);
+          // Brushのdown処理を呼ぶ
+          if (this.brush && this.paintingContext) {
+            this.brush.down(this.paintingContext, xx, yy, pp);
+          }
           if (this.onDowned) {
             this.onDowned(xx, yy, pp);
           }
         },
         // move
         (xx, yy, pp) => {
-          // e.g. this.brush?.move(xx, yy, pp);
           this._move(xx, yy, pp);
         },
         // up
@@ -1204,19 +1213,24 @@ class RichPainter {
       this.isStabilizing = true;
     } else {
       // Stabilizerなし
-      // e.g. this.brush?.down(x, y, pressure);
+      if (this.brush && this.paintingContext) {
+        this.brush.down(this.paintingContext, x, y, pressure);
+      }
       if (this.onDowned) {
         this.onDowned(x, y, pressure);
       }
     }
   
     // knockout の再描画
-    this.knockoutTick = setInterval(() => {
-      if (this.paintingKnockout) {
-        this.gotoBeforeKnockout();
-        this.drawPaintingCanvas();
-      }
-    }, this.knockoutInterval);
+    // 描画中にレイヤーに転写すると、何度も消しゴム効果が適用されてちかちかする
+    // 描画中はpaintingCanvasのプレビューのみを表示し、
+    // 描き終わった時に_up()で1回だけレイヤーに適用する
+    // this.knockoutTick = setInterval(() => {
+    //   if (this.paintingKnockout) {
+    //     this.gotoBeforeKnockout();
+    //     this.drawPaintingCanvas();
+    //   }
+    // }, this.knockoutInterval);
   
     // tick 処理
     this.tick = setInterval(() => {
@@ -1263,6 +1277,10 @@ class RichPainter {
 
   public getBrush(): Brush | null {
     return this.brush;
+  }
+
+  public getIsDrawing(): boolean {
+    return this.isDrawing;
   }
 }
 

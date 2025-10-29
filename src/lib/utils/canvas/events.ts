@@ -43,9 +43,13 @@ const canvasPointerMove = ({
   painter,
   brush,
 }: CanvasPointerMoveProps) => {
+  // 描画中でない場合は何もしない
+  if (!painter.getIsDrawing()) {
+    return;
+  }
 
   const newEvent = setPointerEvent(e);
-  
+
   // 選択した入力タイプかどうかチェック
   if (newEvent.pressure > 0){
     if(brush.getUserSelectInputType() !== newEvent.pointerType){
@@ -53,7 +57,7 @@ const canvasPointerMove = ({
       // return false;
     }
   }
-  console.log(brush.getToolType());
+
   const pointerPosition = painter.getRelativePosition(newEvent.clientX, newEvent.clientY);
   switch (brush.getToolType()) {
     case "pen":
@@ -64,10 +68,10 @@ const canvasPointerMove = ({
       painter.move(pointerPosition.x, pointerPosition.y, newEvent.pressure);
       break;
     case "eraser":
+      painter.move(pointerPosition.x, pointerPosition.y, newEvent.pressure);
       break;
     case "dripper":
       // スポイト
-
       break;
     case "rect":
       // TODO: 四角選択

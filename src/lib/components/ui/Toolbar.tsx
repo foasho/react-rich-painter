@@ -1,5 +1,5 @@
 import React from 'react';
-import { Config, Lasso, RectSelect, PenType, BrushType, Eraser, Layer, HandMove } from "./toolbars";
+import { Config, Lasso, PenType, BrushType, Eraser, Layer, HandMove } from "./toolbars";
 import { WrapperContext } from './WrapperContext';
 
 type ToolBarProps = {
@@ -29,7 +29,6 @@ const ToolBar = (
         >
           <Config />
           <Lasso />
-          <RectSelect />
           <PenType />
         </div>
         {/** Right */}
