@@ -196,19 +196,43 @@ class Brush {
     return [parseInt(d[0]), parseInt(d[1]), parseInt(d[2]), parseFloat(d[3])];
   }
 
-  private mergeBrushColor(base: number[], get_added: string, merge: number): string {
-    let merge_ratio = merge + merge * this.prevScale;
-    merge_ratio = merge_ratio < 1 ? merge_ratio : 1;
-    const added = this.hexToRGB(get_added, 1);
-    const mix = [];
-    const ba = base[3] * merge_ratio;
-    const [adr, br] = this.calRatio(added[3], ba);
-    mix[0] = parseInt(String(adr * added[0])) + parseInt(String(base[0] * br));
-    mix[1] = parseInt(String(adr * added[1])) + parseInt(String(base[1] * br));
-    mix[2] = parseInt(String(adr * added[2])) + parseInt(String(base[2] * br));
-    mix[3] = adr + br;
-    const merge_color = "rgba(" + mix.join(",") + ")";
-    return merge_color;
+  /**
+   * 改良版混色アルゴリズム
+   * @param base キャンバスの既存色 [r, g, b, a] (0-255)
+   * @param brushColor ブラシの色 (hex形式)
+   * @param mergeAmount 混色の強さ (0-1)
+   * @returns 混色後の色 (rgba文字列)
+   *
+   * mergeAmount = 0: 完全にブラシの色
+   * mergeAmount = 1: 既存色とブラシ色を均等に混ぜる（水彩風）
+   */
+  private mergeBrushColor(base: number[], brushColor: string, mergeAmount: number): string {
+    // ブラシの色をRGBAに変換
+    const brushRGB = this.hexToRGB(brushColor, 1);
+
+    // 既存色の透明度を考慮（透明な場合は混色しない）
+    const baseAlpha = base[3] / 255;
+
+    if (baseAlpha < 0.01) {
+      // 既存色がほぼ透明な場合は、ブラシの色をそのまま使用
+      return `rgba(${brushRGB[0]}, ${brushRGB[1]}, ${brushRGB[2]}, 1)`;
+    }
+
+    // 混色の強さを筆圧で調整（より自然な描画）
+    const adjustedMerge = mergeAmount * Math.min(1, this.prevScale + 0.3);
+
+    // RGB線形補間による混色（絵の具を混ぜるような自然な混色）
+    // adjustedMerge = 0: 100% ブラシ色
+    // adjustedMerge = 1: 50% 既存色 + 50% ブラシ色
+    const blendRatio = adjustedMerge * 0.5; // 最大50%まで既存色を混ぜる
+
+    // RGB各チャンネルを線形補間
+    const r = Math.round(brushRGB[0] * (1 - blendRatio) + base[0] * blendRatio);
+    const g = Math.round(brushRGB[1] * (1 - blendRatio) + base[1] * blendRatio);
+    const b = Math.round(brushRGB[2] * (1 - blendRatio) + base[2] * blendRatio);
+
+    // アルファ値は常に1（不透明）、透明度はflowで制御
+    return `rgba(${r}, ${g}, ${b}, 1)`;
   }
 
   private ratioTo255(ratio: number): number {
@@ -217,16 +241,6 @@ class Brush {
 
   private c255ToRatio(data: number): number {
     return data / 255;
-  }
-
-  private calRatio(a: number, b: number): [number, number] {
-    if (a === 0) {
-      return [0, 1];
-    } else if (b === 0) {
-      return [1, 0];
-    } else {
-      return [a / (a + b), b / (a + b)];
-    }
   }
 
   // 以下の関数は、外部のコンテキストや変数（例えば、getNowLayerContext、width、heightなど）に依存しています。

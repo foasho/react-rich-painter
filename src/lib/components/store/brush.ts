@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getInitialBrushSettings, saveBrushSettings, resetBrushSettings } from './local-storage';
 
 type BrushBarState = {
   size: number;
@@ -23,29 +24,86 @@ type BrushBarState = {
   setMinimumSize: (minimumSize: number) => void;
   setStabilizeLevel: (level: number) => void;
   setStabilizeWeight: (weight: number) => void;
+  resetToDefaults: () => void;
 };
 
+// LocalStorageから初期値を読み込む
+const initialSettings = getInitialBrushSettings();
+
 export const useBrushBarStore = create<BrushBarState>((set) => ({
-  size: 10,
-  color: '#1c1314',
-  shape: 'round',
-  customBrushIndex: null,
+  // 初期値（LocalStorage + デフォルト）
+  size: initialSettings.size,
+  color: initialSettings.color,
+  shape: initialSettings.shape,
+  customBrushIndex: initialSettings.customBrushIndex,
   customBrushImages: [],
-  spacing: 0.05,
-  flow: 1.0,
-  merge: 0.2,
-  minimumSize: 0.01,
-  stabilizeLevel: 5,
-  stabilizeWeight: 0.5,
-  setSize: (size) => set({ size }),
-  setColor: (color) => set({ color }),
-  setShape: (shape) => set({ shape }),
-  setCustomBrushIndex: (index) => set({ customBrushIndex: index }),
-  setCustomBrushImages: (images) => set({ customBrushImages: images }),
-  setSpacing: (spacing) => set({ spacing }),
-  setFlow: (flow) => set({ flow }),
-  setMerge: (merge) => set({ merge }),
-  setMinimumSize: (minimumSize) => set({ minimumSize }),
-  setStabilizeLevel: (level) => set({ stabilizeLevel: level }),
-  setStabilizeWeight: (weight) => set({ stabilizeWeight: weight }),
+  spacing: initialSettings.spacing,
+  flow: initialSettings.flow,
+  merge: initialSettings.merge,
+  minimumSize: initialSettings.minimumSize,
+  stabilizeLevel: initialSettings.stabilizeLevel,
+  stabilizeWeight: initialSettings.stabilizeWeight,
+
+  // Setter（変更時にLocalStorageに保存）
+  setSize: (size) => {
+    set({ size });
+    saveBrushSettings({ size });
+  },
+  setColor: (color) => {
+    set({ color });
+    saveBrushSettings({ color });
+  },
+  setShape: (shape) => {
+    set({ shape });
+    saveBrushSettings({ shape });
+  },
+  setCustomBrushIndex: (index) => {
+    set({ customBrushIndex: index });
+    saveBrushSettings({ customBrushIndex: index });
+  },
+  setCustomBrushImages: (images) => {
+    set({ customBrushImages: images });
+    // HTMLImageElementはシリアライズできないので保存しない
+  },
+  setSpacing: (spacing) => {
+    set({ spacing });
+    saveBrushSettings({ spacing });
+  },
+  setFlow: (flow) => {
+    set({ flow });
+    saveBrushSettings({ flow });
+  },
+  setMerge: (merge) => {
+    set({ merge });
+    saveBrushSettings({ merge });
+  },
+  setMinimumSize: (minimumSize) => {
+    set({ minimumSize });
+    saveBrushSettings({ minimumSize });
+  },
+  setStabilizeLevel: (level) => {
+    set({ stabilizeLevel: level });
+    saveBrushSettings({ stabilizeLevel: level });
+  },
+  setStabilizeWeight: (weight) => {
+    set({ stabilizeWeight: weight });
+    saveBrushSettings({ stabilizeWeight: weight });
+  },
+
+  // デフォルト値にリセット
+  resetToDefaults: () => {
+    const defaults = resetBrushSettings();
+    set({
+      size: defaults.size,
+      color: defaults.color,
+      shape: defaults.shape,
+      customBrushIndex: defaults.customBrushIndex,
+      spacing: defaults.spacing,
+      flow: defaults.flow,
+      merge: defaults.merge,
+      minimumSize: defaults.minimumSize,
+      stabilizeLevel: defaults.stabilizeLevel,
+      stabilizeWeight: defaults.stabilizeWeight,
+    });
+  },
 }));

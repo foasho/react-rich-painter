@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { HiCog6Tooth } from "react-icons/hi2";
-import { useControls, Leva } from 'leva';
+import { useControls, Leva, button } from 'leva';
 import { usePainter } from '../../PainterContext';
 import { useBrushBarStore } from '../../store/brush';
+import { DEFAULT_BRUSH_SETTINGS } from '../../store/defaults';
 
 type ConfigProps = {
   size?: number;
@@ -26,10 +27,11 @@ const Config = (
     setMinimumSize,
     setStabilizeLevel,
     setStabilizeWeight,
+    resetToDefaults,
   } = useBrushBarStore();
 
   // Levaコントロールの定義
-  const [values] = useControls(() => ({
+  const [values, setValues] = useControls(() => ({
     'Brush Spacing': {
       value: spacing,
       min: 0.01,
@@ -44,12 +46,12 @@ const Config = (
       step: 0.01,
       label: 'フロー',
     },
-    'Merge': {
+    'Color Mixing': {
       value: merge,
       min: 0,
       max: 1.0,
       step: 0.01,
-      label: 'マージ',
+      label: '混色 (0:なし 1:最大)',
     },
     'Minimum Size': {
       value: minimumSize,
@@ -72,6 +74,20 @@ const Config = (
       step: 0.01,
       label: '手ぶれ補正ウェイト',
     },
+    'デフォルトに戻す': button(() => {
+      // ストアをデフォルト値にリセット
+      resetToDefaults();
+
+      // Levaの表示もリセット
+      setValues({
+        'Brush Spacing': DEFAULT_BRUSH_SETTINGS.spacing,
+        'Flow': DEFAULT_BRUSH_SETTINGS.flow,
+        'Color Mixing': DEFAULT_BRUSH_SETTINGS.merge,
+        'Minimum Size': DEFAULT_BRUSH_SETTINGS.minimumSize,
+        'Stabilizer Level': DEFAULT_BRUSH_SETTINGS.stabilizeLevel,
+        'Stabilizer Weight': DEFAULT_BRUSH_SETTINGS.stabilizeWeight,
+      });
+    }),
   }), [spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight]);
 
   // Levaの値が変更されたときにストアとPainter/Brushを更新
@@ -92,9 +108,9 @@ const Config = (
       brush.setFlow(values['Flow']);
     }
 
-    if (values['Merge'] !== merge) {
-      setMerge(values['Merge']);
-      brush.setMerge(values['Merge']);
+    if (values['Color Mixing'] !== merge) {
+      setMerge(values['Color Mixing']);
+      brush.setMerge(values['Color Mixing']);
     }
 
     if (values['Minimum Size'] !== minimumSize) {
