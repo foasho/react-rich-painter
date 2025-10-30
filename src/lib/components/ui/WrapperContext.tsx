@@ -22,11 +22,13 @@ type WrapperStyleProps = {
 
 type WrapperContextProps = {
   children: React.ReactNode;
+  initialPosition?: { x: number; y: number };
 } & WrapperStyleProps & WrapperContextStyleProps;
 
 const WrapperContext = (
-  { 
+  {
     children,
+    initialPosition = { x: 0, y: 0 },
     withHandle = true,
     draggableId = "rich_painter",
     vertical = false,
@@ -40,7 +42,35 @@ const WrapperContext = (
     style = {},
   }: WrapperContextProps
 ) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  // localStorageから位置を読み込む
+  const getInitialPosition = () => {
+    if (typeof window === 'undefined') return initialPosition;
+
+    try {
+      const storageKey = `wrapper-position-${draggableId}`;
+      const savedPosition = localStorage.getItem(storageKey);
+      if (savedPosition) {
+        return JSON.parse(savedPosition);
+      }
+    } catch (error) {
+      console.error('Failed to load position from localStorage:', error);
+    }
+    return initialPosition;
+  };
+
+  const [position, setPosition] = useState(getInitialPosition);
+
+  // positionが変更されたらlocalStorageに保存
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const storageKey = `wrapper-position-${draggableId}`;
+      localStorage.setItem(storageKey, JSON.stringify(position));
+    } catch (error) {
+      console.error('Failed to save position to localStorage:', error);
+    }
+  }, [position, draggableId]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { delta } = event;

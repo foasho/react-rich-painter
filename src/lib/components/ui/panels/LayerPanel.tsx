@@ -165,6 +165,10 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
     textAlign: 'center',
   };
 
+  // 右側の初期位置を計算（幅240px + 右マージン10px）
+  const initialX = typeof window !== 'undefined' ? window.innerWidth - 250 : 0;
+  const initialY = 60;
+
   return (
     <WrapperContext
       draggableId="layer-panel"
@@ -173,7 +177,7 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
       height="auto"
       linePx={240}
       backgroundColor="#1a1a1a"
-      style={{ top: '60px', right: '10px' }}
+      initialPosition={{ x: initialX, y: initialY }}
     >
       <div style={containerStyle}>
         <div style={headerStyle}>
