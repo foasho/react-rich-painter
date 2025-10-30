@@ -21,7 +21,7 @@ const Lasso: React.FC<LassoProps> = ({ size = 20 }) => {
     clearSelection();
 
     // 描画モードを無効化（Lassoツール選択時は描画しない）
-    painter.setPaintingKnockout(false);
+    painter!.setPaintingKnockout(false);
 
     // カーソルをcrosshairに設定
     const canvasDom = document.getElementById('main_canvas_area');

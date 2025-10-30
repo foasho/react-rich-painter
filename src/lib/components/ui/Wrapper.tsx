@@ -76,7 +76,7 @@ const Wrapper = ({
   };
 
   const childrenStyles: React.CSSProperties = {
-    padding: vertical? '5px' :'10px',
+    padding: vertical? '5px' :'5px',
     flex: 1,
   };
 

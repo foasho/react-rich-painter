@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo, ReactNode } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { RichPainter } from '../utils';
 import { ToolBar, BrushBar } from "./ui";
 import { Brush } from './Brush';
@@ -11,19 +11,31 @@ import { useSelectionStore } from './store/selection';
 import { useBrushBarStore } from './store/brush';
 
 type ReactRichPainterProps = {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  autoSize?: boolean; // 親要素のサイズから自動的にキャンバスサイズを決定するかどうか（デフォルト: true）
   toolbar?: boolean; // Toolbarを表示するかどうか
   brushbar?: boolean; // Brushbarを表示するかどうか
   appendBrushImages?: string[]; // TODO: 追加のBrush画像
   defaultCustomBrush?: boolean; // デフォルトのカスタムブラシ（b0~b4.png）を使用するかどうか
   backgroundSize?: number; // 背景タイルの大きさ
+  backgroundTileColor?: string; // 背景タイルの色
 };
 
-const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, toolbar=true, brushbar=true, defaultCustomBrush=true, backgroundSize=20 }) => {
+const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
+  width: propWidth,
+  height: propHeight,
+  autoSize = true,
+  toolbar=true,
+  brushbar=true,
+  defaultCustomBrush=true,
+  backgroundSize=20,
+  backgroundTileColor="#1e1e1e"
+}) => {
   const [painter, setPainter] = useState<RichPainter>();
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
-  const size = useMemo(() => ({ width, height }), [width, height]);
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 800, height: 600 });
+
   const {
     setCustomBrushImages,
     spacing,
@@ -34,11 +46,61 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
     stabilizeWeight,
   } = useBrushBarStore();
 
+  // autoSizeがfalseの場合、widthとheightが必須であることをチェック
+  useEffect(() => {
+    if (!autoSize && (propWidth === undefined || propHeight === undefined)) {
+      console.error('ReactRichPainter: autoSize=false の場合、width と height の指定が必要です。');
+    }
+  }, [autoSize, propWidth, propHeight]);
+
+  // autoSizeがtrueの場合、親要素のサイズを監視
+  useEffect(() => {
+    if (!autoSize) {
+      // autoSizeがfalseの場合、propで指定されたサイズを使用
+      if (propWidth !== undefined && propHeight !== undefined) {
+        setCanvasSize({ width: propWidth, height: propHeight });
+      }
+      return;
+    }
+
+    if (!canvasContainerRef.current) return;
+
+    const updateSize = () => {
+      if (canvasContainerRef.current) {
+        const parentElement = canvasContainerRef.current.parentElement;
+        if (parentElement) {
+          const parentWidth = parentElement.clientWidth;
+          const parentHeight = parentElement.clientHeight;
+          const newWidth = Math.floor(parentWidth * 0.8);
+          const newHeight = Math.floor(parentHeight * 0.8);
+          setCanvasSize({ width: newWidth, height: newHeight });
+        }
+      }
+    };
+
+    // 初期サイズを設定
+    updateSize();
+
+    // ResizeObserverで親要素のサイズ変更を監視
+    const resizeObserver = new ResizeObserver(() => {
+      updateSize();
+    });
+
+    const parentElement = canvasContainerRef.current.parentElement;
+    if (parentElement) {
+      resizeObserver.observe(parentElement);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [autoSize, propWidth, propHeight]);
+
   useEffect(() => {
     // RichPainter の初期化（最初のみ）
     const painter = new RichPainter({
       undoLimit: 30,
-      initSize: { width, height },
+      initSize: { width: canvasSize.width, height: canvasSize.height },
     });
 
     // 滑らかな線を実現するためのスタビライザー設定
@@ -57,7 +119,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
     }
 
     setPainter(painter);
-  }, [width, height]);
+  }, [canvasSize.width, canvasSize.height]);
 
   // ストアの設定値が変更されたときにPainter/Brushを更新（初期化後）
   useEffect(() => {
@@ -115,7 +177,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
       style={{
         width: "100%",
         height: "100%",
-        backgroundColor: 'black',
+        backgroundColor: backgroundTileColor,
         backgroundImage: `
           linear-gradient(white 1px, transparent 1px),
           linear-gradient(90deg, white 1px, transparent 1px)
@@ -130,8 +192,8 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
         <PainterProvider painter={painter}>
           <PaintCanvas
             painter={painter}
-            width={size.width}
-            height={size.height}
+            width={canvasSize.width}
+            height={canvasSize.height}
           />
           <Brush painter={painter} />
           {toolbar && <ToolBar />}
@@ -211,7 +273,7 @@ const PaintCanvas = (
       painter.unlockHistory();
       if (canvasAreaRef.current && painterCanvasRef.current) {
         const alreadyPainterDom = document.getElementById("main_canvas_area");
-        if (alreadyPainterDom) {
+        if (alreadyPainterDom && alreadyPainterDom.parentNode === canvasAreaRef.current) {
           canvasAreaRef.current.removeChild(alreadyPainterDom);
         }
         const _painterDom = painter.getDOMElement();
@@ -523,6 +585,16 @@ const PaintCanvas = (
         // });
       }
     }
+
+    // クリーンアップ関数：コンポーネントのアンマウント時にDOM要素を削除
+    return () => {
+      if (canvasAreaRef.current) {
+        const painterDom = document.getElementById("main_canvas_area");
+        if (painterDom && painterDom.parentNode === canvasAreaRef.current) {
+          canvasAreaRef.current.removeChild(painterDom);
+        }
+      }
+    };
   }, []);
 
   useEffect(() => {

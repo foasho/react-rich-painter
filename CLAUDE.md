@@ -82,6 +82,9 @@ npm run preview
 
 - **`Painter.tsx`**: メインコンポーネント
   - `ReactRichPainter`: エントリーポイント
+    - `autoSize`プロパティ（デフォルト: true）: 親要素のサイズから自動的にキャンバスサイズを決定
+    - `autoSize=true`の場合: ResizeObserverで親要素のサイズを監視し、0.8倍をキャンバスサイズとして設定
+    - `autoSize=false`の場合: `width`と`height`プロパティで固定サイズを指定
   - `PaintCanvas`: キャンバス描画領域
   - ポインターイベント処理（pointerdown、pointermove、pointerup、pointercancel）
   - Pointer Capture実装（キャンバス外でのイベント捕捉）
