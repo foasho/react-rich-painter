@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaEye, FaEyeSlash, FaTrash } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaEye, FaEyeSlash, FaTrash, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { RichPainter } from '../../../utils/painter/RichPainter';
 
 type LayerItemProps = {
@@ -8,6 +8,10 @@ type LayerItemProps = {
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 };
 
 const LayerItem: React.FC<LayerItemProps> = ({
@@ -16,6 +20,10 @@ const LayerItem: React.FC<LayerItemProps> = ({
   isSelected,
   onSelect,
   onDelete,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [opacity, setOpacity] = useState(100);
@@ -33,7 +41,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
   useEffect(() => {
     const generateThumbnail = () => {
       try {
-        const thumbnailCanvas = painter.createLayerThumbnail(index, 60, 60);
+        const thumbnailCanvas = painter.createLayerThumbnail(index, 40, 40);
         const dataUrl = thumbnailCanvas.toDataURL();
         setThumbnail(dataUrl);
       } catch (error) {
@@ -63,6 +71,16 @@ const LayerItem: React.FC<LayerItemProps> = ({
     onDelete();
   };
 
+  const handleMoveUp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onMoveUp();
+  };
+
+  const handleMoveDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onMoveDown();
+  };
+
   const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newOpacity = parseInt(e.target.value);
     setOpacity(newOpacity);
@@ -72,24 +90,24 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    padding: '8px',
+    padding: '4px',
     backgroundColor: isSelected ? '#2a2a2a' : '#1a1a1a',
-    borderRadius: '8px',
-    marginBottom: '4px',
+    borderRadius: '4px',
+    marginBottom: '3px',
     cursor: 'pointer',
-    border: isSelected ? '2px solid #4a90e2' : '2px solid transparent',
+    border: isSelected ? '1px solid #4a90e2' : '1px solid transparent',
     transition: 'all 0.2s',
   };
 
   const thumbnailStyle: React.CSSProperties = {
-    width: '60px',
-    height: '60px',
+    width: '40px',
+    height: '40px',
     backgroundColor: '#ffffff',
-    borderRadius: '4px',
-    marginRight: '8px',
+    borderRadius: '3px',
+    marginRight: '6px',
     backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)',
-    backgroundSize: '10px 10px',
-    backgroundPosition: '0 0, 5px 5px',
+    backgroundSize: '8px 8px',
+    backgroundPosition: '0 0, 4px 4px',
     opacity: isVisible ? 1 : 0.3,
   };
 
@@ -97,11 +115,11 @@ const LayerItem: React.FC<LayerItemProps> = ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: '2px',
   };
 
   const nameStyle: React.CSSProperties = {
-    fontSize: '14px',
+    fontSize: '11px',
     fontWeight: 'bold',
     color: '#ffffff',
   };
@@ -109,25 +127,26 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const opacityContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '4px',
   };
 
   const opacityLabelStyle: React.CSSProperties = {
-    fontSize: '12px',
+    fontSize: '9px',
     color: '#aaaaaa',
-    minWidth: '30px',
+    minWidth: '25px',
   };
 
   const sliderStyle: React.CSSProperties = {
     flex: 1,
-    height: '4px',
+    height: '3px',
     cursor: 'pointer',
   };
 
   const actionsStyle: React.CSSProperties = {
     display: 'flex',
-    gap: '8px',
-    marginLeft: '8px',
+    flexDirection: 'column',
+    gap: '2px',
+    marginLeft: '4px',
   };
 
   const iconButtonStyle: React.CSSProperties = {
@@ -135,12 +154,18 @@ const LayerItem: React.FC<LayerItemProps> = ({
     border: 'none',
     color: '#ffffff',
     cursor: 'pointer',
-    padding: '4px',
+    padding: '2px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '16px',
+    fontSize: '12px',
     transition: 'color 0.2s',
+  };
+
+  const iconButtonDisabledStyle: React.CSSProperties = {
+    ...iconButtonStyle,
+    color: '#666666',
+    cursor: 'not-allowed',
   };
 
   return (
@@ -150,7 +175,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
           <img
             src={thumbnail}
             alt={`Layer ${index + 1}`}
-            style={{ width: '100%', height: '100%', borderRadius: '4px' }}
+            style={{ width: '100%', height: '100%', borderRadius: '3px' }}
           />
         )}
       </div>
@@ -170,20 +195,40 @@ const LayerItem: React.FC<LayerItemProps> = ({
         </div>
       </div>
       <div style={actionsStyle}>
-        <button
-          style={iconButtonStyle}
-          onClick={handleVisibilityToggle}
-          title={isVisible ? '非表示にする' : '表示する'}
-        >
-          {isVisible ? <FaEye /> : <FaEyeSlash />}
-        </button>
-        <button
-          style={iconButtonStyle}
-          onClick={handleDelete}
-          title="削除"
-        >
-          <FaTrash />
-        </button>
+        <div style={{ display: 'flex', gap: '2px' }}>
+          <button
+            style={canMoveUp ? iconButtonStyle : iconButtonDisabledStyle}
+            onClick={handleMoveUp}
+            title="上に移動"
+            disabled={!canMoveUp}
+          >
+            <FaChevronUp size={10} />
+          </button>
+          <button
+            style={canMoveDown ? iconButtonStyle : iconButtonDisabledStyle}
+            onClick={handleMoveDown}
+            title="下に移動"
+            disabled={!canMoveDown}
+          >
+            <FaChevronDown size={10} />
+          </button>
+        </div>
+        <div style={{ display: 'flex', gap: '2px' }}>
+          <button
+            style={iconButtonStyle}
+            onClick={handleVisibilityToggle}
+            title={isVisible ? '非表示にする' : '表示する'}
+          >
+            {isVisible ? <FaEye size={10} /> : <FaEyeSlash size={10} />}
+          </button>
+          <button
+            style={iconButtonStyle}
+            onClick={handleDelete}
+            title="削除"
+          >
+            <FaTrash size={10} />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Wrapper } from '../Wrapper';
+import { WrapperContext } from '../WrapperContext';
 import { LayerItem } from './LayerItem';
 import { usePainter } from '../../PainterContext';
 import { FaPlus } from 'react-icons/fa';
 
-type LayerPanelProps = {
-  position?: { x: number; y: number };
-};
+type LayerPanelProps = {};
 
-const LayerPanel: React.FC<LayerPanelProps> = ({
-  position = { x: window.innerWidth - 320, y: 60 },
-}) => {
+const LayerPanel: React.FC<LayerPanelProps> = () => {
   const { painter } = usePainter();
   const [layers, setLayers] = useState<number[]>([]);
   const [selectedLayerIndex, setSelectedLayerIndex] = useState(0);
@@ -60,6 +56,30 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
     updateLayers();
   };
 
+  const handleMoveLayerUp = (index: number) => {
+    if (!painter) return;
+    if (index >= painter.getLayerCount() - 1) return; // 最上位レイヤーは上に移動できない
+    painter.swapLayer(index, index + 1);
+    if (index === selectedLayerIndex) {
+      setSelectedLayerIndex(index + 1);
+    } else if (index + 1 === selectedLayerIndex) {
+      setSelectedLayerIndex(index);
+    }
+    updateLayers();
+  };
+
+  const handleMoveLayerDown = (index: number) => {
+    if (!painter) return;
+    if (index <= 0) return; // 最下位レイヤーは下に移動できない
+    painter.swapLayer(index, index - 1);
+    if (index === selectedLayerIndex) {
+      setSelectedLayerIndex(index - 1);
+    } else if (index - 1 === selectedLayerIndex) {
+      setSelectedLayerIndex(index);
+    }
+    updateLayers();
+  };
+
   if (!painter) return null;
 
   const containerStyle: React.CSSProperties = {
@@ -73,12 +93,12 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '12px',
+    padding: '6px 8px',
     borderBottom: '1px solid #333',
   };
 
   const titleStyle: React.CSSProperties = {
-    fontSize: '16px',
+    fontSize: '13px',
     fontWeight: 'bold',
     color: '#ffffff',
   };
@@ -86,40 +106,41 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
   const addButtonStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
-    padding: '6px 12px',
+    gap: '3px',
+    padding: '4px 8px',
     backgroundColor: '#4a90e2',
     color: '#ffffff',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '11px',
     transition: 'background-color 0.2s',
   };
 
   const layerListStyle: React.CSSProperties = {
     flex: 1,
     overflowY: 'auto',
-    padding: '8px',
-    maxHeight: '500px',
+    padding: '4px',
+    maxHeight: '400px',
   };
 
   const layerCountStyle: React.CSSProperties = {
-    padding: '8px 12px',
-    fontSize: '12px',
+    padding: '4px 8px',
+    fontSize: '10px',
     color: '#aaaaaa',
     borderTop: '1px solid #333',
     textAlign: 'center',
   };
 
   return (
-    <Wrapper
+    <WrapperContext
       draggableId="layer-panel"
-      position={position}
       vertical={true}
-      width="300px"
+      width="240px"
       height="auto"
+      linePx={240}
       backgroundColor="#1a1a1a"
+      style={{ top: '60px', right: '10px' }}
     >
       <div style={containerStyle}>
         <div style={headerStyle}>
@@ -134,7 +155,7 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
               e.currentTarget.style.backgroundColor = '#4a90e2';
             }}
           >
-            <FaPlus />
+            <FaPlus size={10} />
             追加
           </button>
         </div>
@@ -148,6 +169,10 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
               isSelected={index === selectedLayerIndex}
               onSelect={() => handleSelectLayer(index)}
               onDelete={() => handleDeleteLayer(index)}
+              onMoveUp={() => handleMoveLayerUp(index)}
+              onMoveDown={() => handleMoveLayerDown(index)}
+              canMoveUp={index < painter.getLayerCount() - 1}
+              canMoveDown={index > 0}
             />
           ))}
         </div>
@@ -155,7 +180,7 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
           {layers.length} / {maxLayers} レイヤー
         </div>
       </div>
-    </Wrapper>
+    </WrapperContext>
   );
 };
 
