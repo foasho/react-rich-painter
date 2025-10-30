@@ -3,12 +3,14 @@ import { RichPainter } from '../utils';
 import { ToolBar, BrushBar } from "./ui";
 import { Brush } from './Brush';
 import { SelectionOverlay } from './SelectionOverlay';
+import { LayerPanel } from './ui/panels/LayerPanel';
 import { canvasPointerDown, canvasPointerMove, canvasPointerUp } from '../utils/canvas';
 import { PainterProvider } from './PainterContext';
 import { useCanvasStore } from './store/canvas';
 import { useToolStore } from './store';
 import { useSelectionStore } from './store/selection';
 import { useBrushBarStore } from './store/brush';
+import { useUiStore } from './store/ui';
 
 type ReactRichPainterProps = {
   width?: number;
@@ -45,6 +47,8 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     stabilizeLevel,
     stabilizeWeight,
   } = useBrushBarStore();
+
+  const { isLayerPanelOpen } = useUiStore();
 
   // autoSizeがfalseの場合、widthとheightが必須であることをチェック
   useEffect(() => {
@@ -208,6 +212,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
           <Brush painter={painter} />
           {toolbar && <ToolBar />}
           {brushbar && <BrushBar />}
+          {isLayerPanelOpen && <LayerPanel />}
         </PainterProvider>
       ) : null}
     </div>
