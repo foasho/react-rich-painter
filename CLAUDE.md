@@ -99,16 +99,36 @@ npm run preview
   - `Toolbar.tsx`: ツールバー（レイヤー、ツール選択、設定）
   - `BrushBar.tsx`: ブラシ設定バー（サイズ、不透明度、カラーパレット）
   - `Wrapper.tsx` / `WrapperContext.tsx`: UIコンテナとコンテキスト
+    - localStorage統合による位置の永続化（`wrapper-position-${draggableId}`キーで保存）
+    - DndContextによるドラッグ&ドロップ機能
+
+- **Panels（`src/lib/components/ui/panels/`）**:
+  - `LayerPanel.tsx`: レイヤー管理パネル
+    - 最大30レイヤーのサポート
+    - レイヤーの追加、削除、選択機能
+    - スクロール可能なレイヤーリスト（最大高さ400px）
+    - 右側に配置（初期位置: window.innerWidth - 250）
+    - WrapperContextによるドラッグ可能なパネル
+    - レイヤー数カウンター表示
+  - `LayerItem.tsx`: 個別レイヤーアイテム
+    - サムネイル表示（40x40px、1秒ごとに更新）
+    - レイヤー名の編集機能（クリックで編集モード、Enter/Escapeで完了/キャンセル）
+    - 不透明度スライダー（0-100%）
+    - 可視化トグル（目アイコン）
+    - レイヤー順序変更ボタン（上下矢印）
+    - 削除ボタン
+    - 横幅比率: サムネイル(20%) : 情報(60%) : アクション(20%)
 
 - **Toolbars（`src/lib/components/ui/toolbars/`）**:
   - `ToolButton.tsx`: ツールボタンの共通コンポーネント（DRY原則）
   - `BrushType.tsx`: ブラシ（ペン）ツール - 通常描画モード
   - `Eraser.tsx`: 消しゴムツール - knockout モード有効化
   - `Lasso.tsx`: 投げ縄選択ツール
-  - `RectSelect.tsx`: 矩形選択ツール
   - `HandMove.tsx`: 手のひらツール - キャンバス移動
   - `PenType.tsx`: ペンタイプ選択（入力デバイス選択）
-  - `Layer.tsx`: レイヤー管理UI
+  - `Layer.tsx`: レイヤーパネル表示トグル
+    - ツール選択とは独立したUI状態管理（`useUiStore`）
+    - パネル開閉時に青色でハイライト表示
   - `Config.tsx`: 設定UI
 
 - **Brush Bars（`src/lib/components/ui/brushbars/`）**:
@@ -124,8 +144,19 @@ Zustandによる状態管理：
   - ToolType: `pen` | `eraser` | `dripper` | `rect` | `move` | `lasso`
   - `useToolStore`: ツール状態管理フック
 - **`brush.ts`**: ブラシ状態（サイズ、色、形状）
-- **`layer.ts`**: レイヤー状態（レイヤー配列、選択、可視化、不透明度）
+- **`layer.ts`**: レイヤー名管理
+  - `layerNames`: レイヤーインデックスと名前のマッピング
+  - `getLayerName(index)`: レイヤー名の取得（デフォルト: `レイヤー ${index + 1}`）
+  - `setLayerName(index, name)`: レイヤー名の設定
+  - `addLayerName(index, name?)`: 新規レイヤー名の追加
+  - `swapLayerNames(indexA, indexB)`: レイヤー入れ替え時の名前スワップ
+  - `shiftLayerNamesAfterRemove(index)`: レイヤー削除後の名前シフト処理
+- **`ui.ts`**: UI状態管理
+  - `isLayerPanelOpen`: レイヤーパネルの開閉状態
+  - `toggleLayerPanel()`: レイヤーパネルのトグル
+  - ツール選択とは独立した状態管理
 - **`canvas.ts`**: キャンバス状態
+- **`selection.ts`**: 選択範囲状態
 - **`utils.ts`**: ユーティリティ
 
 #### 4. **Event Handlers（`src/lib/utils/canvas/`）**
@@ -176,6 +207,38 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 
 ## 開発時の注意点
 
+### Painterインスタンス初期化
+- **重要**: `Painter.tsx`でのPainterインスタンス初期化は空の依存配列`[]`を使用
+  ```typescript
+  useEffect(() => {
+    const painter = new RichPainter({ undoLimit: 30, initSize: { width: 800, height: 600 } });
+    setPainter(painter);
+  }, []); // 空の依存配列で1回のみ初期化
+  ```
+- キャンバスサイズの変更は別のuseEffectで処理し、Painterインスタンスを再生成しない
+  ```typescript
+  useEffect(() => {
+    if (painter && (painter.getCanvasSize().width !== canvasSize.width ||
+                    painter.getCanvasSize().height !== canvasSize.height)) {
+      painter.lockHistory();
+      painter.setCanvasSize(canvasSize.width, canvasSize.height);
+      painter.unlockHistory();
+    }
+  }, [painter, canvasSize.width, canvasSize.height]);
+  ```
+- これにより、ブラシ設定が保持され、不要な再初期化を防止
+
+### Undo/Redoエラーハンドリング
+- Undo/Redo操作は必ずtry-catchで囲む
+  ```typescript
+  try {
+    painter.undo();
+  } catch (error) {
+    console.log('Undo not available:', error);
+  }
+  ```
+- スタックが空の場合のエラーをユーザーに表示せず、コンソールログのみに記録
+
 ### Canvas操作
 - `getContext("2d")`の結果は必ず存在確認してから使用
 - `paintingCanvas`への描画は必ず`drawPaintingCanvas()`で本番レイヤーに転写
@@ -203,6 +266,29 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
   - `pen`: 通常描画（knockout: false）
   - `eraser`: 消しゴム（knockout: true）
   - `lasso`、`rect`、`move`: 選択・移動ツール（今後実装予定）
+
+### レイヤーパネル管理
+- **UI状態の独立**: レイヤーパネルの開閉状態はツール選択とは独立して`useUiStore`で管理
+- **レイヤー名の永続化**: `useLayerNameStore`でレイヤーインデックスと名前をマッピング
+- **レイヤー順序変更時の選択保持**:
+  ```typescript
+  const currentSelected = painter.getCurrentLayerIndex();
+  painter.swapLayer(index, index + 1);
+  swapLayerNames(index, index + 1);
+
+  // 選択中のレイヤーの新しいインデックスを計算
+  let newSelectedIndex = currentSelected;
+  if (currentSelected === index) {
+    newSelectedIndex = index + 1;
+  } else if (currentSelected === index + 1) {
+    newSelectedIndex = index;
+  }
+
+  painter.selectLayer(newSelectedIndex);
+  ```
+- **localStorage統合**: 各UIパネル（toolbar、brushbar、layer-panel）の位置を個別に保存
+  - キー: `wrapper-position-${draggableId}`
+  - 値: `{ x: number, y: number }`のJSON
 
 ### スタビライザー
 - `toolStabilizeLevel`: 補正の強度（0で無効、大きいほど強力）
