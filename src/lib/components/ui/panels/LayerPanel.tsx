@@ -64,26 +64,52 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
   const handleMoveLayerUp = (index: number) => {
     if (!painter) return;
     if (index >= painter.getLayerCount() - 1) return; // 最上位レイヤーは上に移動できない
+
+    // 現在選択中のレイヤーインデックスを保存
+    const currentSelected = painter.getCurrentLayerIndex();
+
+    // レイヤーとレイヤー名をスワップ
     painter.swapLayer(index, index + 1);
     swapLayerNames(index, index + 1);
-    if (index === selectedLayerIndex) {
-      setSelectedLayerIndex(index + 1);
-    } else if (index + 1 === selectedLayerIndex) {
-      setSelectedLayerIndex(index);
+
+    // 選択中のレイヤーの新しいインデックスを計算
+    let newSelectedIndex = currentSelected;
+    if (currentSelected === index) {
+      newSelectedIndex = index + 1;
+    } else if (currentSelected === index + 1) {
+      newSelectedIndex = index;
     }
+
+    // 選択を復元
+    painter.selectLayer(newSelectedIndex);
+    setSelectedLayerIndex(newSelectedIndex);
+
     updateLayers();
   };
 
   const handleMoveLayerDown = (index: number) => {
     if (!painter) return;
     if (index <= 0) return; // 最下位レイヤーは下に移動できない
+
+    // 現在選択中のレイヤーインデックスを保存
+    const currentSelected = painter.getCurrentLayerIndex();
+
+    // レイヤーとレイヤー名をスワップ
     painter.swapLayer(index, index - 1);
     swapLayerNames(index, index - 1);
-    if (index === selectedLayerIndex) {
-      setSelectedLayerIndex(index - 1);
-    } else if (index - 1 === selectedLayerIndex) {
-      setSelectedLayerIndex(index);
+
+    // 選択中のレイヤーの新しいインデックスを計算
+    let newSelectedIndex = currentSelected;
+    if (currentSelected === index) {
+      newSelectedIndex = index - 1;
+    } else if (currentSelected === index - 1) {
+      newSelectedIndex = index;
     }
+
+    // 選択を復元
+    painter.selectLayer(newSelectedIndex);
+    setSelectedLayerIndex(newSelectedIndex);
+
     updateLayers();
   };
 
