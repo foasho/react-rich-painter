@@ -100,7 +100,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     // RichPainter の初期化（最初のみ）
     const painter = new RichPainter({
       undoLimit: 30,
-      initSize: { width: canvasSize.width, height: canvasSize.height },
+      initSize: { width: 800, height: 600 }, // 初期サイズは固定値
     });
 
     // 滑らかな線を実現するためのスタビライザー設定
@@ -119,7 +119,17 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     }
 
     setPainter(painter);
-  }, [canvasSize.width, canvasSize.height]);
+  }, []); // 空の依存配列で一度だけ初期化
+
+  // キャンバスサイズが変更された時にpainterのサイズを更新
+  useEffect(() => {
+    if (painter && painter.getCanvasSize().width !== canvasSize.width ||
+        painter && painter.getCanvasSize().height !== canvasSize.height) {
+      painter.lockHistory();
+      painter.setCanvasSize(canvasSize.width, canvasSize.height);
+      painter.unlockHistory();
+    }
+  }, [painter, canvasSize.width, canvasSize.height]);
 
   // ストアの設定値が変更されたときにPainter/Brushを更新（初期化後）
   useEffect(() => {
@@ -226,7 +236,6 @@ const PaintCanvas = (
   const painterCanvasRef = useRef<HTMLDivElement | null>(null);
 
   const { offsetX, offsetY, setOffset } = useCanvasStore();
-  const { currentTool } = useToolStore();
 
   // HandMoveツール用の状態
   const isDragging = useRef(false);
@@ -612,10 +621,20 @@ const PaintCanvas = (
         // UndoとRedoをキーボードショートカットで実行
         if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
-          painter.undo();
+          try {
+            painter.undo();
+          } catch (error) {
+            // Undoスタックが空の場合は何もしない
+            console.log('Undo not available:', error);
+          }
         } else if (e.key === 'y' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
-          painter.redo();
+          try {
+            painter.redo();
+          } catch (error) {
+            // Redoスタックが空の場合は何もしない
+            console.log('Redo not available:', error);
+          }
         } else if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
           // Save処理
