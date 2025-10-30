@@ -8,6 +8,7 @@ import { PainterProvider } from './PainterContext';
 import { useCanvasStore } from './store/canvas';
 import { useToolStore } from './store';
 import { useSelectionStore } from './store/selection';
+import { useBrushBarStore } from './store/brush';
 
 type ReactRichPainterProps = {
   width: number;
@@ -15,22 +16,32 @@ type ReactRichPainterProps = {
   toolbar?: boolean; // Toolbarを表示するかどうか
   brushbar?: boolean; // Brushbarを表示するかどうか
   appendBrushImages?: string[]; // TODO: 追加のBrush画像
+  defaultCustomBrush?: boolean; // デフォルトのカスタムブラシ（b0~b4.png）を使用するかどうか
   backgroundSize?: number; // 背景タイルの大きさ
 };
 
-const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, toolbar=true, brushbar=true, backgroundSize=20 }) => {
+const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, toolbar=true, brushbar=true, defaultCustomBrush=true, backgroundSize=20 }) => {
   const [painter, setPainter] = useState<RichPainter>();
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
   const size = useMemo(() => ({ width, height }), [width, height]);
+  const {
+    setCustomBrushImages,
+    spacing,
+    flow,
+    merge,
+    minimumSize,
+    stabilizeLevel,
+    stabilizeWeight,
+  } = useBrushBarStore();
 
   useEffect(() => {
-    // RichPainter の初期化
+    // RichPainter の初期化（最初のみ）
     const painter = new RichPainter({
       undoLimit: 30,
       initSize: { width, height },
     });
 
-    // 滑らかな線を実現するためのスタビライザー設定（旧コードから）
+    // 滑らかな線を実現するためのスタビライザー設定
     painter.setToolStabilizeLevel(5);
     painter.setToolStabilizeWeight(0.5);
 
@@ -39,14 +50,64 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({ width, height, tool
     if (brush) {
       brush.setSize(10);
       brush.setColor('#000000');
-      brush.setSpacing(0.05); // 0.01だと重すぎる可能性があるので0.05に
-      brush.setFlow(1.0); // flowは1.0に設定（透明度はpaintingOpacityで制御）
-      brush.setMerge(0.2); // mergeを0.2に設定
+      brush.setSpacing(0.05);
+      brush.setFlow(1.0);
+      brush.setMerge(0.2);
       brush.setMinimumSize(0.01);
     }
 
     setPainter(painter);
   }, [width, height]);
+
+  // ストアの設定値が変更されたときにPainter/Brushを更新（初期化後）
+  useEffect(() => {
+    if (!painter) return;
+
+    const brush = painter.getBrush();
+    if (!brush) return;
+
+    brush.setSpacing(spacing);
+    brush.setFlow(flow);
+    brush.setMerge(merge);
+    brush.setMinimumSize(minimumSize);
+    painter.setToolStabilizeLevel(stabilizeLevel);
+    painter.setToolStabilizeWeight(stabilizeWeight);
+  }, [painter, spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight]);
+
+  // デフォルトカスタムブラシの読み込み
+  useEffect(() => {
+    if (!defaultCustomBrush) return;
+
+    const brushPaths = [
+      '/brush/b0.png',
+      '/brush/b1.png',
+      '/brush/b2.png',
+      '/brush/b3.png',
+      '/brush/b4.png',
+    ];
+
+    const loadedImages: HTMLImageElement[] = [];
+    let loadedCount = 0;
+
+    brushPaths.forEach((path, index) => {
+      const img = new Image();
+      img.src = path;
+      img.onload = () => {
+        loadedImages[index] = img;
+        loadedCount++;
+        if (loadedCount === brushPaths.length) {
+          setCustomBrushImages(loadedImages);
+        }
+      };
+      img.onerror = () => {
+        console.error(`Failed to load brush image: ${path}`);
+        loadedCount++;
+        if (loadedCount === brushPaths.length) {
+          setCustomBrushImages(loadedImages.filter(img => img !== undefined));
+        }
+      };
+    });
+  }, [defaultCustomBrush, setCustomBrushImages]);
 
   return (
     <div

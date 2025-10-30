@@ -1,21 +1,138 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiCog6Tooth } from "react-icons/hi2";
+import { useControls, Leva } from 'leva';
+import { usePainter } from '../../PainterContext';
+import { useBrushBarStore } from '../../store/brush';
 
 type ConfigProps = {
   size?: number;
 }
+
 const Config = (
   { size=20 }: ConfigProps
 ) => {
+  const { painter } = usePainter();
+  const [isOpen, setIsOpen] = useState(false);
+  const {
+    spacing,
+    flow,
+    merge,
+    minimumSize,
+    stabilizeLevel,
+    stabilizeWeight,
+    setSpacing,
+    setFlow,
+    setMerge,
+    setMinimumSize,
+    setStabilizeLevel,
+    setStabilizeWeight,
+  } = useBrushBarStore();
+
+  // Levaコントロールの定義
+  const [values] = useControls(() => ({
+    'Brush Spacing': {
+      value: spacing,
+      min: 0.01,
+      max: 1.0,
+      step: 0.01,
+      label: 'ブラシ離散',
+    },
+    'Flow': {
+      value: flow,
+      min: 0,
+      max: 1.0,
+      step: 0.01,
+      label: 'フロー',
+    },
+    'Merge': {
+      value: merge,
+      min: 0,
+      max: 1.0,
+      step: 0.01,
+      label: 'マージ',
+    },
+    'Minimum Size': {
+      value: minimumSize,
+      min: 0.01,
+      max: 1.0,
+      step: 0.01,
+      label: '最小サイズ',
+    },
+    'Stabilizer Level': {
+      value: stabilizeLevel,
+      min: 0,
+      max: 10,
+      step: 1,
+      label: '手ぶれ補正レベル',
+    },
+    'Stabilizer Weight': {
+      value: stabilizeWeight,
+      min: 0,
+      max: 0.95,
+      step: 0.01,
+      label: '手ぶれ補正ウェイト',
+    },
+  }), [spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight]);
+
+  // Levaの値が変更されたときにストアとPainter/Brushを更新
+  useEffect(() => {
+    if (!painter) return;
+
+    const brush = painter.getBrush();
+    if (!brush) return;
+
+    // ストアを更新
+    if (values['Brush Spacing'] !== spacing) {
+      setSpacing(values['Brush Spacing']);
+      brush.setSpacing(values['Brush Spacing']);
+    }
+
+    if (values['Flow'] !== flow) {
+      setFlow(values['Flow']);
+      brush.setFlow(values['Flow']);
+    }
+
+    if (values['Merge'] !== merge) {
+      setMerge(values['Merge']);
+      brush.setMerge(values['Merge']);
+    }
+
+    if (values['Minimum Size'] !== minimumSize) {
+      setMinimumSize(values['Minimum Size']);
+      brush.setMinimumSize(values['Minimum Size']);
+    }
+
+    if (values['Stabilizer Level'] !== stabilizeLevel) {
+      setStabilizeLevel(values['Stabilizer Level']);
+      painter.setToolStabilizeLevel(values['Stabilizer Level']);
+    }
+
+    if (values['Stabilizer Weight'] !== stabilizeWeight) {
+      setStabilizeWeight(values['Stabilizer Weight']);
+      painter.setToolStabilizeWeight(values['Stabilizer Weight']);
+    }
+  }, [values, painter, spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight, setSpacing, setFlow, setMerge, setMinimumSize, setStabilizeLevel, setStabilizeWeight]);
+
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
 
   const style: React.CSSProperties = {
     width: size,
-    height: size
-  }
+    height: size,
+    cursor: 'pointer',
+  };
 
-  return <>
-    <HiCog6Tooth style={style} />
-  </>
+  return (
+    <>
+      <HiCog6Tooth style={style} onClick={handleClick} />
+      <Leva
+        hidden={!isOpen}
+        collapsed={false}
+        titleBar={{ title: '詳細設定', drag: true }}
+      />
+    </>
+  );
 }
 
 export { Config };

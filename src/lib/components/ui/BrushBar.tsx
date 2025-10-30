@@ -1,6 +1,6 @@
 import React from 'react';
 import { WrapperContext } from './WrapperContext';
-import { ColorPallet, Opacity, Sizer } from './brushbars';
+import { ColorPallet, CustomBrushSelector, Opacity, Sizer } from './brushbars';
 
 type BrushBarProps = {
   linePx?: number;
@@ -29,6 +29,7 @@ const BrushBar = (
         alignItems: 'center',
         height: '100%', // WrapperContext の高さに応じて調整
       }}>
+        <CustomBrushSelector size={30} />
         <Sizer sliderLength={120} />
         <Opacity sliderLength={120} />
         <ColorPallet size={30} />

@@ -18,7 +18,7 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
 
   // 初回マウント時にBrushの色を初期色に設定
   React.useEffect(() => {
-    const brush = painter.getBrush();
+    const brush = painter!.getBrush();
     if (brush) {
       brush.setColor(initialColor);
     }
@@ -29,7 +29,7 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
     setColor(newColor);
 
     // Brushの色を更新
-    const brush = painter.getBrush();
+    const brush = painter!.getBrush();
     if (brush) {
       brush.setColor(newColor);
     }
@@ -52,6 +52,7 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
     backgroundColor: color,
     borderRadius: '50%',
     cursor: 'pointer',
+    border: '2px solid #fff',  
   };
 
   const hiddenInputStyle: React.CSSProperties = {
