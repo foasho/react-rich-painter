@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { WrapperContext } from '../WrapperContext';
 import { LayerItem } from './LayerItem';
 import { usePainter } from '../../PainterContext';
+import { useLayerNameStore } from '../../store/layer';
 import { FaPlus } from 'react-icons/fa';
 
 type LayerPanelProps = {};
 
 const LayerPanel: React.FC<LayerPanelProps> = () => {
   const { painter } = usePainter();
+  const { addLayerName, swapLayerNames, shiftLayerNamesAfterRemove } = useLayerNameStore();
   const [layers, setLayers] = useState<number[]>([]);
   const [selectedLayerIndex, setSelectedLayerIndex] = useState(0);
   const maxLayers = 30;
@@ -36,7 +38,9 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
       alert(`レイヤーは最大${maxLayers}枚までです`);
       return;
     }
+    const newIndex = painter.getLayerCount();
     painter.addLayer();
+    addLayerName(newIndex);
     updateLayers();
   };
 
@@ -53,6 +57,7 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
       return;
     }
     painter.removeLayer(index);
+    shiftLayerNamesAfterRemove(index);
     updateLayers();
   };
 
@@ -60,6 +65,7 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
     if (!painter) return;
     if (index >= painter.getLayerCount() - 1) return; // 最上位レイヤーは上に移動できない
     painter.swapLayer(index, index + 1);
+    swapLayerNames(index, index + 1);
     if (index === selectedLayerIndex) {
       setSelectedLayerIndex(index + 1);
     } else if (index + 1 === selectedLayerIndex) {
@@ -72,6 +78,7 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
     if (!painter) return;
     if (index <= 0) return; // 最下位レイヤーは下に移動できない
     painter.swapLayer(index, index - 1);
+    swapLayerNames(index, index - 1);
     if (index === selectedLayerIndex) {
       setSelectedLayerIndex(index - 1);
     } else if (index - 1 === selectedLayerIndex) {

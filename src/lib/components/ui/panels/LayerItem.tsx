@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaTrash, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { RichPainter } from '../../../utils/painter/RichPainter';
+import { useLayerNameStore } from '../../store/layer';
 
 type LayerItemProps = {
   painter: RichPainter;
@@ -25,9 +26,12 @@ const LayerItem: React.FC<LayerItemProps> = ({
   canMoveUp,
   canMoveDown,
 }) => {
+  const { getLayerName, setLayerName } = useLayerNameStore();
   const [isVisible, setIsVisible] = useState(true);
   const [opacity, setOpacity] = useState(100);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
 
   // レイヤーの状態を更新
   useEffect(() => {
@@ -87,6 +91,31 @@ const LayerItem: React.FC<LayerItemProps> = ({
     painter.setLayerOpacity(newOpacity / 100, index);
   };
 
+  const handleNameClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditingName(true);
+    setEditedName(getLayerName(index));
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedName(e.target.value);
+  };
+
+  const handleNameBlur = () => {
+    if (editedName.trim()) {
+      setLayerName(index, editedName.trim());
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleNameBlur();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
+
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
@@ -102,6 +131,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const thumbnailStyle: React.CSSProperties = {
     width: '40px',
     height: '40px',
+    minWidth: '40px',
     backgroundColor: '#ffffff',
     borderRadius: '3px',
     marginRight: '6px',
@@ -109,44 +139,69 @@ const LayerItem: React.FC<LayerItemProps> = ({
     backgroundSize: '8px 8px',
     backgroundPosition: '0 0, 4px 4px',
     opacity: isVisible ? 1 : 0.3,
+    flexBasis: '20%',
   };
 
   const infoStyle: React.CSSProperties = {
-    flex: 1,
+    flex: 3,
     display: 'flex',
     flexDirection: 'column',
     gap: '2px',
+    minWidth: 0,
+    flexBasis: '60%',
   };
 
   const nameStyle: React.CSSProperties = {
     fontSize: '11px',
     fontWeight: 'bold',
     color: '#ffffff',
+    cursor: 'text',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  };
+
+  const nameInputStyle: React.CSSProperties = {
+    fontSize: '11px',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #4a90e2',
+    borderRadius: '2px',
+    padding: '2px 4px',
+    width: '100%',
+    outline: 'none',
   };
 
   const opacityContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
+    width: '100%',
+    maxWidth: '100%',
   };
 
   const opacityLabelStyle: React.CSSProperties = {
     fontSize: '9px',
     color: '#aaaaaa',
     minWidth: '25px',
+    flexShrink: 0,
   };
 
   const sliderStyle: React.CSSProperties = {
     flex: 1,
+    minWidth: 0,
     height: '3px',
     cursor: 'pointer',
   };
 
   const actionsStyle: React.CSSProperties = {
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     gap: '2px',
     marginLeft: '4px',
+    flexBasis: '20%',
   };
 
   const iconButtonStyle: React.CSSProperties = {
@@ -180,7 +235,22 @@ const LayerItem: React.FC<LayerItemProps> = ({
         )}
       </div>
       <div style={infoStyle}>
-        <div style={nameStyle}>レイヤー {index + 1}</div>
+        {isEditingName ? (
+          <input
+            type="text"
+            value={editedName}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            onKeyDown={handleNameKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            style={nameInputStyle}
+            autoFocus
+          />
+        ) : (
+          <div style={nameStyle} onClick={handleNameClick} title={getLayerName(index)}>
+            {getLayerName(index)}
+          </div>
+        )}
         <div style={opacityContainerStyle}>
           <span style={opacityLabelStyle}>{opacity}%</span>
           <input
