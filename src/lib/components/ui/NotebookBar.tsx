@@ -25,7 +25,7 @@ const NotebookBar = (
         justifyContent: 'space-evenly',
         alignItems: 'center',
         height: '100%', // WrapperContext の高さに応じて調整
-        gap: '10px',
+        gap: '5px',
       }}>
         <BrushType />
         <Eraser />

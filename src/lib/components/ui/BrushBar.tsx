@@ -24,6 +24,7 @@ const BrushBar = (
         justifyContent: 'space-evenly',
         alignItems: 'center',
         height: '100%', // WrapperContext の高さに応じて調整
+        gap: '5px',
       }}>
         <CustomBrushSelector size={30} />
         <Sizer sliderLength={120} />
