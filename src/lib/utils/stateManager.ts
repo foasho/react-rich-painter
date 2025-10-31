@@ -81,6 +81,8 @@ export const importPainterState = async (
   painter: RichPainter,
   state: PainterState
 ): Promise<void> => {
+  console.log('Starting import with state:', state);
+
   const layerNameStore = useLayerNameStore.getState();
   const toolStore = useToolStore.getState();
   const uiStore = useUiStore.getState();
@@ -97,8 +99,12 @@ export const importPainterState = async (
     // 既存のレイヤーをすべて削除（最初の1つは残る）
     const currentLayerCount = painter.getLayerCount();
     for (let i = currentLayerCount - 1; i > 0; i--) {
-      painter.removeLayer(i);
+      painter.removeLayer(i, false); // pushUndoFlg = false
+      layerNameStore.removeLayerName(i); // レイヤー名も削除
     }
+
+    // 最初のレイヤーをクリア
+    painter.clearLayer(0);
 
     // レイヤーを復元
     for (let i = 0; i < state.layers.length; i++) {
@@ -112,13 +118,20 @@ export const importPainterState = async (
       // レイヤー名を設定
       layerNameStore.setLayerName(i, layerState.name);
 
-      // レイヤーの可視性と不透明度を設定
-      painter.setLayerVisible(layerState.visible, i);
-      painter.setLayerOpacity(layerState.opacity, i);
-
-      // 画像データを復元
+      // 画像データを復元（先に画像を読み込んでから属性を設定）
       await loadImageDataToLayer(painter, i, layerState.imageData);
+
+      // レイヤーの可視性と不透明度を設定（画像読み込み後に設定）
+      painter.setLayerVisible(layerState.visible, i, false); // pushUndoFlg = false
+      painter.setLayerOpacity(layerState.opacity, i, false); // pushUndoFlg = false
     }
+
+    // レイヤーのDOM順序を強制的に更新（重要！）
+    // removeLayer()を呼ぶとsortLayers()が実行されるので、
+    // ダミーレイヤーを追加して削除することでDOMを更新
+    const dummyLayerIndex = painter.getLayerCount();
+    painter.addLayer(); // ダミーレイヤーを追加
+    painter.removeLayer(dummyLayerIndex, false); // すぐ削除（この時にsortLayersが呼ばれる）
 
     // 選択中のレイヤーを復元
     const selectedLayerIndex = parseInt(state.selectedLayerId.replace('layer-', ''));
@@ -137,15 +150,29 @@ export const importPainterState = async (
     brush.setFlow(state.brush.flow);
     brush.setMerge(state.brush.merge);
     brush.setMinimumSize(state.brush.minimumSize);
-    brushBarStore.setFlow(state.brush.opacity); // opacityをflowとして復元
+
+    // ブラシバーストアも同期（UI表示用）
+    brushBarStore.setColor(state.brush.color);
+    brushBarStore.setSize(state.brush.size);
+    brushBarStore.setSpacing(state.brush.spacing);
+    brushBarStore.setFlow(state.brush.opacity);
+    brushBarStore.setMerge(state.brush.merge);
+    brushBarStore.setMinimumSize(state.brush.minimumSize);
 
     // スタビライザー設定を復元
     painter.setToolStabilizeLevel(state.stabilizer.level);
     painter.setToolStabilizeWeight(state.stabilizer.weight);
+    brushBarStore.setStabilizeLevel(state.stabilizer.level);
+    brushBarStore.setStabilizeWeight(state.stabilizer.weight);
 
     // ツールとUI状態を復元
     toolStore.setTool(state.currentTool);
     uiStore.setInputType(state.inputType);
+
+    console.log('Import completed successfully');
+  } catch (error) {
+    console.error('Error during import:', error);
+    throw error; // エラーを再スローして呼び出し側で処理
   } finally {
     // History unlockを必ず実行
     painter.unlockHistory();
@@ -161,16 +188,31 @@ const loadImageDataToLayer = (
   imageDataUrl: string
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
+    // 空の画像データの場合はスキップ
+    if (!imageDataUrl || imageDataUrl === '') {
+      console.warn(`Layer ${layerIndex} has no image data, skipping...`);
+      resolve();
+      return;
+    }
+
     const img = new Image();
 
     img.onload = () => {
-      const context = painter.getLayerContext(layerIndex);
-      context.clearRect(0, 0, painter.getCanvasSize().width, painter.getCanvasSize().height);
-      context.drawImage(img, 0, 0);
-      resolve();
+      try {
+        const context = painter.getLayerContext(layerIndex);
+        const { width, height } = painter.getCanvasSize();
+        context.clearRect(0, 0, width, height);
+        context.drawImage(img, 0, 0);
+        console.log(`Successfully loaded image for layer ${layerIndex}`);
+        resolve();
+      } catch (error) {
+        console.error(`Error drawing image for layer ${layerIndex}:`, error);
+        reject(error);
+      }
     };
 
-    img.onerror = () => {
+    img.onerror = (error) => {
+      console.error(`Failed to load image for layer ${layerIndex}:`, error);
       reject(new Error(`Failed to load image data for layer ${layerIndex}`));
     };
 
