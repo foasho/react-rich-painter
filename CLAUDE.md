@@ -209,14 +209,57 @@ Zustandによる状態管理：
 - **フィルタリング**: 入力タイプによる描画制限は行わない（すべての入力で描画可能）
 - **ユーザー体験**: 手動での切り替えも可能（PenType.tsxのUIから）
 
+### Import/Export機能
+
+完全な描画状態の保存と復元をサポートしています。
+
+#### アーキテクチャ
+
+**型定義（`src/lib/types/PainterState.ts`）**:
+- `PainterState`: Painterの完全な状態を表す型
+- `LayerState`: レイヤー情報（Base64画像データ含む）
+- `BrushState`: ブラシ設定
+- `CanvasState`: キャンバスサイズ
+- `StabilizerState`: 手ぶれ補正設定
+
+**状態管理（`src/lib/utils/stateManager.ts`）**:
+- `exportPainterState(painter)`: RichPainterからPainterStateを抽出
+- `importPainterState(painter, state)`: PainterStateからRichPainterを復元
+- `serializePainterState(state)`: PainterStateをJSON文字列に変換
+- `deserializePainterState(json)`: JSON文字列からPainterStateを復元
+
+**UI（`src/lib/components/ui/panels/FileMenu.tsx`）**:
+- 右上端に配置されるFileメニュー
+- ファイルを開く: `<input type="file">` + `importPainterState`
+- エクスポート: `exportPainterState` + Blob download
+- 画像を保存: `createFlattenThumbnail` + PNG download
+
+#### Props
+
+- `onUpdate?: (state: PainterState) => void`: 状態更新コールバック
+  - es-toolkitの`throttle`で100ms間隔に制限
+  - pointerup、pointercancel、lasso操作完了時に呼び出し
+- `initialState?: PainterState`: 初期状態
+  - Painter初期化時に`importPainterState`で復元
+- `importable?: boolean`: FileMenuの表示制御
+
+#### 実装の注意点
+
+- レイヤー画像はBase64エンコード（`canvas.toDataURL('image/png')`）
+- Import時は`painter.lockHistory()`でUndo履歴を無効化
+- Brush/各種Storeの状態も完全に復元
+- 非同期処理（画像読み込み）のため`async/await`を使用
+
 ### 描画フロー
 
 1. **ユーザー入力** → `Painter.tsx`のPointerEventリスナー
 2. **イベント処理** → `canvasPointerDown/Move/Up`（`src/lib/utils/canvas/events.ts`）
-3. **Painter Engine** → `RichPainter.down/move/up`（スタビライザー適用）
-4. **ブラシ描画** → `Brush.down/move/up`（paintingCanvasへ描画）
-5. **レイヤー統合** → `drawPaintingCanvas`で本番レイヤーに転写
-6. **Undo/Redo** → `pushUndo`でスナップショット保存
+3. **自動入力切り替え** → `handleAutoInputSwitch`（入力タイプの自動検出と切り替え）
+4. **Painter Engine** → `RichPainter.down/move/up`（スタビライザー適用）
+5. **ブラシ描画** → `Brush.down/move/up`（paintingCanvasへ描画）
+6. **レイヤー統合** → `drawPaintingCanvas`で本番レイヤーに転写
+7. **Undo/Redo** → `pushUndo`でスナップショット保存
+8. **状態更新コールバック** → `onUpdate`コールバック呼び出し（throttle済み）
 
 ### レイヤーシステム
 

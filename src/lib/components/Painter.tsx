@@ -1,9 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { throttle } from 'es-toolkit';
 import { RichPainter } from '../utils';
 import { ToolBar, BrushBar, NotebookBar } from "./ui";
 import { Brush } from './Brush';
 import { SelectionOverlay } from './SelectionOverlay';
 import { LayerPanel } from './ui/panels/LayerPanel';
+import { FileMenu } from './ui/panels/FileMenu';
 import { canvasPointerDown, canvasPointerMove, canvasPointerUp } from '../utils/canvas';
 import { PainterProvider } from './PainterContext';
 import { useCanvasStore } from './store/canvas';
@@ -11,6 +13,8 @@ import { useToolStore } from './store';
 import { useSelectionStore } from './store/selection';
 import { useBrushBarStore } from './store/brush';
 import { useUiStore } from './store/ui';
+import { PainterState } from '../types/PainterState';
+import { exportPainterState, importPainterState } from '../utils/stateManager';
 
 type ReactRichPainterProps = {
   width?: number;
@@ -23,6 +27,9 @@ type ReactRichPainterProps = {
   defaultCustomBrush?: boolean; // デフォルトのカスタムブラシ（b0~b4.png）を使用するかどうか
   backgroundSize?: number; // 背景タイルの大きさ
   backgroundTileColor?: string; // 背景タイルの色
+  onUpdate?: (state: PainterState) => void; // Painter状態更新時のコールバック（throttleされます）
+  initialState?: PainterState; // 初期状態（Import機能）
+  importable?: boolean; // Import/Export UI を表示するかどうか
 };
 
 const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
@@ -34,11 +41,25 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
   brushbar=true,
   defaultCustomBrush=true,
   backgroundSize=20,
-  backgroundTileColor="#1e1e1e"
+  backgroundTileColor="#1e1e1e",
+  onUpdate,
+  initialState,
+  importable=true,
 }) => {
   const [painter, setPainter] = useState<RichPainter>();
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 800, height: 600 });
+
+  // onUpdateコールバックをthrottle（200ms）
+  const throttledOnUpdate = useCallback(
+    throttle((painterInstance: RichPainter) => {
+      if (onUpdate) {
+        const state = exportPainterState(painterInstance);
+        onUpdate(state);
+      }
+    }, 200),
+    [onUpdate]
+  );
 
   const {
     setCustomBrushImages,
@@ -106,28 +127,41 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
 
   useEffect(() => {
     // RichPainter の初期化（最初のみ）
-    const painter = new RichPainter({
-      undoLimit: 30,
-      initSize: { width: 800, height: 600 }, // 初期サイズは固定値
-    });
+    const initializePainter = async () => {
+      const painter = new RichPainter({
+        undoLimit: 30,
+        initSize: { width: 800, height: 600 }, // 初期サイズは固定値
+      });
 
-    // 滑らかな線を実現するためのスタビライザー設定
-    painter.setToolStabilizeLevel(5);
-    painter.setToolStabilizeWeight(0.5);
+      // 滑らかな線を実現するためのスタビライザー設定
+      painter.setToolStabilizeLevel(5);
+      painter.setToolStabilizeWeight(0.5);
 
-    // Brushの初期設定
-    const brush = painter.getBrush();
-    if (brush) {
-      brush.setSize(10);
-      brush.setColor('#000000');
-      brush.setSpacing(0.05);
-      brush.setFlow(1.0);
-      brush.setMerge(0.2);
-      brush.setMinimumSize(0.01);
-    }
+      // Brushの初期設定
+      const brush = painter.getBrush();
+      if (brush) {
+        brush.setSize(10);
+        brush.setColor('#000000');
+        brush.setSpacing(0.05);
+        brush.setFlow(1.0);
+        brush.setMerge(0.2);
+        brush.setMinimumSize(0.01);
+      }
 
-    setPainter(painter);
-  }, []); // 空の依存配列で一度だけ初期化
+      // initialStateがある場合、状態を復元
+      if (initialState) {
+        try {
+          await importPainterState(painter, initialState);
+        } catch (error) {
+          console.error('Failed to import initial state:', error);
+        }
+      }
+
+      setPainter(painter);
+    };
+
+    initializePainter();
+  }, []); // 空の依存配列で一度だけ初期化（initialStateは初期化時のみ使用）
 
   // キャンバスサイズが変更された時にpainterのサイズを更新
   useEffect(() => {
@@ -225,6 +259,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
             painter={painter}
             width={canvasSize.width}
             height={canvasSize.height}
+            onUpdateCallback={throttledOnUpdate}
           />
           <Brush painter={painter} />
           {preset === 'notebook' ? (
@@ -238,6 +273,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
               {isLayerPanelOpen && <LayerPanel />}
             </>
           )}
+          {importable && <FileMenu />}
         </PainterProvider>
       ) : null}
     </div>
@@ -249,6 +285,7 @@ type PaintCanvasProps = {
   width: number;
   height: number;
   backgroundColor?: string;
+  onUpdateCallback?: (painter: RichPainter) => void;
 };
 const PaintCanvas = (
   {
@@ -256,6 +293,7 @@ const PaintCanvas = (
     width,
     height,
     backgroundColor = '#FFFFFF',
+    onUpdateCallback,
   }: PaintCanvasProps
 ) => {
 
@@ -462,6 +500,11 @@ const PaintCanvas = (
             painter,
             brush: painter.getBrush()!
           });
+
+          // 描画中の状態更新コールバックを呼び出し（throttle済みなので高頻度でも安全）
+          if (painter.getIsDrawing() && onUpdateCallback) {
+            onUpdateCallback(painter);
+          }
         });
 
         _painterDom.addEventListener('pointerup', (e: PointerEvent) => {
@@ -540,6 +583,11 @@ const PaintCanvas = (
 
                   // カーソルをcrosshairに戻す
                   _painterDom.style.cursor = 'crosshair';
+
+                  // 状態更新コールバックを呼び出し
+                  if (onUpdateCallback) {
+                    onUpdateCallback(painter);
+                  }
                 }
               }
               return;
@@ -598,6 +646,11 @@ const PaintCanvas = (
 
           // 通常の描画処理
           canvasPointerUp({e, painter, brush: painter.getBrush()!, isDrawStatus: true, userSelectInputType: 'pen', canvasArea: canvasAreaRef.current! });
+
+          // 状態更新コールバックを呼び出し
+          if (onUpdateCallback) {
+            onUpdateCallback(painter);
+          }
         });
 
         _painterDom.addEventListener('pointercancel', (e: PointerEvent) => {
@@ -614,13 +667,18 @@ const PaintCanvas = (
 
           if (painter.getIsDrawing()) {
             canvasPointerUp({e, painter, brush: painter.getBrush()!, isDrawStatus: true, userSelectInputType: 'pen', canvasArea: canvasAreaRef.current! });
+
+            // 状態更新コールバックを呼び出し
+            if (onUpdateCallback) {
+              onUpdateCallback(painter);
+            }
           }
         });
         
         // touchstartイベントは削除（pointerdownで代用可能）
         // painterCanvasRef.current.addEventListener('touchstart', (event)=>{
         //   event.preventDefault();
-        //   alert('touchstart');
+        //   console.error('touchstart');
         // });
       }
     }

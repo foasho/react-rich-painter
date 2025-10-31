@@ -81,6 +81,9 @@ function NotebookApp() {
 - `brushbar?: boolean` - ブラシバーを表示するかどうか（デフォルト: `true`）※notebookプリセットでは無視されます
 - `defaultCustomBrush?: boolean` - デフォルトのカスタムブラシを使用するかどうか（デフォルト: `true`）
 - `backgroundSize?: number` - 背景グリッドのサイズ（ピクセル）（デフォルト: `20`）
+- `onUpdate?: (state: PainterState) => void` - Painter状態更新時のコールバック（100msでthrottleされます）
+- `initialState?: PainterState` - 初期状態（Import機能）
+- `importable?: boolean` - Import/Export UI（FileMenu）を表示するかどうか（デフォルト: `false`）
 
 ### スマート入力切り替え機能
 
@@ -93,6 +96,112 @@ React Rich Painterは、ユーザーの使用パターンに基づいて入力�
 3. **手動切り替えも可能**: ツールバーの入力タイプボタンで手動切り替えもできます
 
 この機能により、ペンタブレットとマウス、タッチデバイスを併用する環境でも快適に描画できます。
+
+### Import/Export機能
+
+React Rich Painterは、描画状態を完全に保存・復元できるImport/Export機能を提供しています。
+
+#### UIからのImport/Export（importable prop）
+
+```tsx
+import { ReactRichPainter } from "react-rich-painter";
+
+function App() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      {/* importable=trueで右上にFileメニューが表示されます */}
+      <ReactRichPainter importable={true} />
+    </div>
+  );
+}
+```
+
+FileMenuから以下の操作が可能です：
+- **ファイルを開く**: JSONファイルから描画状態を復元
+- **エクスポート**: 現在の描画状態をJSONファイルとして保存
+- **画像を保存**: 統合されたキャンバス画像をPNG形式で保存
+
+#### プログラムからのImport/Export
+
+```tsx
+import {
+  ReactRichPainter,
+  PainterState,
+  exportPainterState,
+  serializePainterState
+} from "react-rich-painter";
+import { useState } from "react";
+
+function App() {
+  const [savedState, setSavedState] = useState<PainterState | undefined>();
+
+  const handleUpdate = (state: PainterState) => {
+    // 状態が更新されるたびに呼ばれます（100msでthrottle）
+    console.log('Painter state updated:', state);
+    setSavedState(state);
+  };
+
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      {/* onUpdateで状態変更を監視 */}
+      <ReactRichPainter
+        onUpdate={handleUpdate}
+        initialState={savedState} // 保存した状態から復元
+      />
+
+      {savedState && (
+        <button onClick={() => {
+          // JSONとしてエクスポート
+          const json = serializePainterState(savedState);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'painting.json';
+          link.click();
+        }}>
+          エクスポート
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+#### PainterStateの構造
+
+```typescript
+type PainterState = {
+  version: string; // フォーマットバージョン
+  canvas: {
+    width: number;
+    height: number;
+  };
+  layers: Array<{
+    id: string;
+    name: string;
+    visible: boolean;
+    opacity: number;
+    imageData: string; // Base64エンコードされた画像データ
+  }>;
+  selectedLayerId: string;
+  brush: {
+    color: string;
+    size: number;
+    spacing: number;
+    flow: number;
+    merge: number;
+    minimumSize: number;
+    opacity: number;
+  };
+  stabilizer: {
+    level: number;
+    weight: number;
+  };
+  currentTool: 'pen' | 'eraser' | 'dripper' | 'lasso' | 'move';
+  inputType: 'pen' | 'mouse' | 'touch';
+};
+```
 
 ## 開発者 / Contributor
 
