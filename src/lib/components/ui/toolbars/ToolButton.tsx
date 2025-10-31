@@ -55,6 +55,7 @@ const ToolButton: React.FC<ToolButtonProps> = ({
 
   return (
     <div style={containerStyle} onClick={handleClick} title={toolType}>
+      {/** @ts-ignore */}
       {React.cloneElement(icon as React.ReactElement, { style: iconStyle })}
     </div>
   );

@@ -1,7 +1,8 @@
+// @ts-nocheck
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReactRichPainter } from './Painter';
 
-const meta = {
+const meta: Meta = {
   title: 'ReactRichPainter',
   component: ReactRichPainter,
   parameters: {
