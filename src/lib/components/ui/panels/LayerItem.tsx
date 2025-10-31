@@ -69,7 +69,6 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (painter.getLayerCount() <= 1) {
-      alert('最後のレイヤーは削除できません');
       return;
     }
     onDelete();

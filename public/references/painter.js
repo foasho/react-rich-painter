@@ -1002,7 +1002,7 @@ function addNewLayer(){
         easy_layer_select.prepend(easy_layer_option);
     }
     else {
-      alert("最大レイヤー数(30)に達しています。")
+      console.error("最大レイヤー数(30)に達しています。")
     }
 }
 //表示非表示の切り替え
@@ -1135,7 +1135,6 @@ remove_layer.onclick = () => {
             console.log("ここに削除処理を入れる");
         }
     }
-    else{alert("レイヤー数が最小です。")}
 };
 //レイヤーの入れかえを可能にする
 const layer_viewer_content = document.getElementById("layer_viewer_content");

@@ -35,7 +35,7 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
   const handleAddLayer = () => {
     if (!painter) return;
     if (painter.getLayerCount() >= maxLayers) {
-      alert(`レイヤーは最大${maxLayers}枚までです`);
+      console.error(`レイヤーは最大${maxLayers}枚までです`);
       return;
     }
     const newIndex = painter.getLayerCount();
@@ -53,7 +53,6 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
   const handleDeleteLayer = (index: number) => {
     if (!painter) return;
     if (painter.getLayerCount() <= 1) {
-      alert('最後のレイヤーは削除できません');
       return;
     }
     painter.removeLayer(index);

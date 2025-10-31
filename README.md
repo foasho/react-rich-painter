@@ -1,15 +1,13 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/8acfcd39-6028-4c82-b871-d59f10c30b69" width="200" />
+<img src="https://github.com/user-attachments/assets/882ba142-0fd8-4c34-857c-014de5c79bd8" width="200" />
 
-# [WIP] Web Rich Painter in React🎨
+# 🎨　React Rich Painter
 
-## This project is Work In Progress now.
+React Rich Painterは、
+Reactで統合可能なPainterライブラリです。
 
-[Painter機能](https://github.com/user-attachments/assets/8b17c822-145f-4f95-96fd-ba266de453b4)
 
-[Storybook](https://react-rich-painter.vercel.app)
-
-React Rich Painterは、Reactで統合可能なPainterライブラリです。
+[Demo on Storybook](https://story-book-react-rich-painter.vercel.app)
 
 ## ショーケース
 
@@ -17,10 +15,8 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 
 </div>
 
-- Node22
-- React19
-
 ## 特徴🌴
+* ノート利用とペイントツール利用が可能
 * マウス入力 / タッチ入力 / ペン入力🚀
   * **スマート入力切り替え**: ペン入力を最優先し、使用パターンに応じて自動的に入力タイプを切り替え✨
 * Webでの本格的でなめらかな線👥
@@ -30,7 +26,7 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 * NextJS / Vite などReactに統合可能なTSの柔軟なライブラリ🤖
 * UI位置の自動保存（localStorage統合）💾
 
-### ビルドファイルをReactで読み込み💡
+### Usage💡
 
 ```bash
 npm install react-rich-painter
@@ -85,6 +81,9 @@ function NotebookApp() {
 - `brushbar?: boolean` - ブラシバーを表示するかどうか（デフォルト: `true`）※notebookプリセットでは無視されます
 - `defaultCustomBrush?: boolean` - デフォルトのカスタムブラシを使用するかどうか（デフォルト: `true`）
 - `backgroundSize?: number` - 背景グリッドのサイズ（ピクセル）（デフォルト: `20`）
+- `onUpdate?: (state: PainterState) => void` - Painter状態更新時のコールバック（100msでthrottleされます）
+- `initialState?: PainterState` - 初期状態（Import機能）
+- `showFileMenu?: boolean` - FileMenuを表示するかどうか（デフォルト: `false`）
 
 ### スマート入力切り替え機能
 
@@ -98,19 +97,127 @@ React Rich Painterは、ユーザーの使用パターンに基づいて入力�
 
 この機能により、ペンタブレットとマウス、タッチデバイスを併用する環境でも快適に描画できます。
 
-## 開発者向け🛠️
+### Import/Export機能
+
+React Rich Painterは、描画状態を完全に保存・復元できるImport/Export機能を提供しています。
+
+#### UIからのImport/Export（showFileMenu prop）
+
+```tsx
+import { ReactRichPainter } from "react-rich-painter";
+
+function App() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      {/* showFileMenu=trueでToolBar/NotebookBarにFileメニューが表示されます */}
+      <ReactRichPainter showFileMenu={true} />
+    </div>
+  );
+}
+```
+
+FileMenuから以下の操作が可能です：
+- **ファイルを開く**: JSONファイルから描画状態を復元
+- **エクスポート**: 現在の描画状態をJSONファイルとして保存
+- **画像を保存**: 統合されたキャンバス画像をPNG形式で保存
+
+#### プログラムからのImport/Export
+
+```tsx
+import {
+  ReactRichPainter,
+  PainterState,
+  exportPainterState,
+  serializePainterState
+} from "react-rich-painter";
+import { useState } from "react";
+
+function App() {
+  const [savedState, setSavedState] = useState<PainterState | undefined>();
+
+  const handleUpdate = (state: PainterState) => {
+    // 状態が更新されるたびに呼ばれます（100msでthrottle）
+    console.log('Painter state updated:', state);
+    setSavedState(state);
+  };
+
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      {/* onUpdateで状態変更を監視 */}
+      <ReactRichPainter
+        onUpdate={handleUpdate}
+        initialState={savedState} // 保存した状態から復元
+      />
+
+      {savedState && (
+        <button onClick={() => {
+          // JSONとしてエクスポート
+          const json = serializePainterState(savedState);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'painting.json';
+          link.click();
+        }}>
+          エクスポート
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+#### PainterStateの構造
+
+```typescript
+type PainterState = {
+  version: string; // フォーマットバージョン
+  canvas: {
+    width: number;
+    height: number;
+  };
+  layers: Array<{
+    id: string;
+    name: string;
+    visible: boolean;
+    opacity: number;
+    imageData: string; // Base64エンコードされた画像データ
+  }>;
+  selectedLayerId: string;
+  brush: {
+    color: string;
+    size: number;
+    spacing: number;
+    flow: number;
+    merge: number;
+    minimumSize: number;
+    opacity: number;
+  };
+  stabilizer: {
+    level: number;
+    weight: number;
+  };
+  currentTool: 'pen' | 'eraser' | 'dripper' | 'lasso' | 'move';
+  inputType: 'pen' | 'mouse' | 'touch';
+};
+```
+
+## 開発者 / Contributor
+
+fork後にPRを出してください。
 
 ### セットアップ
 
 ```bash
 # 依存関係のインストール
-npm install
+pnpm install
 
 # 開発サーバーの起動
-npm run dev
+pnpm dev
 
 # ビルド
-npm run build
+pnpm run build
 ```
 
 ### Storybookで確認
@@ -122,42 +229,7 @@ Storybookを使用して、様々なパラメータでReact Rich Painterをイ�
 npm run storybook
 ```
 
-ブラウザで `http://localhost:6006` を開くと、Storybookが表示されます。
-
-利用可能なストーリー：
-
-**自動サイズ調整（autoSize=true）**
-- **Default**: 親要素のサイズに自動調整（フルスクリーン）
-- **AutoSizeSmallContainer**: 小さいコンテナでの自動サイズ調整
-- **AutoSizeLargeContainer**: 大きいコンテナでの自動サイズ調整
-
-**固定サイズ（autoSize=false）**
-- **FixedSizeDefault**: 標準サイズ（800x600）
-- **Small**: 小さいサイズ（400x300）
-- **Large**: 大きいサイズ（1200x800）
-- **Square**: 正方形（600x600）
-- **Mobile**: モバイル向け（360x640）
-- **Tablet**: タブレット向け（768x1024）
-- **Widescreen**: ワイドスクリーン（1600x900）
-
-**UI設定**
-- **CanvasOnly**: ツールバーとブラシバーを非表示
-- **WithToolbarOnly**: ツールバーのみ表示
-- **WithBrushbarOnly**: ブラシバーのみ表示
-
-**その他の設定**
-- **WithoutCustomBrush**: カスタムブラシなし
-- **FineGrid**: 細かい背景グリッド
-- **CoarseGrid**: 粗い背景グリッド
-
-Storybookの「Controls」タブから、以下のパラメータをリアルタイムで調整できます：
-- `autoSize`: 自動サイズ調整の有効/無効
-- `width`: キャンバスの幅（autoSize=falseの場合に使用）
-- `height`: キャンバスの高さ（autoSize=falseの場合に使用）
-- `toolbar`: ツールバーの表示/非表示
-- `brushbar`: ブラシバーの表示/非表示
-- `defaultCustomBrush`: デフォルトカスタムブラシの使用
-- `backgroundSize`: 背景グリッドのサイズ
+ブラウザで `http://localhost:6006` を開く
 
 ### Storybookのビルド
 
