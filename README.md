@@ -9,29 +9,14 @@ Reactで統合可能なPainterライブラリです。
 
 [Demo on Storybook](https://story-book-react-rich-painter.vercel.app)
 
-## Usage Painter
-
-```tsx
-<ReactRichPainter preset='painter' />
-```
-
-## Usage Notebook
-
-```tsx
-<ReactRichPainter preset='notebook' />
-```
-
 ## ショーケース
 
 (準備中)
 
 </div>
 
-- Node22
-- React19
-
 ## 特徴🌴
-* ノート利用とペインター利用が可能
+* ノート利用とペイントツール利用が可能
 * マウス入力 / タッチ入力 / ペン入力🚀
   * **スマート入力切り替え**: ペン入力を最優先し、使用パターンに応じて自動的に入力タイプを切り替え✨
 * Webでの本格的でなめらかな線👥
@@ -41,7 +26,7 @@ Reactで統合可能なPainterライブラリです。
 * NextJS / Vite などReactに統合可能なTSの柔軟なライブラリ🤖
 * UI位置の自動保存（localStorage統合）💾
 
-### ビルドファイルをReactで読み込み💡
+### Usage💡
 
 ```bash
 npm install react-rich-painter
@@ -109,19 +94,21 @@ React Rich Painterは、ユーザーの使用パターンに基づいて入力�
 
 この機能により、ペンタブレットとマウス、タッチデバイスを併用する環境でも快適に描画できます。
 
-## 開発者向け🛠️
+## 開発者 / Contributor
+
+fork後にPRを出してください。
 
 ### セットアップ
 
 ```bash
 # 依存関係のインストール
-npm install
+pnpm install
 
 # 開発サーバーの起動
-npm run dev
+pnpm dev
 
 # ビルド
-npm run build
+pnpm run build
 ```
 
 ### Storybookで確認
@@ -133,42 +120,7 @@ Storybookを使用して、様々なパラメータでReact Rich Painterをイ�
 npm run storybook
 ```
 
-ブラウザで `http://localhost:6006` を開くと、Storybookが表示されます。
-
-利用可能なストーリー：
-
-**自動サイズ調整（autoSize=true）**
-- **Default**: 親要素のサイズに自動調整（フルスクリーン）
-- **AutoSizeSmallContainer**: 小さいコンテナでの自動サイズ調整
-- **AutoSizeLargeContainer**: 大きいコンテナでの自動サイズ調整
-
-**固定サイズ（autoSize=false）**
-- **FixedSizeDefault**: 標準サイズ（800x600）
-- **Small**: 小さいサイズ（400x300）
-- **Large**: 大きいサイズ（1200x800）
-- **Square**: 正方形（600x600）
-- **Mobile**: モバイル向け（360x640）
-- **Tablet**: タブレット向け（768x1024）
-- **Widescreen**: ワイドスクリーン（1600x900）
-
-**UI設定**
-- **CanvasOnly**: ツールバーとブラシバーを非表示
-- **WithToolbarOnly**: ツールバーのみ表示
-- **WithBrushbarOnly**: ブラシバーのみ表示
-
-**その他の設定**
-- **WithoutCustomBrush**: カスタムブラシなし
-- **FineGrid**: 細かい背景グリッド
-- **CoarseGrid**: 粗い背景グリッド
-
-Storybookの「Controls」タブから、以下のパラメータをリアルタイムで調整できます：
-- `autoSize`: 自動サイズ調整の有効/無効
-- `width`: キャンバスの幅（autoSize=falseの場合に使用）
-- `height`: キャンバスの高さ（autoSize=falseの場合に使用）
-- `toolbar`: ツールバーの表示/非表示
-- `brushbar`: ブラシバーの表示/非表示
-- `defaultCustomBrush`: デフォルトカスタムブラシの使用
-- `backgroundSize`: 背景グリッドのサイズ
+ブラウザで `http://localhost:6006` を開く
 
 ### Storybookのビルド
 
