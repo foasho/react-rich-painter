@@ -1,15 +1,25 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/8acfcd39-6028-4c82-b871-d59f10c30b69" width="200" />
+<img src="https://github.com/user-attachments/assets/882ba142-0fd8-4c34-857c-014de5c79bd8" width="200" />
 
-# [WIP] Web Rich Painter in React🎨
+# 🎨　React Rich Painter
 
-## This project is Work In Progress now.
+React Rich Painterは、
+Reactで統合可能なPainterライブラリです。
 
-[Painter機能](https://github.com/user-attachments/assets/8b17c822-145f-4f95-96fd-ba266de453b4)
 
-[Storybook](https://react-rich-painter.vercel.app)
+[Demo on Storybook](https://story-book-react-rich-painter.vercel.app)
 
-React Rich Painterは、Reactで統合可能なPainterライブラリです。
+## Usage Painter
+
+```tsx
+<ReactRichPainter preset='painter' />
+```
+
+## Usage Notebook
+
+```tsx
+<ReactRichPainter preset='notebook' />
+```
 
 ## ショーケース
 
@@ -21,6 +31,7 @@ React Rich Painterは、Reactで統合可能なPainterライブラリです。
 - React19
 
 ## 特徴🌴
+* ノート利用とペインター利用が可能
 * マウス入力 / タッチ入力 / ペン入力🚀
   * **スマート入力切り替え**: ペン入力を最優先し、使用パターンに応じて自動的に入力タイプを切り替え✨
 * Webでの本格的でなめらかな線👥
