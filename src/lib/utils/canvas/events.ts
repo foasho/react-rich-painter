@@ -1,6 +1,61 @@
-import { InputType } from "../../components/store/ui";
+import { InputType, useUiStore } from "../../components/store/ui";
 import { Brush, RichPainter, Tablet } from "../painter";
-import { UserSelectInputType } from "./userUtilities";
+
+// 連続入力の閾値（この回数を超えたら自動切り替え）
+const AUTO_SWITCH_THRESHOLD = 7;
+
+/**
+ * 入力タイプに基づいて自動切り替えを処理
+ * ルール:
+ * 1. ペン入力は最優先 - 検知されたら即座にペンモードに切り替え
+ * 2. ペンモード中に他の入力が連続したら、閾値を超えた時点でその入力タイプに切り替え
+ * 3. 入力タイプが変わったらカウンターをリセット
+ */
+const handleAutoInputSwitch = (detectedType: string) => {
+  const store = useUiStore.getState();
+  const currentInputType = store.inputType;
+
+  // PointerEvent.pointerTypeをInputTypeに変換
+  const detectedInputType: InputType = detectedType === 'touch' ? 'touch' :
+                                        detectedType === 'mouse' ? 'mouse' : 'pen';
+
+  // ルール1: ペン入力は最優先 - 即座に切り替え
+  if (detectedInputType === 'pen') {
+    if (currentInputType !== 'pen') {
+      store.setInputType('pen');
+    }
+    store.resetConsecutiveInput();
+    return;
+  }
+
+  // ルール2: 現在ペンモードで、他の入力が検知された場合
+  if (currentInputType === 'pen') {
+    // 連続入力をカウント
+    store.incrementConsecutiveInput(detectedInputType);
+
+    // 閾値を超えたら自動切り替え
+    const { consecutiveInputCount, lastDetectedInputType } = useUiStore.getState();
+    if (consecutiveInputCount >= AUTO_SWITCH_THRESHOLD && lastDetectedInputType === detectedInputType) {
+      store.setInputType(detectedInputType);
+      store.resetConsecutiveInput();
+    }
+    return;
+  }
+
+  // ルール3: 現在の入力タイプと異なる入力が検知された場合
+  if (currentInputType !== detectedInputType) {
+    store.incrementConsecutiveInput(detectedInputType);
+
+    const { consecutiveInputCount, lastDetectedInputType } = useUiStore.getState();
+    if (consecutiveInputCount >= AUTO_SWITCH_THRESHOLD && lastDetectedInputType === detectedInputType) {
+      store.setInputType(detectedInputType);
+      store.resetConsecutiveInput();
+    }
+  } else {
+    // 同じ入力タイプが続いている場合はカウンターをリセット
+    store.resetConsecutiveInput();
+  }
+};
 
 class PaintPointerEvent extends PointerEvent {
   public pressure: number;
@@ -16,21 +71,6 @@ class PaintPointerEvent extends PointerEvent {
   }
 }
 
-/**
- * 選択された入力タイプとイベントのpointerTypeが一致するかチェック
- * @param userSelectInputType - Brushで設定された入力タイプ ('pen' | 'mouse' | 'finger')
- * @param eventPointerType - PointerEventのpointerType ('pen' | 'mouse' | 'touch')
- * @returns 一致する場合true
- */
-const isMatchingInputType = (userSelectInputType: UserSelectInputType, eventPointerType: string): boolean => {
-  // 'finger'は'touch'に対応
-  if (userSelectInputType === 'finger') {
-    return eventPointerType === 'touch';
-  }
-  // それ以外は直接比較
-  return userSelectInputType === eventPointerType;
-};
-
 type CanvasPointerDownProps = {
   e: PaintPointerEvent;
   painter: RichPainter;
@@ -45,13 +85,10 @@ const canvasPointerDown = (
 ) => {
   const newEvent = setPointerEvent(e);
 
-  // 選択した入力タイプかどうかチェック
-  const userSelectInputType = brush.getUserSelectInputType();
-  if (!isMatchingInputType(userSelectInputType, newEvent.pointerType)) {
-    // 選択した入力タイプと一致しない場合は描画しない
-    return;
-  }
+  // 自動入力切り替えを処理
+  handleAutoInputSwitch(newEvent.pointerType);
 
+  // すべての入力タイプで描画を許可（自動切り替え後）
   const pointerPosition = painter.getRelativePosition(newEvent.clientX, newEvent.clientY);
   painter.down(pointerPosition.x, pointerPosition.y, newEvent.pressure);
 }
@@ -74,13 +111,10 @@ const canvasPointerMove = ({
 
   const newEvent = setPointerEvent(e);
 
-  // 選択した入力タイプかどうかチェック
-  const userSelectInputType = brush.getUserSelectInputType();
-  if (!isMatchingInputType(userSelectInputType, newEvent.pointerType)) {
-    // 選択した入力タイプと一致しない場合は描画を中断
-    return;
-  }
+  // 自動入力切り替えを処理
+  handleAutoInputSwitch(newEvent.pointerType);
 
+  // すべての入力タイプで描画を許可
   const pointerPosition = painter.getRelativePosition(newEvent.clientX, newEvent.clientY);
   switch (brush.getToolType()) {
     case "pen":
@@ -123,12 +157,10 @@ function canvasPointerUp(
 ) {
   const newEvent = setPointerEvent(e);
 
-  // 選択した入力タイプかどうかチェック
-  const userSelectInputType = brush.getUserSelectInputType();
-  if (!isMatchingInputType(userSelectInputType, newEvent.pointerType)) {
-    // 選択した入力タイプと一致しない場合は処理しない
-    return;
-  }
+  // 自動入力切り替えを処理
+  handleAutoInputSwitch(newEvent.pointerType);
+
+  // すべての入力タイプで処理を許可
   const pointerPosition = painter.getRelativePosition(newEvent.clientX, newEvent.clientY);
   if (isDrawStatus) {
       canvasArea.style.setProperty('cursor', 'crosshair');
