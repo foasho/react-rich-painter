@@ -4,14 +4,11 @@ import { ColorPallet, CustomBrushSelector, Opacity, Sizer } from './brushbars';
 
 type BrushBarProps = {
   linePx?: number;
-  height?: number;
 }
 
 const BrushBar = (
-  { linePx = 40, height = 350 }: BrushBarProps
+  { linePx = 40 }: BrushBarProps
 ) => {
-
-  const _height = height + 'px';
 
   return (
     <WrapperContext
@@ -20,7 +17,6 @@ const BrushBar = (
       draggableId="brushbar" // 一意なIDを設定
       style={{ top: '100px', left: '10px' }} // 初期位置
       linePx={linePx}
-      height={_height}
     >
       <div style={{
         display: 'flex',

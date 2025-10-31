@@ -79,13 +79,16 @@ const WrapperContext = (
     }));
   };
 
-  // verticalがtrueの場合には、widthが50px固定値
+  // verticalがtrueの場合には、widthが固定値、heightは自動
+  // verticalがfalseの場合には、heightが固定値、widthは自動
   let fixedWidth = width;
   let fixedHeight = height;
   if (vertical) {
     fixedWidth = `${linePx}px`;
+    fixedHeight = 'auto'; // 子要素のサイズに応じて自動調整
   } else {
     fixedHeight = `${linePx}px`;
+    fixedWidth = 'auto'; // 子要素のサイズに応じて自動調整
   }
 
   return (

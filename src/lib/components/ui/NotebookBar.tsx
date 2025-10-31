@@ -5,14 +5,11 @@ import { BrushType, Eraser } from './toolbars';
 
 type NotebookBarProps = {
   linePx?: number;
-  height?: number;
 }
 
 const NotebookBar = (
-  { linePx = 40, height = 250 }: NotebookBarProps
+  { linePx = 40 }: NotebookBarProps
 ) => {
-
-  const _height = height + 'px';
 
   return (
     <WrapperContext
@@ -21,7 +18,6 @@ const NotebookBar = (
       draggableId="notebookbar" // 一意なIDを設定
       style={{ top: '100px', left: '10px' }} // 初期位置
       linePx={linePx}
-      height={_height}
     >
       <div style={{
         display: 'flex',
