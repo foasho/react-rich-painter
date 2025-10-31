@@ -15,5 +15,3 @@ export const getDeviceType = (): DeviceType => {
   }
 };
 
-export type UserSelectInputType = 'pen' | 'finger' | 'mouse';
-

@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { UserSelectInputType } from '../../utils/canvas/userUtilities';
+import { InputType } from './ui';
 
 type UtilsState = {
-  userSelectInput: UserSelectInputType;
-  setUserSelectInput: (userSelectInput: UserSelectInputType) => void;
+  userSelectInput: InputType;
+  setUserSelectInput: (userSelectInput: InputType) => void;
 }
 
 const useUtilsStore = create<UtilsState>((set) => ({
