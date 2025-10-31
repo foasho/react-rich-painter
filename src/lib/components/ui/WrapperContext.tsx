@@ -36,7 +36,6 @@ const WrapperContext = (
     width = '50%',
     height = '50%',
     linePx = 40,
-    // padding = '10px',
     backgroundColor = '#121212',
     wrapperBgColor = '#FFFFFF88',
     style = {},
@@ -74,7 +73,7 @@ const WrapperContext = (
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { delta } = event;
-    setPosition((prev) => ({
+    setPosition((prev: { x: number, y: number }) => ({
       x: prev.x + (delta?.x || 0),
       y: prev.y + (delta?.y || 0),
     }));

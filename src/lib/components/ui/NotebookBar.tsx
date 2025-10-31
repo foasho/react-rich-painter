@@ -31,11 +31,8 @@ const NotebookBar = (
         height: '100%', // WrapperContext の高さに応じて調整
         gap: '10px',
       }}>
-        {/* ツールボタン */}
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <BrushType />
-          <Eraser />
-        </div>
+        <BrushType />
+        <Eraser />
         {/* ブラシサイズ */}
         <Sizer sliderLength={120} />
         {/* カラーパレット */}
