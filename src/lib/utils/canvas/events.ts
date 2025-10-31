@@ -1,5 +1,5 @@
+import { InputType } from "../../components/store/ui";
 import { Brush, RichPainter, Tablet } from "../painter";
-import { UserSelectInputType } from "./userUtilities";
 
 class PaintPointerEvent extends PointerEvent {
   public pressure: number;
@@ -85,7 +85,7 @@ type CanvasPointerUpProps = {
   e: PaintPointerEvent;
   painter: RichPainter;
   brush: Brush;
-  userSelectInputType: UserSelectInputType;
+  userSelectInputType: InputType;
   isDrawStatus: boolean;
   canvasArea: HTMLElement;
 }

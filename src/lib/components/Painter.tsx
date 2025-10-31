@@ -162,8 +162,8 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     if (!brush) return;
 
     // InputType ('pen' | 'mouse' | 'touch') を
-    // UserSelectInputType ('pen' | 'mouse' | 'finger') に変換
-    const userSelectInputType = inputType === 'touch' ? 'finger' : inputType;
+    // ç ('pen' | 'mouse' | 'finger') に変換
+    const userSelectInputType = inputType === 'touch' ? 'touch' : inputType;
     brush.setUserSelectInputType(userSelectInputType);
   }, [painter, inputType]);
 

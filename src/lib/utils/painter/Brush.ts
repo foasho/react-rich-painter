@@ -1,4 +1,5 @@
-import { UserSelectInputType } from "../canvas/userUtilities";
+import { InputType } from "../../components/store/ui";
+
 
 // pen: 描画, eraser: 消しゴム, dripper: スポイト, rect: 選択, move: キャンバス移動
 type BrushToolType = "pen" | "eraser" | "dripper" | "rect" | "move";
@@ -11,7 +12,7 @@ class Brush {
   private angle: number = 0;
   private minimumSize: number = 0;
   private userDevice: string = "pc";
-  private userSelectInputType: UserSelectInputType = "mouse";
+  private userSelectInputType: InputType = "mouse";
   private toolType: BrushToolType = "pen";
   private isDrawTool: boolean = false;//描画系のツールかどうか
   private isFinger: boolean = false;
@@ -42,11 +43,11 @@ class Brush {
     return clone;
   }
 
-  public getUserSelectInputType(): UserSelectInputType {
+  public getUserSelectInputType(): InputType {
     return this.userSelectInputType;
   }
 
-  public setUserSelectInputType(value: UserSelectInputType): void {
+  public setUserSelectInputType(value: InputType): void {
     this.userSelectInputType = value;
   }
 
