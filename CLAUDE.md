@@ -241,7 +241,7 @@ Zustandによる状態管理：
   - pointerup、pointercancel、lasso操作完了時に呼び出し
 - `initialState?: PainterState`: 初期状態
   - Painter初期化時に`importPainterState`で復元
-- `importable?: boolean`: FileMenuの表示制御
+- `showFileMenu?: boolean`: FileMenuの表示制御
 
 #### 実装の注意点
 

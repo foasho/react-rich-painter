@@ -83,7 +83,7 @@ function NotebookApp() {
 - `backgroundSize?: number` - 背景グリッドのサイズ（ピクセル）（デフォルト: `20`）
 - `onUpdate?: (state: PainterState) => void` - Painter状態更新時のコールバック（100msでthrottleされます）
 - `initialState?: PainterState` - 初期状態（Import機能）
-- `importable?: boolean` - Import/Export UI（FileMenu）を表示するかどうか（デフォルト: `false`）
+- `showFileMenu?: boolean` - FileMenuを表示するかどうか（デフォルト: `false`）
 
 ### スマート入力切り替え機能
 
@@ -101,7 +101,7 @@ React Rich Painterは、ユーザーの使用パターンに基づいて入力�
 
 React Rich Painterは、描画状態を完全に保存・復元できるImport/Export機能を提供しています。
 
-#### UIからのImport/Export（importable prop）
+#### UIからのImport/Export（showFileMenu prop）
 
 ```tsx
 import { ReactRichPainter } from "react-rich-painter";
@@ -109,8 +109,8 @@ import { ReactRichPainter } from "react-rich-painter";
 function App() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      {/* importable=trueで右上にFileメニューが表示されます */}
-      <ReactRichPainter importable={true} />
+      {/* showFileMenu=trueでToolBar/NotebookBarにFileメニューが表示されます */}
+      <ReactRichPainter showFileMenu={true} />
     </div>
   );
 }

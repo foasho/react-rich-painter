@@ -5,7 +5,7 @@ function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactRichPainter width={800} height={600} onUpdate={(state) => {
+      <ReactRichPainter width={800} height={600} preset="notebook" onUpdate={(state) => {
         console.log(state.version)
       }} />
     </div>

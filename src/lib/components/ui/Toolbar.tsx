@@ -1,13 +1,15 @@
 import React from 'react';
 import { Config, Lasso, PenType, BrushType, Eraser, Layer, HandMove } from "./toolbars";
 import { WrapperContext } from './WrapperContext';
+import { FileMenu } from './panels/FileMenu';
 
 type ToolBarProps = {
   linePx?: number;
+  showFileMenu?: boolean;
 }
 
 const ToolBar = (
-  { linePx = 40 }: ToolBarProps
+  { linePx = 40, showFileMenu = false }: ToolBarProps
 ) => {
 
   return (
@@ -27,6 +29,7 @@ const ToolBar = (
             gap: '5px', // アイコン間のスペースを設定
           }}
         >
+          {showFileMenu && <FileMenu />}
           <Config />
           <Lasso />
           <PenType />

@@ -86,6 +86,14 @@ const meta = {
         defaultValue: { summary: 20 },
       },
     },
+    showFileMenu: {
+      control: 'boolean',
+      description: 'FileMenuを表示するかどうか（Import/Export機能）',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: false },
+      },
+    },
   },
 } satisfies Meta<typeof ReactRichPainter>;
 
@@ -162,6 +170,56 @@ export const PaintingFixedSize: Story = {
     docs: {
       description: {
         story: 'Paintingプリセットで固定サイズ（800x600px）を指定した例です。',
+      },
+    },
+  },
+};
+
+// Paintingプリセット with FileMenu
+export const PaintingWithFileMenu: Story = {
+  args: {
+    autoSize: true,
+    preset: 'painting',
+    toolbar: true,
+    brushbar: true,
+    defaultCustomBrush: true,
+    backgroundSize: 20,
+    showFileMenu: true,
+  },
+  render: (args) => (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'FileMenuを表示してImport/Export機能を使用できます。ToolBarの左側にFileアイコンが表示され、クリックすると「ファイルを開く」「エクスポート」「画像を保存」のメニューが表示されます。描画状態をJSONファイルとして保存・復元できます。',
+      },
+    },
+  },
+};
+
+// Notebookプリセット with FileMenu
+export const NotebookWithFileMenu: Story = {
+  args: {
+    autoSize: true,
+    preset: 'notebook',
+    toolbar: false,
+    brushbar: false,
+    defaultCustomBrush: false,
+    backgroundSize: 20,
+    showFileMenu: true,
+  },
+  render: (args) => (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'NotebookプリセットでもFileMenuを使用できます。NotebookBarの上部にFileアイコンが表示され、同様にImport/Export機能が利用可能です。シンプルなノート環境でも作業の保存・復元が可能です。',
       },
     },
   },

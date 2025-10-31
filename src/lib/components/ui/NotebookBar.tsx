@@ -2,13 +2,15 @@ import React from 'react';
 import { WrapperContext } from './WrapperContext';
 import { ColorPallet, Sizer } from './brushbars';
 import { BrushType, Eraser } from './toolbars';
+import { FileMenu } from './panels/FileMenu';
 
 type NotebookBarProps = {
   linePx?: number;
+  showFileMenu?: boolean;
 }
 
 const NotebookBar = (
-  { linePx = 40 }: NotebookBarProps
+  { linePx = 40, showFileMenu = false }: NotebookBarProps
 ) => {
 
   return (
@@ -27,6 +29,7 @@ const NotebookBar = (
         height: '100%', // WrapperContext の高さに応じて調整
         gap: '5px',
       }}>
+        {showFileMenu && <FileMenu />}
         <BrushType />
         <Eraser />
         {/* ブラシサイズ */}

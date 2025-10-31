@@ -5,7 +5,6 @@ import { ToolBar, BrushBar, NotebookBar } from "./ui";
 import { Brush } from './Brush';
 import { SelectionOverlay } from './SelectionOverlay';
 import { LayerPanel } from './ui/panels/LayerPanel';
-import { FileMenu } from './ui/panels/FileMenu';
 import { canvasPointerDown, canvasPointerMove, canvasPointerUp } from '../utils/canvas';
 import { PainterProvider } from './PainterContext';
 import { useCanvasStore } from './store/canvas';
@@ -29,7 +28,7 @@ type ReactRichPainterProps = {
   backgroundTileColor?: string; // 背景タイルの色
   onUpdate?: (state: PainterState) => void; // Painter状態更新時のコールバック（throttleされます）
   initialState?: PainterState; // 初期状態（Import機能）
-  importable?: boolean; // Import/Export UI を表示するかどうか
+  showFileMenu?: boolean; // FileMenuを表示するかどうか
 };
 
 const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
@@ -44,7 +43,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
   backgroundTileColor="#1e1e1e",
   onUpdate,
   initialState,
-  importable=true,
+  showFileMenu=true,
 }) => {
   const [painter, setPainter] = useState<RichPainter>();
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
@@ -264,16 +263,15 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
           <Brush painter={painter} />
           {preset === 'notebook' ? (
             <>
-              <NotebookBar />
+              <NotebookBar showFileMenu={showFileMenu} />
             </>
           ) : (
             <>
-              {toolbar && <ToolBar />}
+              {toolbar && <ToolBar showFileMenu={showFileMenu} />}
               {brushbar && <BrushBar />}
               {isLayerPanelOpen && <LayerPanel />}
             </>
           )}
-          {importable && <FileMenu />}
         </PainterProvider>
       ) : null}
     </div>

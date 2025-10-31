@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { HiDocument } from 'react-icons/hi2';
 import { usePainter } from '../../PainterContext';
 import { exportPainterState, serializePainterState, deserializePainterState, importPainterState } from '../../../utils/stateManager';
-import { WrapperContext } from '../WrapperContext';
 
 type FileMenuProps = {
   size?: number;
@@ -93,64 +92,57 @@ const FileMenu: React.FC<FileMenuProps> = ({ size = 20 }) => {
         onChange={handleFileSelect}
       />
 
-      <WrapperContext
-        vertical={true}
-        draggableId="filemenu"
-        linePx={size}
-        initialPosition={{ x: window.innerWidth - 60, y: 10 }} // 右上端
-      >
-        <div
+      <div style={{ position: 'relative' }}>
+        {/* Fileボタン */}
+        <button
+          onClick={toggleMenu}
           style={{
+            width: size,
+            height: size,
             display: 'flex',
-            flexDirection: 'column',
-            gap: '3px',
-            padding: '5px',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '8px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            borderRadius: '5px',
+            backgroundColor: isOpen ? '#4a90e2' : 'transparent',
+            color: isOpen ? '#ffffff' : '#aaaaaa',
+            transition: 'all 0.2s',
+            border: 'none',
+            padding: 0,
+          }}
+          title="File"
+          onMouseEnter={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.backgroundColor = '#3a3a3a';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }
           }}
         >
-          {/* Fileボタン */}
-          <button
-            onClick={toggleMenu}
+          <HiDocument size={size * 0.7} />
+        </button>
+
+        {/* メニューパネル - ボタンの下に絶対配置 */}
+        {isOpen && (
+          <div
             style={{
-              width: size,
-              height: size,
+              position: 'absolute',
+              top: size + 5, // ボタンの下に配置
+              left: 0,
+              zIndex: 10000,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              borderRadius: '5px',
-              backgroundColor: isOpen ? '#4a90e2' : 'transparent',
-              color: isOpen ? '#ffffff' : '#aaaaaa',
-              transition: 'all 0.2s',
-              border: 'none',
-              padding: 0,
-            }}
-            title="File"
-            onMouseEnter={(e) => {
-              if (!isOpen) {
-                e.currentTarget.style.backgroundColor = '#3a3a3a';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isOpen) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }
+              flexDirection: 'column',
+              gap: '5px',
+              padding: '8px',
+              backgroundColor: '#2a2a2a',
+              borderRadius: '8px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+              minWidth: '140px',
             }}
           >
-            <HiDocument size={size * 0.7} />
-          </button>
-
-          {/* メニューパネル */}
-          {isOpen && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                marginTop: '5px',
-              }}
-            >
               <button
                 onClick={handleImportClick}
                 style={{
@@ -219,10 +211,9 @@ const FileMenu: React.FC<FileMenuProps> = ({ size = 20 }) => {
               >
                 画像を保存
               </button>
-            </div>
-          )}
-        </div>
-      </WrapperContext>
+          </div>
+        )}
+      </div>
     </>
   );
 };
