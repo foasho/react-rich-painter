@@ -116,6 +116,31 @@ export const PaintingDefault: Story = {
   },
 };
 
+// Notebookプリセット
+export const NotebookDefault: Story = {
+  args: {
+    autoSize: true,
+    preset: 'notebook',
+    toolbar: false,
+    brushbar: false,
+    defaultCustomBrush: false,
+    backgroundSize: 20,
+  },
+  render: (args) => (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Notebookプリセットの例です。親要素いっぱいにキャンバスが配置され、ペン・消しゴム・ブラシサイズ・色を含むNotebookBarのみが表示されます。シンプルなメモやスケッチに適しています。',
+      },
+    },
+  },
+};
+
+
 // Paintingプリセット：固定サイズ
 export const PaintingFixedSize: Story = {
   args: {
@@ -142,26 +167,3 @@ export const PaintingFixedSize: Story = {
   },
 };
 
-// Notebookプリセット
-export const NotebookDefault: Story = {
-  args: {
-    autoSize: true,
-    preset: 'notebook',
-    toolbar: false,
-    brushbar: false,
-    defaultCustomBrush: false,
-    backgroundSize: 20,
-  },
-  render: (args) => (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactRichPainter {...args} />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: 'Notebookプリセットの例です。親要素いっぱいにキャンバスが配置され、ペン・消しゴム・ブラシサイズ・色を含むNotebookBarのみが表示されます。シンプルなメモやスケッチに適しています。',
-      },
-    },
-  },
-};
