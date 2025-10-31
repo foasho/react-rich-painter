@@ -29,7 +29,7 @@ export type BrushSettings = {
 export const DEFAULT_BRUSH_SETTINGS: BrushSettings = {
   // 基本設定
   size: 10,
-  color: '#000000',
+  color: '#474747ff',
   shape: 'round',
 
   // カスタムブラシ
