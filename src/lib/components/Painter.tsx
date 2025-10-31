@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { RichPainter } from '../utils';
-import { ToolBar, BrushBar } from "./ui";
+import { ToolBar, BrushBar, NotebookBar } from "./ui";
 import { Brush } from './Brush';
 import { SelectionOverlay } from './SelectionOverlay';
 import { LayerPanel } from './ui/panels/LayerPanel';
@@ -16,6 +16,7 @@ type ReactRichPainterProps = {
   width?: number;
   height?: number;
   autoSize?: boolean; // 親要素のサイズから自動的にキャンバスサイズを決定するかどうか（デフォルト: true）
+  preset?: 'notebook' | 'painting'; // プリセット設定（デフォルト: painting）
   toolbar?: boolean; // Toolbarを表示するかどうか
   brushbar?: boolean; // Brushbarを表示するかどうか
   appendBrushImages?: string[]; // TODO: 追加のBrush画像
@@ -28,6 +29,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
   width: propWidth,
   height: propHeight,
   autoSize = true,
+  preset = 'painting',
   toolbar=true,
   brushbar=true,
   defaultCustomBrush=true,
@@ -75,8 +77,10 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
         if (parentElement) {
           const parentWidth = parentElement.clientWidth;
           const parentHeight = parentElement.clientHeight;
-          const newWidth = Math.floor(parentWidth * 0.8);
-          const newHeight = Math.floor(parentHeight * 0.8);
+          // notebook presetの場合は親要素いっぱい（1倍）、paintingの場合は0.8倍
+          const scale = preset === 'notebook' ? 1.0 : 0.8;
+          const newWidth = Math.floor(parentWidth * scale);
+          const newHeight = Math.floor(parentHeight * scale);
           setCanvasSize({ width: newWidth, height: newHeight });
         }
       }
@@ -98,7 +102,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [autoSize, propWidth, propHeight]);
+  }, [autoSize, propWidth, propHeight, preset]);
 
   useEffect(() => {
     // RichPainter の初期化（最初のみ）
@@ -210,9 +214,17 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
             height={canvasSize.height}
           />
           <Brush painter={painter} />
-          {toolbar && <ToolBar />}
-          {brushbar && <BrushBar />}
-          {isLayerPanelOpen && <LayerPanel />}
+          {preset === 'notebook' ? (
+            <>
+              <NotebookBar />
+            </>
+          ) : (
+            <>
+              {toolbar && <ToolBar />}
+              {brushbar && <BrushBar />}
+              {isLayerPanelOpen && <LayerPanel />}
+            </>
+          )}
         </PainterProvider>
       ) : null}
     </div>

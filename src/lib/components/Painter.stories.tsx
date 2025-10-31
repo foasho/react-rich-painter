@@ -29,6 +29,15 @@ const meta = {
         defaultValue: { summary: true },
       },
     },
+    preset: {
+      control: 'select',
+      options: ['painting', 'notebook'],
+      description: 'プリセット設定（painting: 通常モード、notebook: ノートブックモード）',
+      table: {
+        type: { summary: "'painting' | 'notebook'" },
+        defaultValue: { summary: 'painting' },
+      },
+    },
     width: {
       control: { type: 'number', min: 100, max: 2000, step: 50 },
       description: 'キャンバスの幅（ピクセル）※autoSize=falseの場合に使用',
@@ -471,6 +480,82 @@ export const Widescreen: Story = {
     docs: {
       description: {
         story: 'ワイドスクリーン向けの16:9アスペクト比のキャンバスです。',
+      },
+    },
+  },
+};
+
+// Notebookプリセット：フルスクリーン
+export const NotebookPreset: Story = {
+  args: {
+    autoSize: true,
+    preset: 'notebook',
+    toolbar: false,
+    brushbar: false,
+    defaultCustomBrush: false,
+    backgroundSize: 20,
+  },
+  render: (args) => (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Notebookプリセットの例です。親要素いっぱいにキャンバスが配置され、ペン・消しゴム・ブラシサイズ・色を含むNotebookBarのみが表示されます。シンプルなメモやスケッチに適しています。',
+      },
+    },
+  },
+};
+
+// Notebookプリセット：固定サイズ
+export const NotebookPresetFixedSize: Story = {
+  args: {
+    autoSize: false,
+    preset: 'notebook',
+    width: 800,
+    height: 600,
+    toolbar: false,
+    brushbar: false,
+    defaultCustomBrush: false,
+    backgroundSize: 20,
+  },
+  render: (args) => (
+    <div style={{ width: `${args.width}px`, height: `${args.height}px` }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Notebookプリセットで固定サイズ（800x600px）を指定した例です。簡易的なメモやスケッチに適しています。',
+      },
+    },
+  },
+};
+
+// Notebookプリセット：タブレット向け
+export const NotebookPresetTablet: Story = {
+  args: {
+    autoSize: false,
+    preset: 'notebook',
+    width: 768,
+    height: 1024,
+    toolbar: false,
+    brushbar: false,
+    defaultCustomBrush: false,
+    backgroundSize: 15,
+  },
+  render: (args) => (
+    <div style={{ width: `${args.width}px`, height: `${args.height}px` }}>
+      <ReactRichPainter {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Notebookプリセットをタブレット向けサイズで表示した例です。iPadなどでの手書きメモやスケッチに適しています。',
       },
     },
   },

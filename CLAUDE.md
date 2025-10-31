@@ -83,8 +83,13 @@ npm run preview
 - **`Painter.tsx`**: メインコンポーネント
   - `ReactRichPainter`: エントリーポイント
     - `autoSize`プロパティ（デフォルト: true）: 親要素のサイズから自動的にキャンバスサイズを決定
-    - `autoSize=true`の場合: ResizeObserverで親要素のサイズを監視し、0.8倍をキャンバスサイズとして設定
+    - `autoSize=true`の場合: ResizeObserverで親要素のサイズを監視
+      - `painting`モード: 親要素の0.8倍をキャンバスサイズとして設定
+      - `notebook`モード: 親要素の1倍（フル表示）をキャンバスサイズとして設定
     - `autoSize=false`の場合: `width`と`height`プロパティで固定サイズを指定
+    - `preset`プロパティ（デフォルト: 'painting'）: UIプリセットを指定
+      - `'painting'`: フル機能モード（ToolBar、BrushBar、LayerPanel）
+      - `'notebook'`: シンプルモード（NotebookBarのみ）
   - `PaintCanvas`: キャンバス描画領域
   - ポインターイベント処理（pointerdown、pointermove、pointerup、pointercancel）
   - Pointer Capture実装（キャンバス外でのイベント捕捉）
@@ -98,6 +103,12 @@ npm run preview
 - **UI Components（`src/lib/components/ui/`）**:
   - `Toolbar.tsx`: ツールバー（レイヤー、ツール選択、設定）
   - `BrushBar.tsx`: ブラシ設定バー（サイズ、不透明度、カラーパレット）
+  - `NotebookBar.tsx`: Notebookプリセット用のシンプルバー
+    - ペンと消しゴムのツールボタン
+    - ブラシサイズ調整
+    - カラーパレット
+    - 不透明度とカスタムブラシは非表示
+    - 高さ: 250px（デフォルト）
   - `Wrapper.tsx` / `WrapperContext.tsx`: UIコンテナとコンテキスト
     - localStorage統合による位置の永続化（`wrapper-position-${draggableId}`キーで保存）
     - DndContextによるドラッグ&ドロップ機能
@@ -290,6 +301,33 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
   - キー: `wrapper-position-${draggableId}`
   - 値: `{ x: number, y: number }`のJSON
 
+### プリセット管理
+- **preset prop**: `'painting'` | `'notebook'` でUIモードを切り替え
+- **プリセット別の表示制御**（`Painter.tsx:217-227`）:
+  ```typescript
+  {preset === 'notebook' ? (
+    <>
+      <NotebookBar />
+    </>
+  ) : (
+    <>
+      {toolbar && <ToolBar />}
+      {brushbar && <BrushBar />}
+      {isLayerPanelOpen && <LayerPanel />}
+    </>
+  )}
+  ```
+- **キャンバスサイズのスケール調整**（`Painter.tsx:81`）:
+  ```typescript
+  const scale = preset === 'notebook' ? 1.0 : 0.8;
+  const newWidth = Math.floor(parentWidth * scale);
+  const newHeight = Math.floor(parentHeight * scale);
+  ```
+- **NotebookBarの構成**: ペン、消しゴム、サイズ、色のみの最小限UI
+- **使用例**:
+  - メモアプリ、スケッチアプリなど機能を絞った用途に最適
+  - `<ReactRichPainter preset="notebook" />`
+
 ### スタビライザー
 - `toolStabilizeLevel`: 補正の強度（0で無効、大きいほど強力）
 - `toolStabilizeWeight`: 追従の重み（0〜0.95）
@@ -312,3 +350,10 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 
 UIコンポーネントのデモとドキュメントをStorybookで管理しています。
 デプロイ先: https://react-rich-painter.vercel.app
+
+### 主なストーリー
+- **自動サイズ調整**: Default、AutoSizeSmallContainer、AutoSizeLargeContainer
+- **固定サイズ**: FixedSizeDefault、Small、Large、Square、Mobile、Tablet、Widescreen
+- **UI設定**: CanvasOnly、WithToolbarOnly、WithBrushbarOnly
+- **Notebookプリセット**: NotebookPreset、NotebookPresetFixedSize、NotebookPresetTablet
+- **その他**: WithoutCustomBrush、FineGrid、CoarseGrid

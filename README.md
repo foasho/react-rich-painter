@@ -57,17 +57,31 @@ function AppWithFixedSize() {
     <ReactRichPainter autoSize={false} width={800} height={600} />
   );
 }
+
+// Notebookプリセット：シンプルなメモ・スケッチ向け
+function NotebookApp() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      {/* 親要素いっぱいにキャンバスを配置し、必要最小限の機能のみ表示 */}
+      <ReactRichPainter preset="notebook" />
+    </div>
+  );
+}
 ```
 
 ### プロパティ
 
 - `autoSize?: boolean` - 親要素のサイズから自動的にキャンバスサイズを決定するかどうか（デフォルト: `true`）
-  - `true`: 親要素のサイズの0.8倍が自動的にキャンバスサイズとして設定されます
+  - `true` (paintingモード): 親要素のサイズの0.8倍が自動的にキャンバスサイズとして設定されます
+  - `true` (notebookモード): 親要素のサイズの1倍（親要素いっぱい）にキャンバスが配置されます
   - `false`: `width`と`height`プロパティで固定サイズを指定する必要があります
+- `preset?: 'painting' | 'notebook'` - プリセット設定（デフォルト: `'painting'`）
+  - `'painting'`: フル機能モード（ToolBar、BrushBar、レイヤーパネル）
+  - `'notebook'`: シンプルモード（ペン・消しゴム・サイズ・色のみのNotebookBar）
 - `width?: number` - キャンバスの幅（ピクセル）※`autoSize=false`の場合に使用
 - `height?: number` - キャンバスの高さ（ピクセル）※`autoSize=false`の場合に使用
-- `toolbar?: boolean` - ツールバーを表示するかどうか（デフォルト: `true`）
-- `brushbar?: boolean` - ブラシバーを表示するかどうか（デフォルト: `true`）
+- `toolbar?: boolean` - ツールバーを表示するかどうか（デフォルト: `true`）※notebookプリセットでは無視されます
+- `brushbar?: boolean` - ブラシバーを表示するかどうか（デフォルト: `true`）※notebookプリセットでは無視されます
 - `defaultCustomBrush?: boolean` - デフォルトのカスタムブラシを使用するかどうか（デフォルト: `true`）
 - `backgroundSize?: number` - 背景グリッドのサイズ（ピクセル）（デフォルト: `20`）
 
