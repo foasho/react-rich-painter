@@ -50,7 +50,7 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     stabilizeWeight,
   } = useBrushBarStore();
 
-  const { isLayerPanelOpen } = useUiStore();
+  const { isLayerPanelOpen, inputType } = useUiStore();
 
   // autoSizeがfalseの場合、widthとheightが必須であることをチェック
   useEffect(() => {
@@ -153,6 +153,19 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
     painter.setToolStabilizeLevel(stabilizeLevel);
     painter.setToolStabilizeWeight(stabilizeWeight);
   }, [painter, spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight]);
+
+  // 入力タイプが変更されたときにBrushを更新
+  useEffect(() => {
+    if (!painter) return;
+
+    const brush = painter.getBrush();
+    if (!brush) return;
+
+    // InputType ('pen' | 'mouse' | 'touch') を
+    // UserSelectInputType ('pen' | 'mouse' | 'finger') に変換
+    const userSelectInputType = inputType === 'touch' ? 'finger' : inputType;
+    brush.setUserSelectInputType(userSelectInputType);
+  }, [painter, inputType]);
 
   // デフォルトカスタムブラシの読み込み
   useEffect(() => {
