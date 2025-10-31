@@ -1,20 +1,21 @@
 import React from 'react';
 import { WrapperContext } from './WrapperContext';
-import { ColorPallet, CustomBrushSelector, Opacity, Sizer } from './brushbars';
+import { ColorPallet, Sizer } from './brushbars';
+import { BrushType, Eraser } from './toolbars';
 
-type BrushBarProps = {
+type NotebookBarProps = {
   linePx?: number;
 }
 
-const BrushBar = (
-  { linePx = 40 }: BrushBarProps
+const NotebookBar = (
+  { linePx = 40 }: NotebookBarProps
 ) => {
 
   return (
     <WrapperContext
       vertical={true} // 縦方向に並べる
       withHandle={true} // ハンドルを有効にする
-      draggableId="brushbar" // 一意なIDを設定
+      draggableId="notebookbar" // 一意なIDを設定
       style={{ top: '100px', left: '10px' }} // 初期位置
       linePx={linePx}
     >
@@ -26,13 +27,15 @@ const BrushBar = (
         height: '100%', // WrapperContext の高さに応じて調整
         gap: '5px',
       }}>
-        <CustomBrushSelector size={30} />
+        <BrushType />
+        <Eraser />
+        {/* ブラシサイズ */}
         <Sizer sliderLength={120} />
-        <Opacity sliderLength={120} />
+        {/* カラーパレット */}
         <ColorPallet size={30} />
       </div>
     </WrapperContext>
   );
 }
 
-export { BrushBar };
+export { NotebookBar };

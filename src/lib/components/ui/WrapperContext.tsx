@@ -22,11 +22,13 @@ type WrapperStyleProps = {
 
 type WrapperContextProps = {
   children: React.ReactNode;
+  initialPosition?: { x: number; y: number };
 } & WrapperStyleProps & WrapperContextStyleProps;
 
 const WrapperContext = (
-  { 
+  {
     children,
+    initialPosition = { x: 0, y: 0 },
     withHandle = true,
     draggableId = "rich_painter",
     vertical = false,
@@ -34,29 +36,59 @@ const WrapperContext = (
     width = '50%',
     height = '50%',
     linePx = 40,
-    // padding = '10px',
     backgroundColor = '#121212',
     wrapperBgColor = '#FFFFFF88',
     style = {},
   }: WrapperContextProps
 ) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  // localStorageから位置を読み込む
+  const getInitialPosition = () => {
+    if (typeof window === 'undefined') return initialPosition;
+
+    try {
+      const storageKey = `wrapper-position-${draggableId}`;
+      const savedPosition = localStorage.getItem(storageKey);
+      if (savedPosition) {
+        return JSON.parse(savedPosition);
+      }
+    } catch (error) {
+      console.error('Failed to load position from localStorage:', error);
+    }
+    return initialPosition;
+  };
+
+  const [position, setPosition] = useState(getInitialPosition);
+
+  // positionが変更されたらlocalStorageに保存
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const storageKey = `wrapper-position-${draggableId}`;
+      localStorage.setItem(storageKey, JSON.stringify(position));
+    } catch (error) {
+      console.error('Failed to save position to localStorage:', error);
+    }
+  }, [position, draggableId]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { delta } = event;
-    setPosition((prev) => ({
+    setPosition((prev: { x: number, y: number }) => ({
       x: prev.x + (delta?.x || 0),
       y: prev.y + (delta?.y || 0),
     }));
   };
 
-  // verticalがtrueの場合には、widthが50px固定値
+  // verticalがtrueの場合には、widthが固定値、heightは自動
+  // verticalがfalseの場合には、heightが固定値、widthは自動
   let fixedWidth = width;
   let fixedHeight = height;
   if (vertical) {
     fixedWidth = `${linePx}px`;
+    fixedHeight = 'auto'; // 子要素のサイズに応じて自動調整
   } else {
     fixedHeight = `${linePx}px`;
+    fixedWidth = 'auto'; // 子要素のサイズに応じて自動調整
   }
 
   return (

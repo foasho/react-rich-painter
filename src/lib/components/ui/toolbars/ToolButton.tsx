@@ -11,7 +11,6 @@ type ToolButtonProps = {
 
 /**
  * ツールボタンの共通コンポーネント
- * Clean Code原則：DRY（Don't Repeat Yourself）に従い、共通ロジックを抽出
  */
 const ToolButton: React.FC<ToolButtonProps> = ({
   toolType,
@@ -25,7 +24,7 @@ const ToolButton: React.FC<ToolButtonProps> = ({
 
   const handleClick = () => {
     setTool(toolType);
-    const brush = painter.getBrush();
+    const brush = painter!.getBrush();
     if (brush) {
       brush.setToolType(toolType === 'lasso' ? 'rect' : toolType);
     }
@@ -44,8 +43,7 @@ const ToolButton: React.FC<ToolButtonProps> = ({
     justifyContent: 'center',
     cursor: 'pointer',
     backgroundColor: isActive ? '#4a90e2' : 'transparent',
-    borderRadius: '4px',
-    padding: '5px',
+    borderRadius: '16px',
     transition: 'background-color 0.2s',
   };
 

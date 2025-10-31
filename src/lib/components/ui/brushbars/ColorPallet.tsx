@@ -52,7 +52,8 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
     backgroundColor: color,
     borderRadius: '50%',
     cursor: 'pointer',
-    border: '2px solid #fff',  
+    border: '2px solid #fff',
+    boxSizing: "border-box"  
   };
 
   const hiddenInputStyle: React.CSSProperties = {

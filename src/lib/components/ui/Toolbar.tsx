@@ -17,14 +17,14 @@ const ToolBar = (
       style={{ top: '10px', left: '100px' }} // 初期位置
       linePx={linePx} // ドラッグ時の移動量
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '3px' }}>
         {/** Left */}
         <div
           style={{
             display: 'flex',
             // flexDirection: 'column',
             alignItems: 'center', // アイコンを中央揃え
-            gap: '10px', // アイコン間のスペースを設定
+            gap: '5px', // アイコン間のスペースを設定
           }}
         >
           <Config />
@@ -35,9 +35,10 @@ const ToolBar = (
         <div
           style={{
             display: 'flex',
+            marginLeft: "20px",
             // flexDirection: 'column',
             alignItems: 'center', // アイコンを中央揃え
-            gap: '10px', // アイコン間のスペースを設定
+            gap: '3px', // アイコン間のスペースを設定
           }}
         >
           <BrushType />

@@ -88,6 +88,10 @@ const Config = (
         'Stabilizer Weight': DEFAULT_BRUSH_SETTINGS.stabilizeWeight,
       });
     }),
+    '閉じる': button(() => {
+      // Levaパネルを閉じる
+      setIsOpen(false);
+    }),
   }), [spacing, flow, merge, minimumSize, stabilizeLevel, stabilizeWeight]);
 
   // Levaの値が変更されたときにストアとPainter/Brushを更新
@@ -145,7 +149,7 @@ const Config = (
       <Leva
         hidden={!isOpen}
         collapsed={false}
-        titleBar={{ title: '詳細設定', drag: true }}
+        titleBar={{ title: '詳細設定', drag: true, filter: false }}
       />
     </>
   );
