@@ -4,13 +4,18 @@
   - Simple Rich Painter
     - Vite
     - 📁 `simple-painter/`
-- [] 2.Handwritten Dairy
-  - DB less Sample Dairy
+- [x] 2.Handwritten Diary
+  - DB less Sample Diary
     - Next.js
+    - 📁 `handwritten-diary/`
 - [] 3.WhiteBoard
   - P2P Notebook
     - Next.js
     - Skyway
+      - docs: https://skyway.ntt.com/ja/docs/user-guide/javascript-sdk/
+    - Redis
+      -.env
+        - REDIS_URL="..."
 - [] 4.Live Painting
   - SFU Canvas Sharing
     - Next.js
