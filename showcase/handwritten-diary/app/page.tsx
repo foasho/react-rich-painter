@@ -30,7 +30,7 @@ export default function Home() {
         backdropFilter: 'blur(8px)'
       }}>
         <div style={{ 
-          maxWidth: '896px', 
+          maxWidth: '1152px', 
           margin: '0 auto', 
           padding: '20px 24px',
           display: 'flex',
@@ -67,7 +67,7 @@ export default function Home() {
       </header>
 
       {/* メインコンテンツ */}
-      <main style={{ maxWidth: '896px', margin: '0 auto', padding: '40px 24px' }}>
+      <main style={{ maxWidth: '1152px', margin: '0 auto', padding: '40px 24px' }}>
         {!isLoaded ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
             <div style={{ 
@@ -133,7 +133,7 @@ export default function Home() {
 
       {/* フッター */}
       <footer style={{ borderTop: '1px solid #e4e4e7' }}>
-        <div style={{ maxWidth: '896px', margin: '0 auto', padding: '16px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '16px 24px', textAlign: 'center' }}>
           <p style={{ fontSize: '12px', color: '#a1a1aa' }}>
             Powered by{' '}
             <a

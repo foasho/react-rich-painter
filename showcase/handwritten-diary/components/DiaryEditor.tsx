@@ -65,45 +65,114 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-zinc-50">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#fafafa' }}>
       {/* ヘッダー */}
-      <header className="flex-shrink-0 px-4 py-3 border-b border-zinc-200 bg-white">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <header style={{ 
+        flexShrink: 0,
+        padding: '16px 24px',
+        borderBottom: '1px solid #e4e4e7',
+        backgroundColor: '#fff'
+      }}>
+        <div style={{ 
+          maxWidth: '1152px', 
+          margin: '0 auto', 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px'
+        }}>
           <button
             onClick={handleBack}
-            className="p-2 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors"
+            style={{
+              padding: '8px',
+              color: '#71717a',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#18181b';
+              e.currentTarget.style.backgroundColor = '#f4f4f5';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#71717a';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <div className="flex-1 flex items-center gap-4">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px' }}>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="タイトルを入力..."
-              className="flex-1 bg-transparent border-none text-base font-medium text-zinc-900 placeholder-zinc-400 focus:outline-none"
+              style={{
+                flex: 1,
+                backgroundColor: 'transparent',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: 500,
+                color: '#18181b',
+                outline: 'none'
+              }}
             />
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="bg-zinc-100 border border-zinc-200 rounded-lg px-3 py-1.5 text-sm text-zinc-700 focus:outline-none focus:border-zinc-400"
+              style={{
+                backgroundColor: '#f4f4f5',
+                border: '1px solid #e4e4e7',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '14px',
+                color: '#3f3f46',
+                outline: 'none'
+              }}
             />
           </div>
 
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#18181b',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: 500,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              opacity: isSaving ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              if (!isSaving) {
+                e.currentTarget.style.backgroundColor = '#27272a';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSaving) {
+                e.currentTarget.style.backgroundColor = '#18181b';
+              }
+            }}
           >
             {isSaving ? (
               <>
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} fill="none" viewBox="0 0 24 24">
+                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
                 保存中
               </>
@@ -115,7 +184,7 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
       </header>
 
       {/* キャンバスエリア */}
-      <main className="flex-1 overflow-hidden bg-white" ref={canvasContainerRef}>
+      <main style={{ flex: 1, overflow: 'hidden', backgroundColor: '#fff' }} ref={canvasContainerRef}>
         {isClient && (
           <ReactRichPainter
             autoSize={true}
