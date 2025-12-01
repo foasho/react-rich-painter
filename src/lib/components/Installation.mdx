@@ -1,0 +1,217 @@
+import { Meta, Source } from '@storybook/blocks';
+
+<Meta title="Getting Started/Installation" />
+
+# Installation
+
+## パッケージのインストール
+
+npm、yarn、pnpmのいずれかを使用してインストールできます。
+
+### npm
+
+```bash
+npm install react-rich-painter
+```
+
+### yarn
+
+```bash
+yarn add react-rich-painter
+```
+
+### pnpm
+
+```bash
+pnpm add react-rich-painter
+```
+
+## Peer Dependencies
+
+以下のパッケージがpeer dependenciesとして必要です（通常のReactプロジェクトでは既にインストール済みの場合が多いです）：
+
+```bash
+npm install react react-dom
+```
+
+---
+
+# 基本的な使い方
+
+## シンプルな例
+
+```tsx
+import { ReactRichPainter } from 'react-rich-painter';
+
+function App() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter />
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Paintingプリセット（デフォルト）
+
+フル機能のペイントツールを使用する場合：
+
+```tsx
+import { ReactRichPainter } from 'react-rich-painter';
+
+function PaintingApp() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter
+        autoSize={true}
+        preset="painting"
+        toolbar={true}
+        brushbar={true}
+        defaultCustomBrush={true}
+      />
+    </div>
+  );
+}
+```
+
+## Notebookプリセット
+
+シンプルなメモ・スケッチ用途の場合：
+
+```tsx
+import { ReactRichPainter } from 'react-rich-painter';
+
+function NotebookApp() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter
+        autoSize={true}
+        preset="notebook"
+        toolbar={false}
+        brushbar={false}
+      />
+    </div>
+  );
+}
+```
+
+## 固定サイズで使用
+
+```tsx
+import { ReactRichPainter } from 'react-rich-painter';
+
+function FixedSizeApp() {
+  return (
+    <div style={{ width: '800px', height: '600px' }}>
+      <ReactRichPainter
+        autoSize={false}
+        width={800}
+        height={600}
+        preset="painting"
+      />
+    </div>
+  );
+}
+```
+
+---
+
+# Props リファレンス
+
+<table>
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>autoSize</code></td>
+      <td><code>boolean</code></td>
+      <td><code>true</code></td>
+      <td>親要素のサイズから自動的にキャンバスサイズを決定</td>
+    </tr>
+    <tr>
+      <td><code>preset</code></td>
+      <td><code>'painting' | 'notebook'</code></td>
+      <td><code>'painting'</code></td>
+      <td>プリセット設定</td>
+    </tr>
+    <tr>
+      <td><code>width</code></td>
+      <td><code>number</code></td>
+      <td><code>800</code></td>
+      <td>キャンバスの幅（autoSize=falseの場合）</td>
+    </tr>
+    <tr>
+      <td><code>height</code></td>
+      <td><code>number</code></td>
+      <td><code>600</code></td>
+      <td>キャンバスの高さ（autoSize=falseの場合）</td>
+    </tr>
+    <tr>
+      <td><code>toolbar</code></td>
+      <td><code>boolean</code></td>
+      <td><code>true</code></td>
+      <td>ツールバーを表示するかどうか</td>
+    </tr>
+    <tr>
+      <td><code>brushbar</code></td>
+      <td><code>boolean</code></td>
+      <td><code>true</code></td>
+      <td>ブラシバーを表示するかどうか</td>
+    </tr>
+    <tr>
+      <td><code>defaultCustomBrush</code></td>
+      <td><code>boolean</code></td>
+      <td><code>true</code></td>
+      <td>デフォルトのカスタムブラシを使用</td>
+    </tr>
+    <tr>
+      <td><code>backgroundSize</code></td>
+      <td><code>number</code></td>
+      <td><code>20</code></td>
+      <td>背景タイルの大きさ（ピクセル）</td>
+    </tr>
+    <tr>
+      <td><code>showFileMenu</code></td>
+      <td><code>boolean</code></td>
+      <td><code>false</code></td>
+      <td>FileMenuを表示（Import/Export機能）</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+# Import/Export機能
+
+`showFileMenu={true}` を設定すると、描画状態の保存・復元機能が使用できます。
+
+```tsx
+import { ReactRichPainter } from 'react-rich-painter';
+
+function AppWithFileMenu() {
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactRichPainter
+        autoSize={true}
+        preset="painting"
+        showFileMenu={true}
+      />
+    </div>
+  );
+}
+```
+
+FileMenuからは以下の操作が可能です：
+
+- **ファイルを開く** - 保存したJSONファイルを読み込み
+- **エクスポート** - 描画状態をJSONファイルとして保存
+- **画像を保存** - キャンバスをPNG画像として保存
+
