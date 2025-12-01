@@ -15,6 +15,7 @@ const BrushType: React.FC<BrushTypeProps> = ({ size = 20 }) => {
   const { painter } = usePainter();
 
   const handleBrushSelect = () => {
+    if (!painter) return;
     const brush = painter.getBrush();
     if (brush) {
       // 消しゴムから戻った場合に備えて、色を元に戻す

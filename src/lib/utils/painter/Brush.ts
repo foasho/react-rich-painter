@@ -16,7 +16,6 @@ class Brush {
   private toolType: BrushToolType = "pen";
   private isDrawTool: boolean = false;//描画系のツールかどうか
   private isFinger: boolean = false;
-  private isMerge: boolean = true;
   private merge: number = 0.2;
   private image: HTMLImageElement | null = null;
   private transformedImage: HTMLCanvasElement | null = null;
@@ -140,10 +139,8 @@ class Brush {
 
   public setMerge(value: number): void {
     if (value > 0) {
-      this.isMerge = true;
       this.merge = value;
     } else {
-      this.isMerge = false;
       this.merge = 0;
     }
   }
@@ -472,7 +469,7 @@ class Brush {
     }
   }
 
-  public up(context: CanvasRenderingContext2D, x: number, y: number, scale: number): { x: number; y: number; width: number; height: number } {
+  public up(_context: CanvasRenderingContext2D, _x: number, _y: number, _scale: number): { x: number; y: number; width: number; height: number } {
     return this.dirtyRect;
   }
 }

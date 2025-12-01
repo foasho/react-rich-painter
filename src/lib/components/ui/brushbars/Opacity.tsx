@@ -1,5 +1,5 @@
 import React from "react";
-import { VerticalSlider, VerticalSliderProps } from "./VerticalSlider";
+import { VerticalSlider } from "./VerticalSlider";
 import { usePainter } from "../../PainterContext";
 
 type OpacityProps = {
@@ -16,6 +16,7 @@ const Opacity: React.FC<OpacityProps> = ({ width = 30, sliderLength = 150 }) => 
   const { painter } = usePainter();
 
   const handleOpacityChange = (value: number) => {
+    if (!painter) return;
     // 0-100の値を0-1の範囲に変換
     const opacity = value / 100;
 

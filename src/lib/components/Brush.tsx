@@ -4,7 +4,7 @@ import { RichPainter } from '../utils';
 type BrushProps = {
   painter: RichPainter;
 };
-const Brush = memo(({ painter }: BrushProps) => {
+const Brush = memo(({ painter: _painter }: BrushProps) => {
 
   return <></>
 });

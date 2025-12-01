@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { restrictToParentElement } from '@dnd-kit/modifiers';
 import { Wrapper } from './Wrapper';
 
 type WrapperContextStyleProps = {

@@ -121,9 +121,9 @@ export const createAlphaThresholdBorder = (
 
 export const createBrushPointer = (
   brushImage: HTMLImageElement | null,
-  v_canvas: HTMLCanvasElement,
+  _v_canvas: HTMLCanvasElement,
   brushSize: number,
-  brushAngle: number,
+  _brushAngle: number,
   threshold: number,
   antialias: boolean
 ): HTMLCanvasElement => {
@@ -197,10 +197,10 @@ export const createFloodFill = (
     let west = nx;
     let east = nx;
     do {
-      const wc = getColor(--west, ny);
+      getColor(--west, ny);
     } while (west >= 0 && getColor(west, ny) === targetColor);
     do {
-      const ec = getColor(++east, ny);
+      getColor(++east, ny);
     } while (east < w && getColor(east, ny) === targetColor);
     for (let i = west + 1; i < east; ++i) {
       rd[(ny * w + i) * 4] = 1;

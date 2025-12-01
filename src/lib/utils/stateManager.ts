@@ -13,7 +13,6 @@ export const exportPainterState = (painter: RichPainter): PainterState => {
   const layerNameStore = useLayerNameStore.getState();
   const toolStore = useToolStore.getState();
   const uiStore = useUiStore.getState();
-  const brushBarStore = useBrushBarStore.getState();
 
   // キャンバスサイズを取得
   const canvasSize = painter.getCanvasSize();

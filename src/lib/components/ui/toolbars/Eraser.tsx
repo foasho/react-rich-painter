@@ -16,6 +16,7 @@ const Eraser: React.FC<EraserProps> = ({ size = 20 }) => {
   const savedColorRef = React.useRef<string>('#000000');
 
   const handleEraserSelect = () => {
+    if (!painter) return;
     const brush = painter.getBrush();
     if (brush) {
       // 現在の色を保存

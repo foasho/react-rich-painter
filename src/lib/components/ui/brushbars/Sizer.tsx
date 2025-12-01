@@ -1,5 +1,5 @@
 import React from "react";
-import { VerticalSlider, VerticalSliderProps } from "./VerticalSlider";
+import { VerticalSlider } from "./VerticalSlider";
 import { usePainter } from "../../PainterContext";
 
 type SizerProps = {
@@ -11,6 +11,7 @@ const Sizer: React.FC<SizerProps> = ({ width = 30, sliderLength = 150 }) => {
   const { painter } = usePainter();
 
   const handleSizeChange = (value: number) => {
+    if (!painter) return;
     const brush = painter.getBrush();
     if (brush) {
       // 値を1-100の範囲にマッピング

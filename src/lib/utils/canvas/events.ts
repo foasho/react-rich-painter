@@ -80,7 +80,7 @@ const canvasPointerDown = (
   {
     e,
     painter,
-    brush,
+    brush: _brush,
   }: CanvasPointerDownProps
 ) => {
   const newEvent = setPointerEvent(e);
@@ -150,7 +150,7 @@ function canvasPointerUp(
   {
     e,
     painter,
-    brush,
+    brush: _brush,
     canvasArea,
     isDrawStatus=true,
   }: CanvasPointerUpProps
@@ -170,7 +170,7 @@ function canvasPointerUp(
           }, 3000);
 
       //  カラーヒストリーに保存する
-      const hex = brush.getColor();
+      // const hex = brush.getColor();
   }
   painter.up(pointerPosition.x, pointerPosition.y, newEvent.pointerType === "pen" ? newEvent.pressure : 1);
 }

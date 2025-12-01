@@ -187,6 +187,8 @@ const SelectionOverlay: React.FC<SelectionOverlayProps> = ({ width, height }) =>
         ctx.clearRect(0, 0, width, height);
       };
     }
+
+    return undefined;
   }, [selectionPath, isSelecting, hasSelection, selectedImageData, selectionOffset, isMovingSelection, width, height]);
 
   const canvasStyle: React.CSSProperties = {

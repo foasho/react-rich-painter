@@ -639,22 +639,6 @@ class RichPainter {
     );
   }
 
-  private setColor(
-    x: number,
-    y: number,
-    w: number,
-    d: Uint8ClampedArray,
-    r: number,
-    g: number,
-    b: number,
-    a: number
-  ): void {
-    var index = (y * w + x) * 4;
-    d[index] = r;
-    d[index + 1] = g;
-    d[index + 2] = b;
-    d[index + 3] = a;
-  }
 
   public floodFill(
     x: number,
@@ -1096,8 +1080,6 @@ class RichPainter {
   private isDrawing: boolean = false;
   private isStabilizing: boolean = false;
   private beforeKnockout = document.createElement("canvas");
-  private knockoutTick: any;
-  private knockoutInterval = 20;
 
   public gotoBeforeKnockout(): void {
     const context = this.getLayerContext(this.layerIndex);
