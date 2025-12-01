@@ -15,8 +15,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
       react-rich-painter:
-        specifier: ^0.0.2
-        version: 0.0.2(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)
+        specifier: ^0.0.5
+        version: 0.0.5(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
@@ -1361,9 +1361,12 @@ packages:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
     engines: {node: '>=0.10.0'}
 
-  react-rich-painter@0.0.2:
-    resolution: {integrity: sha512-LHPThnLKRy2NJ0Xw+PgXqTheNSwocWoznkfOvs/eYZ75laC1VVQB3RXp6sLdy8QOaVof6ofsYLralxF14IEPVQ==}
+  react-rich-painter@0.0.5:
+    resolution: {integrity: sha512-KM7cZh/FU8l2YdwYpnXLiYeZqcpgcyzlHMCZtj3nFPehcwT70rYsj6zMkZc/qrpwYTqRzaoMZ37XAJSsT4ZaWw==}
     engines: {node: '>=22'}
+    peerDependencies:
+      react: ^19.0.0
+      react-dom: ^19.0.0
 
   react@19.2.0:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
@@ -2788,7 +2791,7 @@ snapshots:
 
   react-refresh@0.18.0: {}
 
-  react-rich-painter@0.0.2(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7):
+  react-rich-painter@0.0.5(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@dnd-kit/modifiers': 9.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
