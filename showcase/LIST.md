@@ -1,16 +1,17 @@
 ## [WIP] Showcases
 
-- Simple Painter
+- [x] 1.Simple Painter
   - Simple Rich Painter
     - Vite
-- Handwritten Dairy
+    - 📁 `simple-painter/`
+- [] 2.Handwritten Dairy
   - DB less Sample Dairy
     - Next.js
-- WhiteBoard
+- [] 3.WhiteBoard
   - P2P Notebook
     - Next.js
     - Skyway
-- Live Painting
+- [] 4.Live Painting
   - SFU Canvas Sharing
     - Next.js
     - Vercel Postgres
