@@ -14,7 +14,6 @@ import {
 // SSRを無効化してreact-rich-painterをインポート
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ReactRichPainter = dynamic<any>(
-  // @ts-expect-error - react-rich-painter has no type declarations
   () => import('react-rich-painter').then(mod => mod.ReactRichPainter),
   { ssr: false }
 );
@@ -39,7 +38,10 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
   const initialState = useMemo(() => {
     if (entry?.painterState) {
       try {
-        return JSON.parse(entry.painterState) as PainterState;
+        const parsed = JSON.parse(entry.painterState) as PainterState;
+        // 初期状態をrefにも設定（何も描かずに保存した場合のため）
+        painterStateRef.current = parsed;
+        return parsed;
       } catch (error) {
         console.error('Failed to parse painterState:', error);
         return undefined;
