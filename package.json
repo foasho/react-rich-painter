@@ -1,7 +1,7 @@
 {
   "name": "react-rich-painter",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.6",
   "publishConfig": {
     "access": "public"
   },
@@ -20,7 +20,14 @@
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
-  "types": "types/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -31,7 +38,7 @@
   ],
   "scripts": {
     "prebuild": "rimraf dist && npm run typegen",
-    "prepublishOnly": "npm run build && npm version patch",
+    "prepublishOnly": "npm run build",
     "dev": "vite",
     "build": "vite build && tsc",
     "eslint": "eslint --fix .",
@@ -45,14 +52,16 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "es-toolkit": "^1.41.0",
     "leva": "^0.10.0",
     "lodash-es": "^4.17.21",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "react-icons": "^5.4.0",
     "styled-components": "^6.1.13",
     "zustand": "^5.0.2"
@@ -68,6 +77,8 @@
     "@storybook/react-vite": "^8.4.7",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
     "@vitejs/plugin-react-swc": "^3.7.2",

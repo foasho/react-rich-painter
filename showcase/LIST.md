@@ -1,16 +1,22 @@
 ## [WIP] Showcases
 
-- Simple Painter
+- [x] 1.Simple Painter
   - Simple Rich Painter
     - Vite
-- Handwritten Dairy
-  - DB less Sample Dairy
+    - 📁 `simple-painter/`
+- [x] 2.Handwritten Diary
+  - DB less Sample Diary
     - Next.js
-- WhiteBoard
+    - 📁 `handwritten-diary/`
+- [] 3.WhiteBoard
   - P2P Notebook
     - Next.js
     - Skyway
-- Live Painting
+      - docs: https://skyway.ntt.com/ja/docs/user-guide/javascript-sdk/
+    - Redis
+      -.env
+        - REDIS_URL="..."
+- [] 4.Live Painting
   - SFU Canvas Sharing
     - Next.js
     - Vercel Postgres
