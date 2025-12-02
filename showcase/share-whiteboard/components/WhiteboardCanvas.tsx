@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { SkyWayContext, SkyWayRoom, LocalP2PRoomMember, RemoteRoomMember, RoomPublication } from '@skyway-sdk/room';
+import { SkyWayContext, SkyWayRoom, LocalP2PRoomMember, RoomMember } from '@skyway-sdk/room';
 import type {
   PainterHandle,
   StrokeStartData,
@@ -184,13 +184,12 @@ export default function WhiteboardCanvas({
     return () => {
       // クリーンアップ
       memberRef.current?.leave();
-      roomRef.current?.close();
       contextRef.current?.dispose();
     };
   }, [isClient, roomId, userName, userColor, skywayToken]);
 
   // 受信メッセージの処理
-  const handleReceivedMessage = useCallback((data: unknown, publisher: RemoteRoomMember | undefined) => {
+  const handleReceivedMessage = useCallback((data: unknown, publisher: RoomMember | undefined) => {
     if (!publisher) return;
     
     try {

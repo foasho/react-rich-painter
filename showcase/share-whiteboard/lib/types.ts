@@ -84,7 +84,6 @@ export type {
   StrokeStartData,
   StrokeMoveData,
   StrokeEndData,
-  WhiteboardMessage,
   PainterState,
 } from 'react-rich-painter';
 
