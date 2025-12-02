@@ -1,13 +1,20 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { DiaryEntry, saveDiaryEntry, generateId } from '@/lib/storage';
+import { 
+  DiaryEntry, 
+  saveDiaryEntry, 
+  generateId, 
+  generatePreviewFromState,
+  PainterState
+} from '@/lib/storage';
 
 // SSRを無効化してreact-rich-painterをインポート
-const ReactRichPainter = dynamic(
-  // @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ReactRichPainter = dynamic<any>(
+  // @ts-expect-error - react-rich-painter has no type declarations
   () => import('react-rich-painter').then(mod => mod.ReactRichPainter),
   { ssr: false }
 );
@@ -22,22 +29,43 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
   const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0]);
   const [isSaving, setIsSaving] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const painterStateRef = useRef<PainterState | null>(null);
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  // 既存エントリからPainterStateを復元
+  const initialState = useMemo(() => {
+    if (entry?.painterState) {
+      try {
+        return JSON.parse(entry.painterState) as PainterState;
+      } catch (error) {
+        console.error('Failed to parse painterState:', error);
+        return undefined;
+      }
+    }
+    return undefined;
+  }, [entry?.painterState]);
+
+  // 描画状態の更新を追跡
+  const handlePainterUpdate = useCallback((state: PainterState) => {
+    painterStateRef.current = state;
   }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
 
     try {
-      // キャンバスから画像データを取得
-      const canvas = canvasContainerRef.current?.querySelector('canvas');
       let imageData = '';
-      
-      if (canvas) {
-        imageData = canvas.toDataURL('image/png');
+      let painterStateJson = '';
+
+      // PainterStateから画像データとJSON状態を取得
+      if (painterStateRef.current) {
+        // プレビュー画像を生成
+        imageData = await generatePreviewFromState(painterStateRef.current);
+        // PainterStateをJSON化して保存（再編集用）
+        painterStateJson = JSON.stringify(painterStateRef.current);
       }
 
       const diaryEntry: DiaryEntry = {
@@ -45,6 +73,7 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
         title: title || `${date}の日記`,
         date,
         imageData,
+        painterState: painterStateJson,
         createdAt: entry?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -116,7 +145,7 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
       </header>
 
       {/* キャンバスエリア */}
-      <main className="flex-1 overflow-hidden bg-white" ref={canvasContainerRef}>
+      <main className="flex-1 overflow-hidden bg-white">
         {isClient && (
           <ReactRichPainter
             autoSize={true}
@@ -125,6 +154,8 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
             brushbar={false}
             defaultCustomBrush={false}
             backgroundSize={25}
+            onUpdate={handlePainterUpdate}
+            initialState={initialState}
           />
         )}
       </main>
