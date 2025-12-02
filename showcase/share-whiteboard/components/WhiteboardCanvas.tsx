@@ -157,10 +157,9 @@ export default function WhiteboardCanvas({
           return;
         }
 
-        // ルームに参加（名前の重複を避けるためuserIdの一部を追加）
-        const uniqueMemberName = `${userName}_${userId.slice(0, 8)}`;
+        // ルームに参加（SkyWayは英数字のみ許可のため、userIdをメンバー名として使用）
         const member = await room.join({
-          name: uniqueMemberName,
+          name: `member_${userId.replace(/-/g, '').slice(0, 12)}`,
           metadata: JSON.stringify({ color: userColor, displayName: userName }),
         });
         memberRef.current = member;
