@@ -157,10 +157,11 @@ export default function WhiteboardCanvas({
           return;
         }
 
-        // ルームに参加
+        // ルームに参加（名前の重複を避けるためuserIdの一部を追加）
+        const uniqueMemberName = `${userName}_${userId.slice(0, 8)}`;
         const member = await room.join({
-          name: userName,
-          metadata: JSON.stringify({ color: userColor }),
+          name: uniqueMemberName,
+          metadata: JSON.stringify({ color: userColor, displayName: userName }),
         });
         memberRef.current = member;
 
@@ -189,9 +190,11 @@ export default function WhiteboardCanvas({
           setRemoteUsers(prev => {
             if (prev.some(u => u.id === newMember.id)) return prev;
             const metadata = newMember.metadata ? JSON.parse(newMember.metadata) : {};
+            // displayNameがあればそれを使用、なければSkyWayのname（_以前の部分）を使用
+            const displayName = metadata.displayName || (newMember.name?.split('_')[0]) || 'Unknown';
             return [...prev, {
               id: newMember.id,
-              name: newMember.name || 'Unknown',
+              name: displayName,
               color: metadata.color || '#888888',
               isDrawing: false,
               layerIndex: 0,
@@ -213,27 +216,66 @@ export default function WhiteboardCanvas({
           if (publication.contentType !== 'data') return;
           if (publication.publisher?.id === member.id) return;
           
-          const { stream } = await member.subscribe(publication.id);
-          // RemoteDataStreamのonDataイベントでデータを受信
-          stream.onData.add((data: string) => {
-            handleReceivedMessage(data, publication.publisher);
-          });
+          try {
+            const { stream } = await member.subscribe(publication.id);
+            // RemoteDataStreamのonDataイベントでデータを受信
+            stream.onData.add((data: string) => {
+              handleReceivedMessage(data, publication.publisher);
+            });
+          } catch (err) {
+            // publisher already left room などのエラーは無視
+            console.warn('Failed to subscribe to publication:', err);
+          }
         };
 
         // 新しいストリームの購読を監視
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         room.onStreamPublished.add(async ({ publication }: any) => {
           await subscribeToDataStream(publication);
+          
+          // 新しいメンバーのストリームが公開されたら、現在の状態を送信
+          // （ホストまたは最初のメンバーとして）
+          setTimeout(() => {
+            const state = painterRef.current?.exportState();
+            if (state && sendMessageRef.current) {
+              console.log('Sending canvas state to new member');
+              sendMessageRef.current({ type: 'sync_response', data: state });
+            }
+          }, 500);
         });
 
-        // 既存のストリームを購読
+        // 既存のストリームを購読（エラーは個別に処理）
         for (const publication of room.publications) {
           await subscribeToDataStream(publication);
         }
 
+        // 既存メンバーがいる場合、キャンバス状態の同期をリクエスト
+        const otherMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        if (otherMembers.length > 0) {
+          // 少し待ってから同期リクエストを送信（ストリーム確立のため）
+          setTimeout(() => {
+            if (sendMessageRef.current) {
+              console.log('Requesting canvas sync from existing members');
+              sendMessageRef.current({ type: 'sync_request', userId });
+            }
+          }, 1000);
+        }
+
       } catch (error) {
         console.error('Failed to connect to SkyWay:', error);
-        setConnectionError('接続に失敗しました。再度お試しください。');
+        
+        // ルームが空または無効な場合、Redisからルームを削除
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('left room') || errorMessage.includes('not found')) {
+          try {
+            await fetch(`/api/rooms/${roomId}`, { method: 'DELETE' });
+            setConnectionError('このルームは終了しました。ホームに戻ってください。');
+          } catch {
+            setConnectionError('接続に失敗しました。');
+          }
+        } else {
+          setConnectionError('接続に失敗しました。再度お試しください。');
+        }
       }
     };
 
@@ -241,6 +283,18 @@ export default function WhiteboardCanvas({
 
     return () => {
       cleanup = true;
+      
+      // 退出時に自分が最後のメンバーかチェックしてルームを削除
+      const room = roomRef.current;
+      const member = memberRef.current;
+      if (room && member) {
+        const otherMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        if (otherMembers.length === 0) {
+          // 最後のメンバーの場合、Redisからルームを削除
+          fetch(`/api/rooms/${roomId}`, { method: 'DELETE' }).catch(() => {});
+        }
+      }
+      
       memberRef.current?.leave();
       contextRef.current?.dispose();
     };
