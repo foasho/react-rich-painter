@@ -8,14 +8,17 @@
   - DB less Sample Diary
     - Next.js
     - 📁 `handwritten-diary/`
-- [] 3.WhiteBoard
+- [x] 3.Share WhiteBoard
   - P2P Notebook
     - Next.js
     - Skyway
       - docs: https://skyway.ntt.com/ja/docs/user-guide/javascript-sdk/
     - Redis
-      -.env
-        - REDIS_URL="..."
+    - 📁 `share-whiteboard/`
+    - `.env` 必要項目:
+      - `SKYWAY_APP_ID`
+      - `SKYWAY_SECRET_KEY`
+      - `REDIS_URL`
 - [] 4.Live Painting
   - SFU Canvas Sharing
     - Next.js
