@@ -22,6 +22,13 @@ import type {
   PainterHandle,
 } from '../types/ShareTypes';
 
+// ブラシ画像をバンドルに含める
+import brushB0 from '../assets/brush/b0.png';
+import brushB1 from '../assets/brush/b1.png';
+import brushB2 from '../assets/brush/b2.png';
+import brushB3 from '../assets/brush/b3.png';
+import brushB4 from '../assets/brush/b4.png';
+
 type ReactRichPainterProps = {
   width?: number;
   height?: number;
@@ -333,12 +340,13 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>((
   useEffect(() => {
     if (!defaultCustomBrush) return;
 
+    // バンドルされたブラシ画像を使用
     const brushPaths = [
-      '/brush/b0.png',
-      '/brush/b1.png',
-      '/brush/b2.png',
-      '/brush/b3.png',
-      '/brush/b4.png',
+      brushB0,
+      brushB1,
+      brushB2,
+      brushB3,
+      brushB4,
     ];
 
     const loadedImages: HTMLImageElement[] = [];

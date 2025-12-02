@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { SkyWayContext, SkyWayRoom, LocalP2PRoomMember, RoomMember } from '@skyway-sdk/room';
 import type {
   PainterHandle,
   StrokeStartData,
@@ -58,138 +57,26 @@ export default function WhiteboardCanvas({
   const [remoteUsers, setRemoteUsers] = useState<RemoteUser[]>([]);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   
-  // SkyWay関連
-  const contextRef = useRef<SkyWayContext | null>(null);
-  const roomRef = useRef<SkyWayRoom | null>(null);
-  const memberRef = useRef<LocalP2PRoomMember | null>(null);
-  const dataStreamRef = useRef<WritableStreamDefaultWriter | null>(null);
+  // SkyWay関連（any型で保持、動的インポートのため）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const contextRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const roomRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const memberRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dataStreamRef = useRef<any>(null);
+
+  // メッセージ送信関数をrefで保持
+  const sendMessageRef = useRef<((message: WhiteboardMessage) => void) | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // SkyWayに接続
-  useEffect(() => {
-    if (!isClient) return;
-
-    const connectToSkyWay = async () => {
-      try {
-        // SkyWayコンテキストを作成
-        const context = await SkyWayContext.Create(skywayToken);
-        contextRef.current = context;
-
-        // P2Pルームに参加または作成
-        const room = await SkyWayRoom.FindOrCreate(context, {
-          type: 'p2p',
-          name: roomId,
-        });
-        roomRef.current = room;
-
-        // ルームに参加
-        const member = await room.join({
-          name: userName,
-          metadata: JSON.stringify({ color: userColor }),
-        });
-        memberRef.current = member;
-
-        // DataStreamを公開
-        const dataStream = new WritableStream();
-        const writer = dataStream.getWriter();
-        dataStreamRef.current = writer;
-
-        await member.publish({
-          contentType: 'data',
-          // @ts-expect-error - SkyWay SDK type issue
-          data: dataStream,
-        });
-
-        setIsConnected(true);
-
-        // 既存のメンバーを取得
-        const existingMembers = room.members.filter(m => m.id !== member.id);
-        if (existingMembers.length > 0) {
-          // 既存メンバーに同期をリクエスト
-          // Note: 実際の実装では最初のメンバーからステートを取得
-        }
-
-        // 新しいメンバーの参加を監視
-        room.onMemberJoined.add(({ member: newMember }) => {
-          console.log('Member joined:', newMember.name);
-          setRemoteUsers(prev => {
-            if (prev.some(u => u.id === newMember.id)) return prev;
-            const metadata = newMember.metadata ? JSON.parse(newMember.metadata) : {};
-            return [...prev, {
-              id: newMember.id,
-              name: newMember.name || 'Unknown',
-              color: metadata.color || '#888888',
-              isDrawing: false,
-              layerIndex: 0,
-            }];
-          });
-        });
-
-        // メンバーの退出を監視
-        room.onMemberLeft.add(({ member: leftMember }) => {
-          console.log('Member left:', leftMember.name);
-          setRemoteUsers(prev => prev.filter(u => u.id !== leftMember.id));
-          painterRef.current?.clearRemoteUser(leftMember.id);
-        });
-
-        // データストリームの購読
-        room.onStreamPublished.add(async ({ publication }) => {
-          if (publication.contentType === 'data') {
-            const subscription = await member.subscribe(publication.id);
-            // @ts-expect-error - SkyWay SDK type issue
-            const stream = subscription.stream as ReadableStream;
-            const reader = stream.getReader();
-            
-            const readData = async () => {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                handleReceivedMessage(value, publication.publisher);
-              }
-            };
-            readData();
-          }
-        });
-
-        // 既存のストリームを購読
-        for (const publication of room.publications) {
-          if (publication.contentType === 'data' && publication.publisher?.id !== member.id) {
-            const subscription = await member.subscribe(publication.id);
-            // @ts-expect-error - SkyWay SDK type issue
-            const stream = subscription.stream as ReadableStream;
-            const reader = stream.getReader();
-            
-            const readData = async () => {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                handleReceivedMessage(value, publication.publisher);
-              }
-            };
-            readData();
-          }
-        }
-
-      } catch (error) {
-        console.error('Failed to connect to SkyWay:', error);
-        setConnectionError('接続に失敗しました。再度お試しください。');
-      }
-    };
-
-    connectToSkyWay();
-
-    return () => {
-      // クリーンアップ
-      memberRef.current?.leave();
-      contextRef.current?.dispose();
-    };
-  }, [isClient, roomId, userName, userColor, skywayToken]);
-
   // 受信メッセージの処理
-  const handleReceivedMessage = useCallback((data: unknown, publisher: RoomMember | undefined) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleReceivedMessage = useCallback((data: unknown, publisher: any) => {
     if (!publisher) return;
     
     try {
@@ -221,8 +108,8 @@ export default function WhiteboardCanvas({
         case 'sync_request':
           // 同期リクエストに応答
           const state = painterRef.current?.exportState();
-          if (state) {
-            sendMessage({ type: 'sync_response', data: state });
+          if (state && sendMessageRef.current) {
+            sendMessageRef.current({ type: 'sync_response', data: state });
           }
           break;
           
@@ -236,14 +123,132 @@ export default function WhiteboardCanvas({
     }
   }, []);
 
+  // SkyWayに接続
+  useEffect(() => {
+    if (!isClient) return;
+
+    let cleanup = false;
+
+    const connectToSkyWay = async () => {
+      try {
+        // SkyWay SDKを動的にインポート
+        const { SkyWayContext, SkyWayRoom } = await import('@skyway-sdk/room');
+
+        if (cleanup) return;
+
+        // SkyWayコンテキストを作成
+        const context = await SkyWayContext.Create(skywayToken);
+        contextRef.current = context;
+
+        if (cleanup) {
+          context.dispose();
+          return;
+        }
+
+        // P2Pルームに参加または作成
+        const room = await SkyWayRoom.FindOrCreate(context, {
+          type: 'p2p',
+          name: roomId,
+        });
+        roomRef.current = room;
+
+        if (cleanup) {
+          context.dispose();
+          return;
+        }
+
+        // ルームに参加
+        const member = await room.join({
+          name: userName,
+          metadata: JSON.stringify({ color: userColor }),
+        });
+        memberRef.current = member;
+
+        // SkyWayStreamFactoryを使用してDataStreamを作成
+        const { SkyWayStreamFactory } = await import('@skyway-sdk/core');
+        const dataStream = await SkyWayStreamFactory.createDataStream();
+        dataStreamRef.current = dataStream;
+
+        // メッセージ送信関数を設定
+        sendMessageRef.current = (message: WhiteboardMessage) => {
+          try {
+            dataStream.write(JSON.stringify(message));
+          } catch (error) {
+            console.error('Failed to send message:', error);
+          }
+        };
+
+        await member.publish(dataStream);
+
+        setIsConnected(true);
+
+        // 新しいメンバーの参加を監視
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        room.onMemberJoined.add(({ member: newMember }: any) => {
+          console.log('Member joined:', newMember.name);
+          setRemoteUsers(prev => {
+            if (prev.some(u => u.id === newMember.id)) return prev;
+            const metadata = newMember.metadata ? JSON.parse(newMember.metadata) : {};
+            return [...prev, {
+              id: newMember.id,
+              name: newMember.name || 'Unknown',
+              color: metadata.color || '#888888',
+              isDrawing: false,
+              layerIndex: 0,
+            }];
+          });
+        });
+
+        // メンバーの退出を監視
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        room.onMemberLeft.add(({ member: leftMember }: any) => {
+          console.log('Member left:', leftMember.name);
+          setRemoteUsers(prev => prev.filter(u => u.id !== leftMember.id));
+          painterRef.current?.clearRemoteUser(leftMember.id);
+        });
+
+        // データストリームの購読ヘルパー関数
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const subscribeToDataStream = async (publication: any) => {
+          if (publication.contentType !== 'data') return;
+          if (publication.publisher?.id === member.id) return;
+          
+          const { stream } = await member.subscribe(publication.id);
+          // RemoteDataStreamのonDataイベントでデータを受信
+          stream.onData.add((data: string) => {
+            handleReceivedMessage(data, publication.publisher);
+          });
+        };
+
+        // 新しいストリームの購読を監視
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        room.onStreamPublished.add(async ({ publication }: any) => {
+          await subscribeToDataStream(publication);
+        });
+
+        // 既存のストリームを購読
+        for (const publication of room.publications) {
+          await subscribeToDataStream(publication);
+        }
+
+      } catch (error) {
+        console.error('Failed to connect to SkyWay:', error);
+        setConnectionError('接続に失敗しました。再度お試しください。');
+      }
+    };
+
+    connectToSkyWay();
+
+    return () => {
+      cleanup = true;
+      memberRef.current?.leave();
+      contextRef.current?.dispose();
+    };
+  }, [isClient, roomId, userName, userColor, skywayToken, handleReceivedMessage]);
+
   // メッセージ送信
   const sendMessage = useCallback((message: WhiteboardMessage) => {
-    if (!dataStreamRef.current) return;
-    try {
-      dataStreamRef.current.write(JSON.stringify(message));
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
+    sendMessageRef.current?.(message);
   }, []);
 
   // ストロークイベントハンドラ
@@ -354,4 +359,3 @@ export default function WhiteboardCanvas({
     </div>
   );
 }
-

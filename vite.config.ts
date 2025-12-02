@@ -9,6 +9,8 @@ export default defineConfig({
       name: 'index',
       fileName: 'index',
     },
+    // ブラシ画像をBase64としてインライン化（10KB以下）
+    assetsInlineLimit: 10240,
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
@@ -16,7 +18,9 @@ export default defineConfig({
           react: 'React',
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'react/jsx-runtime'
-        }
+        },
+        // アセットファイル名を維持
+        assetFileNames: 'assets/[name].[ext]',
       }
     }
   },

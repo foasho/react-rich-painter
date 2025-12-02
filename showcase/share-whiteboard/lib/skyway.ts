@@ -23,11 +23,11 @@ export function generateSkyWayToken(roomName: string, memberId: string): string 
         channels: [
           {
             id: '*',
-            name: roomName,
+            name: '*', // ワイルドカードで任意のルーム名を許可
             actions: ['write'],
             members: [
               {
-                id: memberId,
+                id: '*', // ワイルドカードで任意のメンバーIDを許可
                 name: '*',
                 actions: ['write'],
                 publication: {
