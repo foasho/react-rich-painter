@@ -219,7 +219,8 @@ export default function WhiteboardCanvas({
           try {
             const { stream } = await member.subscribe(publication.id);
             // RemoteDataStreamのonDataイベントでデータを受信
-            stream.onData.add((data: string) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (stream as any).onData.add((data: string) => {
               handleReceivedMessage(data, publication.publisher);
             });
           } catch (err) {
