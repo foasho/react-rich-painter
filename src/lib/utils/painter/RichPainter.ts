@@ -1264,6 +1264,137 @@ class RichPainter {
   public getIsDrawing(): boolean {
     return this.isDrawing;
   }
+
+  // ------------------------------------------------------------------------
+  // リモートストローク機能（share=true の場合に使用）
+  // ------------------------------------------------------------------------
+
+  /** リモートユーザーのブラシ状態を一時的に保持 */
+  private remoteUserBrushes: Map<string, {
+    brush: Brush;
+    layerIndex: number;
+    userName?: string;
+    lastActivity: number;
+  }> = new Map();
+
+  /**
+   * リモートユーザーのストローク開始を適用
+   */
+  public remoteDown(
+    userId: string,
+    x: number,
+    y: number,
+    pressure: number,
+    layerIndex: number,
+    brushConfig: {
+      color: string;
+      size: number;
+      opacity: number;
+      spacing: number;
+      flow: number;
+      merge: number;
+      minimumSize: number;
+      toolType: 'pen' | 'eraser';
+    },
+    userName?: string
+  ): void {
+    // リモートユーザー用の一時的なBrushインスタンスを作成
+    const remoteBrush = new Brush();
+    remoteBrush.setColor(brushConfig.color);
+    remoteBrush.setSize(brushConfig.size);
+    remoteBrush.setFlow(brushConfig.opacity);
+    remoteBrush.setSpacing(brushConfig.spacing);
+    remoteBrush.setMerge(brushConfig.merge);
+    remoteBrush.setMinimumSize(brushConfig.minimumSize);
+    remoteBrush.setToolType(brushConfig.toolType);
+
+    // 保存
+    this.remoteUserBrushes.set(userId, {
+      brush: remoteBrush,
+      layerIndex,
+      userName,
+      lastActivity: Date.now(),
+    });
+
+    // 指定されたレイヤーに描画開始
+    const context = this.getLayerContext(layerIndex);
+    remoteBrush.down(context, x, y, pressure);
+  }
+
+  /**
+   * リモートユーザーのストローク移動を適用
+   */
+  public remoteMove(userId: string, x: number, y: number, pressure: number): void {
+    const remote = this.remoteUserBrushes.get(userId);
+    if (!remote) return;
+
+    // 最終アクティビティを更新
+    remote.lastActivity = Date.now();
+
+    // 描画
+    const context = this.getLayerContext(remote.layerIndex);
+    remote.brush.move(context, x, y, pressure);
+  }
+
+  /**
+   * リモートユーザーのストローク終了を適用
+   */
+  public remoteUp(userId: string, x: number, y: number, pressure: number): void {
+    const remote = this.remoteUserBrushes.get(userId);
+    if (!remote) return;
+
+    // 描画終了
+    const context = this.getLayerContext(remote.layerIndex);
+    remote.brush.up(context, x, y, pressure);
+
+    // クリーンアップ
+    this.remoteUserBrushes.delete(userId);
+  }
+
+  /**
+   * アクティブなリモートユーザー一覧を取得
+   */
+  public getRemoteUsers(): Array<{
+    userId: string;
+    userName?: string;
+    layerIndex: number;
+    isDrawing: boolean;
+    lastActivity: number;
+  }> {
+    const users: Array<{
+      userId: string;
+      userName?: string;
+      layerIndex: number;
+      isDrawing: boolean;
+      lastActivity: number;
+    }> = [];
+
+    this.remoteUserBrushes.forEach((value, userId) => {
+      users.push({
+        userId,
+        userName: value.userName,
+        layerIndex: value.layerIndex,
+        isDrawing: true,
+        lastActivity: value.lastActivity,
+      });
+    });
+
+    return users;
+  }
+
+  /**
+   * 特定のリモートユーザーの描画を強制終了（接続切断時など）
+   */
+  public removeRemoteUser(userId: string): void {
+    this.remoteUserBrushes.delete(userId);
+  }
+
+  /**
+   * すべてのリモートユーザーの描画を強制終了
+   */
+  public clearRemoteUsers(): void {
+    this.remoteUserBrushes.clear();
+  }
 }
 
 export { RichPainter };

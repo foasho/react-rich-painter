@@ -10,6 +10,16 @@ export type {
   StabilizerState,
 } from "./types/PainterState";
 
+// 共有機能の型をエクスポート
+export type {
+  StrokeStartData,
+  StrokeMoveData,
+  StrokeEndData,
+  RemoteUserState,
+  PainterHandle,
+  ShareCallbacks,
+} from "./types/ShareTypes";
+
 export {
   exportPainterState,
   importPainterState,

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { throttle } from 'es-toolkit';
 import { RichPainter } from '../utils';
 import { ToolBar, BrushBar, NotebookBar } from "./ui";
@@ -14,6 +14,13 @@ import { useBrushBarStore } from './store/brush';
 import { useUiStore } from './store/ui';
 import { PainterState } from '../types/PainterState';
 import { exportPainterState, importPainterState } from '../utils/stateManager';
+import type {
+  StrokeStartData,
+  StrokeMoveData,
+  StrokeEndData,
+  RemoteUserState,
+  PainterHandle,
+} from '../types/ShareTypes';
 
 type ReactRichPainterProps = {
   width?: number;
@@ -29,9 +36,17 @@ type ReactRichPainterProps = {
   onUpdate?: (state: PainterState) => void; // Painter状態更新時のコールバック（throttleされます）
   initialState?: PainterState; // 初期状態（Import機能）
   showFileMenu?: boolean; // FileMenuを表示するかどうか
+  
+  // 共有機能（share=trueの場合のみ有効）
+  share?: boolean; // 共有モードを有効にするか（デフォルト: false）
+  userId?: string; // 共有モード時のユーザー識別子
+  userName?: string; // 共有モード時のユーザー表示名
+  onStrokeStart?: (data: StrokeStartData) => void; // ストローク開始時のコールバック
+  onStrokeMove?: (data: StrokeMoveData) => void; // ストローク移動時のコールバック
+  onStrokeEnd?: (data: StrokeEndData) => void; // ストローク終了時のコールバック
 };
 
-const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
+const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(({
   width: propWidth,
   height: propHeight,
   autoSize = true,
@@ -44,7 +59,14 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
   onUpdate,
   initialState,
   showFileMenu=true,
-}) => {
+  // 共有機能
+  share = false,
+  userId,
+  userName,
+  onStrokeStart,
+  onStrokeMove,
+  onStrokeEnd,
+}, ref) => {
   const [painter, setPainter] = useState<RichPainter>();
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 800, height: 600 });
@@ -71,6 +93,113 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
   } = useBrushBarStore();
 
   const { isLayerPanelOpen, inputType } = useUiStore();
+
+  // 共有モード用: PainterHandleを公開
+  useImperativeHandle(ref, () => ({
+    applyRemoteStrokeStart: (data: StrokeStartData) => {
+      if (!painter || !share) return;
+      painter.remoteDown(
+        data.userId,
+        data.x,
+        data.y,
+        data.pressure,
+        data.layerIndex,
+        data.brush,
+        data.userName
+      );
+    },
+    applyRemoteStrokeMove: (data: StrokeMoveData) => {
+      if (!painter || !share) return;
+      painter.remoteMove(data.userId, data.x, data.y, data.pressure);
+    },
+    applyRemoteStrokeEnd: (data: StrokeEndData) => {
+      if (!painter || !share) return;
+      painter.remoteUp(data.userId, data.x, data.y, data.pressure);
+    },
+    exportState: () => {
+      if (!painter) throw new Error('Painter is not initialized');
+      return exportPainterState(painter);
+    },
+    importState: async (state: PainterState) => {
+      if (!painter) throw new Error('Painter is not initialized');
+      await importPainterState(painter, state);
+    },
+    getRemoteUsers: (): RemoteUserState[] => {
+      if (!painter) return [];
+      return painter.getRemoteUsers();
+    },
+    clearRemoteUser: (userId: string) => {
+      if (!painter) return;
+      painter.removeRemoteUser(userId);
+    },
+  }), [painter, share]);
+
+  // 共有モード用: ストロークイベントをコールバックに通知
+  useEffect(() => {
+    if (!painter || !share || !userId) return;
+
+    const brush = painter.getBrush();
+    if (!brush) return;
+
+    // down時のコールバック
+    painter.onDowned = (x, y, pressure) => {
+      if (onStrokeStart) {
+        onStrokeStart({
+          userId,
+          userName,
+          timestamp: Date.now(),
+          x,
+          y,
+          pressure,
+          layerIndex: painter.getCurrentLayerIndex(),
+          brush: {
+            color: brush.getColor(),
+            size: brush.getSize(),
+            opacity: brush.getFlow(),
+            spacing: brush.getSpacing(),
+            flow: brush.getFlow(),
+            merge: brush.getMerge(),
+            minimumSize: brush.getMinimumSize(),
+            toolType: brush.getToolType() as 'pen' | 'eraser',
+          },
+        });
+      }
+    };
+
+    // move時のコールバック
+    painter.onMoved = (x, y, pressure) => {
+      if (onStrokeMove) {
+        onStrokeMove({
+          userId,
+          timestamp: Date.now(),
+          x,
+          y,
+          pressure,
+        });
+      }
+    };
+
+    // up時のコールバック
+    painter.onUpped = (x, y, pressure, _dirtyRect) => {
+      if (onStrokeEnd) {
+        onStrokeEnd({
+          userId,
+          timestamp: Date.now(),
+          x,
+          y,
+          pressure,
+          layerIndex: painter.getCurrentLayerIndex(),
+        });
+      }
+    };
+
+    return () => {
+      // クリーンアップ
+      painter.onDowned = undefined;
+      painter.onMoved = undefined;
+      painter.onUpped = undefined;
+    };
+  }, [painter, share, userId, userName, onStrokeStart, onStrokeMove, onStrokeEnd]);
 
   // autoSizeがfalseの場合、widthとheightが必須であることをチェック
   useEffect(() => {
@@ -276,7 +405,10 @@ const ReactRichPainter: React.FC<ReactRichPainterProps> = ({
       ) : null}
     </div>
   );
-};
+});
+
+// 表示名を設定
+ReactRichPainterInner.displayName = 'ReactRichPainter';
 
 type PaintCanvasProps = {
   painter: RichPainter;
@@ -753,6 +885,9 @@ const PaintCanvas = (
       <SelectionOverlay width={width} height={height} />
     </div>
   )
-}
+};
+
+// 後方互換性のためのエクスポート（refなしでも使用可能）
+const ReactRichPainter = ReactRichPainterInner;
 
 export { ReactRichPainter };
