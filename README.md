@@ -13,9 +13,7 @@ Reactで統合可能なPainterライブラリです。
 
 ## ショーケース
 
-- [ペイントアプリ](https://simple-painter.vercel.app/)
-- [手書き日記](https://handwritten-diary.vercel.app/)
-- [共有ホワイトボード](https://share-whiteboard.vercel.app/)
+[![ペイントアプリ](https://github.com/user-attachments/assets/7c31ce76-f653-408c-90e6-0f26494ae2f1)](https://simple-painter.vercel.app/) [![手書き日記](https://github.com/user-attachments/assets/f06062ec-86b9-4b0f-8a83-6d502e3e97b0)](https://handwritten-diary.vercel.app/) [![共有ホワイトボード](https://github.com/user-attachments/assets/c93cfbe7-3c35-4810-8ba2-b054b45f59ba)](https://share-whiteboard.vercel.app/)
 
 </div>
 
