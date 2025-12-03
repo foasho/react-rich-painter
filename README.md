@@ -9,11 +9,15 @@ Reactで統合可能なPainterライブラリです。
 
 [Demo on Storybook](https://story-book-react-rich-painter.vercel.app)
 
+
+
 ## ショーケース
 
 - [ペイントアプリ](https://simple-painter.vercel.app/)
 - [手書き日記](https://handwritten-diary.vercel.app/)
 - [共有ホワイトボード](https://share-whiteboard.vercel.app/)
+
+</div>
 
 ## 特徴🌴
 * ノート利用とペイントツール利用が可能
