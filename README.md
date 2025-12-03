@@ -13,24 +13,24 @@ Reactで統合可能なPainterライブラリです。
 
 <div align="center" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
 
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
-<a href="https://simple-painter.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
+<a href="https://simple-painter.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
 <h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">ペイントアプリ</h3>
-<img src="https://github.com/user-attachments/assets/120ef2eb-3bed-4750-98d1-c7160a794962" alt="SimplePainter" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://simple-painter.vercel.app/</div>
 </a>
 </div>
 
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
-<a href="https://handwritten-diary.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
+<a href="https://handwritten-diary.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
 <h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">手書き日記</h3>
-<img src="https://github.com/user-attachments/assets/852d2ba9-1fcc-4875-8623-179dda6be60b" alt="HandwrittenDiary" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://handwritten-diary.vercel.app/</div>
 </a>
 </div>
 
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
-<a href="https://share-whiteboard.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
+<a href="https://share-whiteboard.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
 <h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">共有ホワイトボード</h3>
-<img src="https://github.com/user-attachments/assets/d263c3d3-8f26-4262-b467-d6620e46416d" alt="ShareWhiteboard" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://share-whiteboard.vercel.app/</div>
 </a>
 </div>
 
