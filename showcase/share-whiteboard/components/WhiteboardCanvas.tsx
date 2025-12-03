@@ -182,6 +182,24 @@ export default function WhiteboardCanvas({
 
         setIsConnected(true);
 
+        // 既存のメンバーをリストに追加
+        const existingMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        if (existingMembers.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const existingUsers = existingMembers.map((m: any) => {
+            const metadata = m.metadata ? JSON.parse(m.metadata) : {};
+            const displayName = metadata.displayName || 'Unknown';
+            return {
+              id: m.id,
+              name: displayName,
+              color: metadata.color || '#888888',
+              isDrawing: false,
+              layerIndex: 0,
+            };
+          });
+          setRemoteUsers(existingUsers);
+        }
+
         // 新しいメンバーの参加を監視
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         room.onMemberJoined.add(({ member: newMember }: any) => {
