@@ -11,32 +11,9 @@ Reactで統合可能なPainterライブラリです。
 
 ## ショーケース
 
-<div align="center" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
-
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
-<a href="https://simple-painter.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
-<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">ペイントアプリ</h3>
-<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://simple-painter.vercel.app/</div>
-</a>
-</div>
-
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
-<a href="https://handwritten-diary.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
-<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">手書き日記</h3>
-<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://handwritten-diary.vercel.app/</div>
-</a>
-</div>
-
-<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; transition: transform 0.2s;">
-<a href="https://share-whiteboard.vercel.app/" target="_blank" style="text-decoration: none; color: inherit; display: block;">
-<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">共有ホワイトボード</h3>
-<div style="color: #0366d6; font-size: 14px; word-break: break-all;">https://share-whiteboard.vercel.app/</div>
-</a>
-</div>
-
-</div>
-
-</div>
+- [ペイントアプリ](https://simple-painter.vercel.app/)
+- [手書き日記](https://handwritten-diary.vercel.app/)
+- [共有ホワイトボード](https://share-whiteboard.vercel.app/)
 
 ## 特徴🌴
 * ノート利用とペイントツール利用が可能
