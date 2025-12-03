@@ -11,7 +11,30 @@ Reactで統合可能なPainterライブラリです。
 
 ## ショーケース
 
-(準備中)
+<div align="center" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
+
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
+<a href="https://simple-painter.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">ペイントアプリ</h3>
+<img src="https://github.com/user-attachments/assets/120ef2eb-3bed-4750-98d1-c7160a794962" alt="SimplePainter" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+</a>
+</div>
+
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
+<a href="https://handwritten-diary.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">手書き日記</h3>
+<img src="https://github.com/user-attachments/assets/852d2ba9-1fcc-4875-8623-179dda6be60b" alt="HandwrittenDiary" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+</a>
+</div>
+
+<div style="border: 1px solid #e1e4e8; border-radius: 6px; padding: 8px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); max-width: 280px; transition: transform 0.2s;">
+<a href="https://share-whiteboard.vercel.app/" target="_blank" style="text-decoration: none; color: inherit;">
+<h3 style="margin-top: 0; margin-bottom: 8px; color: #24292e; font-size: 16px;">共有ホワイトボード</h3>
+<img src="https://github.com/user-attachments/assets/d263c3d3-8f26-4262-b467-d6620e46416d" alt="ShareWhiteboard" style="width: 100%; max-height: 200px; height: auto; border-radius: 4px; display: block; object-fit: cover;" />
+</a>
+</div>
+
+</div>
 
 </div>
 
@@ -84,6 +107,46 @@ function NotebookApp() {
 - `onUpdate?: (state: PainterState) => void` - Painter状態更新時のコールバック（100msでthrottleされます）
 - `initialState?: PainterState` - 初期状態（Import機能）
 - `showFileMenu?: boolean` - FileMenuを表示するかどうか（デフォルト: `false`）
+
+#### 共有機能（Share）
+
+リアルタイム共有ホワイトボードを構築するためのプロパティです。`share=true`の場合のみ有効になります。
+
+- `share?: boolean` - 共有モードを有効にするか（デフォルト: `false`）
+- `userId?: string` - 共有モード時のユーザー識別子
+- `userName?: string` - 共有モード時のユーザー表示名
+- `onStrokeStart?: (data: StrokeStartData) => void` - ストローク開始時のコールバック
+- `onStrokeMove?: (data: StrokeMoveData) => void` - ストローク移動時のコールバック
+- `onStrokeEnd?: (data: StrokeEndData) => void` - ストローク終了時のコールバック
+
+共有モードでは、`ref`を使用して外部からリモートユーザーの描画を適用できます：
+
+```tsx
+import { ReactRichPainter, PainterHandle } from "react-rich-painter";
+import { useRef } from "react";
+
+function SharedWhiteboard() {
+  const painterRef = useRef<PainterHandle>(null);
+  
+  // リモートからのストロークを適用
+  const handleRemoteStroke = (data) => {
+    painterRef.current?.applyRemoteStrokeStart(data);
+    // applyRemoteStrokeMove, applyRemoteStrokeEnd も同様
+  };
+  
+  return (
+    <ReactRichPainter
+      ref={painterRef}
+      share={true}
+      userId="user-123"
+      userName="田中"
+      onStrokeStart={(data) => sendToServer(data)}
+      onStrokeMove={(data) => sendToServer(data)}
+      onStrokeEnd={(data) => sendToServer(data)}
+    />
+  );
+}
+```
 
 ### スマート入力切り替え機能
 

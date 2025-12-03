@@ -95,6 +95,53 @@ const meta: Meta = {
         defaultValue: { summary: false },
       },
     },
+    // 共有機能（Share）
+    share: {
+      control: 'boolean',
+      description: '共有モードを有効にするか（リアルタイム共有ホワイトボード用）',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: false },
+        category: 'Share',
+      },
+    },
+    userId: {
+      control: 'text',
+      description: '共有モード時のユーザー識別子',
+      table: {
+        type: { summary: 'string' },
+        category: 'Share',
+      },
+    },
+    userName: {
+      control: 'text',
+      description: '共有モード時のユーザー表示名',
+      table: {
+        type: { summary: 'string' },
+        category: 'Share',
+      },
+    },
+    onStrokeStart: {
+      description: 'ストローク開始時のコールバック（share=true時のみ有効）',
+      table: {
+        type: { summary: '(data: StrokeStartData) => void' },
+        category: 'Share',
+      },
+    },
+    onStrokeMove: {
+      description: 'ストローク移動時のコールバック（share=true時のみ有効）',
+      table: {
+        type: { summary: '(data: StrokeMoveData) => void' },
+        category: 'Share',
+      },
+    },
+    onStrokeEnd: {
+      description: 'ストローク終了時のコールバック（share=true時のみ有効）',
+      table: {
+        type: { summary: '(data: StrokeEndData) => void' },
+        category: 'Share',
+      },
+    },
   },
 } satisfies Meta<typeof ReactRichPainter>;
 

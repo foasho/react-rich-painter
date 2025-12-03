@@ -187,6 +187,59 @@ function FixedSizeApp() {
   </tbody>
 </table>
 
+## 共有機能（Share）Props
+
+リアルタイム共有ホワイトボードを構築するためのプロパティです。`share=true`の場合のみ有効になります。
+
+<table>
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>share</code></td>
+      <td><code>boolean</code></td>
+      <td><code>false</code></td>
+      <td>共有モードを有効にするか</td>
+    </tr>
+    <tr>
+      <td><code>userId</code></td>
+      <td><code>string</code></td>
+      <td><code>undefined</code></td>
+      <td>共有モード時のユーザー識別子</td>
+    </tr>
+    <tr>
+      <td><code>userName</code></td>
+      <td><code>string</code></td>
+      <td><code>undefined</code></td>
+      <td>共有モード時のユーザー表示名</td>
+    </tr>
+    <tr>
+      <td><code>onStrokeStart</code></td>
+      <td><code>(data: StrokeStartData) =&gt; void</code></td>
+      <td><code>undefined</code></td>
+      <td>ストローク開始時のコールバック</td>
+    </tr>
+    <tr>
+      <td><code>onStrokeMove</code></td>
+      <td><code>(data: StrokeMoveData) =&gt; void</code></td>
+      <td><code>undefined</code></td>
+      <td>ストローク移動時のコールバック</td>
+    </tr>
+    <tr>
+      <td><code>onStrokeEnd</code></td>
+      <td><code>(data: StrokeEndData) =&gt; void</code></td>
+      <td><code>undefined</code></td>
+      <td>ストローク終了時のコールバック</td>
+    </tr>
+  </tbody>
+</table>
+
 ---
 
 # Import/Export機能
@@ -214,4 +267,55 @@ FileMenuからは以下の操作が可能です：
 - **ファイルを開く** - 保存したJSONファイルを読み込み
 - **エクスポート** - 描画状態をJSONファイルとして保存
 - **画像を保存** - キャンバスをPNG画像として保存
+
+---
+
+# 共有機能（Share）
+
+`share={true}` を設定すると、リアルタイム共有ホワイトボードを構築できます。
+WebRTC（SkyWay等）やWebSocketと組み合わせて使用します。
+
+```tsx
+import { ReactRichPainter, PainterHandle } from 'react-rich-painter';
+import { useRef } from 'react';
+
+function SharedWhiteboard() {
+  const painterRef = useRef<PainterHandle>(null);
+
+  // 自分の描画をリモートに送信
+  const handleStrokeStart = (data) => {
+    websocket.send({ type: 'stroke_start', data });
+  };
+
+  // リモートからの描画を適用
+  const handleRemoteMessage = (message) => {
+    if (message.type === 'stroke_start') {
+      painterRef.current?.applyRemoteStrokeStart(message.data);
+    }
+    // applyRemoteStrokeMove, applyRemoteStrokeEnd も同様
+  };
+
+  return (
+    <ReactRichPainter
+      ref={painterRef}
+      share={true}
+      userId="user-123"
+      userName="田中"
+      onStrokeStart={handleStrokeStart}
+      onStrokeMove={(data) => websocket.send({ type: 'stroke_move', data })}
+      onStrokeEnd={(data) => websocket.send({ type: 'stroke_end', data })}
+    />
+  );
+}
+```
+
+## PainterHandle（ref）で使用可能なメソッド
+
+- `applyRemoteStrokeStart(data)` - リモートユーザーのストローク開始を適用
+- `applyRemoteStrokeMove(data)` - リモートユーザーのストローク移動を適用
+- `applyRemoteStrokeEnd(data)` - リモートユーザーのストローク終了を適用
+- `getRemoteUsers()` - 現在描画中のリモートユーザー一覧を取得
+- `clearRemoteUser(userId)` - 特定のリモートユーザーの描画状態をクリア
+- `exportState()` - 現在のキャンバス状態をエクスポート
+- `importState(state)` - キャンバス状態をインポート
 
