@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 
 settings.local.json
+settings.json
+!settings.example.json
 PR.md

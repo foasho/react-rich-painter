@@ -30,7 +30,7 @@ npm run typegen
 # Linting
 npm run lint          # ESLintを実行（エラー時に停止）
 npm run eslint        # ESLintを実行（自動修正）
-npm run eslint:ci     # CI用のESLint実行
+npm run eslint:ci     # CI用のESLint
 
 # Formatting
 npm run prettier      # Prettierでフォーマットをチェック
@@ -250,6 +250,50 @@ Zustandによる状態管理：
 - Brush/各種Storeの状態も完全に復元
 - 非同期処理（画像読み込み）のため`async/await`を使用
 
+### Share（共有ホワイトボード）機能
+
+リアルタイム共有ホワイトボードを構築するための機能です。
+
+#### アーキテクチャ
+
+**型定義（`src/lib/types/ShareTypes.ts`）**:
+- `StrokeStartData`: ストローク開始データ（ユーザーID、座標、筆圧、ブラシ設定）
+- `StrokeMoveData`: ストローク移動データ
+- `StrokeEndData`: ストローク終了データ
+- `RemoteUserState`: リモートユーザーの描画状態
+- `PainterHandle`: `useImperativeHandle`用のハンドル型
+- `WhiteboardMessage`: P2P通信メッセージ型
+
+**Props**:
+- `share?: boolean`: 共有モードを有効にするか（デフォルト: `false`）
+- `userId?: string`: 共有モード時のユーザー識別子
+- `userName?: string`: 共有モード時のユーザー表示名
+- `onStrokeStart/Move/End`: ストロークイベントコールバック
+
+**refハンドル（`PainterHandle`）**:
+- `applyRemoteStrokeStart/Move/End`: リモートストロークの適用
+- `exportState/importState`: 状態の同期
+- `getRemoteUsers/clearRemoteUser`: リモートユーザー管理
+
+#### 実装パターン
+
+```tsx
+const painterRef = useRef<PainterHandle>(null);
+
+// リモートからのストロークを適用
+painterRef.current?.applyRemoteStrokeStart(data);
+painterRef.current?.applyRemoteStrokeMove(data);
+painterRef.current?.applyRemoteStrokeEnd(data);
+
+// 自分のストロークをサーバーに送信
+<ReactRichPainter
+  ref={painterRef}
+  share={true}
+  userId="user-123"
+  onStrokeStart={(data) => sendToServer(data)}
+/>
+```
+
 ### 描画フロー
 
 1. **ユーザー入力** → `Painter.tsx`のPointerEventリスナー
@@ -420,7 +464,7 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 ## Storybook
 
 UIコンポーネントのデモとドキュメントをStorybookで管理しています。
-デプロイ先: https://react-rich-painter.vercel.app
+デプロイ先: https://story-book-react-rich-painter.vercel.app
 
 ### 主なストーリー
 - **自動サイズ調整**: Default、AutoSizeSmallContainer、AutoSizeLargeContainer
