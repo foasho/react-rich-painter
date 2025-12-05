@@ -13,7 +13,7 @@
     "@skyway-sdk/room": "^2.2.0",
     "@skyway-sdk/token": "^2.0.1",
     "ioredis": "^5.8.2",
-    "next": "16.0.6",
+    "next": "16.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-rich-painter": "^0.0.8",
@@ -26,7 +26,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.0.6",
+    "eslint-config-next": "16.0.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
