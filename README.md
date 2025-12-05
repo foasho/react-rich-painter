@@ -268,7 +268,7 @@ Storybookを使用して、様々なパラメータでReact Rich Painterをイ�
 
 ```bash
 # Storybookの起動
-npm run storybook
+pnpm run storybook
 ```
 
 ブラウザで `http://localhost:6006` を開く
@@ -277,5 +277,5 @@ npm run storybook
 
 ```bash
 # Storybookの静的ファイルを生成
-npm run build-storybook
+pnpm run build-storybook
 ```
