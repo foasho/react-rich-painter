@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "react-rich-painter": "^0.0.9"
+    "react-rich-painter": "^0.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

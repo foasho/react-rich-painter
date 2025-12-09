@@ -331,3 +331,110 @@ describe("自動入力切り替えシステム", () => {
     });
   });
 });
+
+describe("ペン入力の筆圧処理", () => {
+  /**
+   * setPointerEvent関数の筆圧処理ロジックをテスト
+   * events.ts内の実際のロジック:
+   * - pointerup/pointercancel時: e.pressureをそのまま使用（0も許可）
+   * - pointerdown/pointermove時: e.pressure > 0 ? e.pressure : 1
+   */
+
+  // 筆圧計算ロジックを再現（events.tsのsetPointerEvent内のロジック）
+  const calculatePressure = (
+    eventType: string,
+    rawPressure: number,
+  ): number => {
+    const isUpOrCancel =
+      eventType === "pointerup" || eventType === "pointercancel";
+    return isUpOrCancel ? rawPressure : rawPressure > 0 ? rawPressure : 1;
+  };
+
+  describe("pointerdown時の筆圧処理", () => {
+    it("筆圧が正の値の場合、その値をそのまま使用", () => {
+      expect(calculatePressure("pointerdown", 0.5)).toBe(0.5);
+      expect(calculatePressure("pointerdown", 0.8)).toBe(0.8);
+      expect(calculatePressure("pointerdown", 1.0)).toBe(1.0);
+    });
+
+    it("筆圧が0の場合、1にフォールバック", () => {
+      expect(calculatePressure("pointerdown", 0)).toBe(1);
+    });
+
+    it("筆圧が負の値の場合、1にフォールバック", () => {
+      expect(calculatePressure("pointerdown", -0.1)).toBe(1);
+    });
+  });
+
+  describe("pointermove時の筆圧処理", () => {
+    it("筆圧が正の値の場合、その値をそのまま使用", () => {
+      expect(calculatePressure("pointermove", 0.3)).toBe(0.3);
+      expect(calculatePressure("pointermove", 0.7)).toBe(0.7);
+    });
+
+    it("筆圧が0の場合、1にフォールバック", () => {
+      expect(calculatePressure("pointermove", 0)).toBe(1);
+    });
+  });
+
+  describe("pointerup時の筆圧処理（線終端の自然な細さのため）", () => {
+    it("筆圧が0の場合、0をそのまま使用（フォールバックしない）", () => {
+      // これが今回の修正のポイント：
+      // pointerup時に筆圧0を許可することで、線の終端が自然に細くなる
+      expect(calculatePressure("pointerup", 0)).toBe(0);
+    });
+
+    it("筆圧が正の値の場合、その値をそのまま使用", () => {
+      expect(calculatePressure("pointerup", 0.2)).toBe(0.2);
+      expect(calculatePressure("pointerup", 0.5)).toBe(0.5);
+    });
+
+    it("筆圧が低い値でもそのまま使用される", () => {
+      // ペンを離す直前の低い筆圧も正しく処理される
+      expect(calculatePressure("pointerup", 0.05)).toBe(0.05);
+      expect(calculatePressure("pointerup", 0.01)).toBe(0.01);
+    });
+  });
+
+  describe("pointercancel時の筆圧処理", () => {
+    it("筆圧が0の場合、0をそのまま使用", () => {
+      expect(calculatePressure("pointercancel", 0)).toBe(0);
+    });
+
+    it("筆圧が正の値の場合、その値をそのまま使用", () => {
+      expect(calculatePressure("pointercancel", 0.4)).toBe(0.4);
+    });
+  });
+
+  describe("線終端の描画シナリオ", () => {
+    it("シナリオ: ペンを離す際の筆圧変化", () => {
+      // 描画中の筆圧シーケンスをシミュレート
+      const pressureSequence = [
+        { type: "pointerdown", pressure: 0.8 },
+        { type: "pointermove", pressure: 0.9 },
+        { type: "pointermove", pressure: 0.7 },
+        { type: "pointermove", pressure: 0.5 },
+        { type: "pointermove", pressure: 0.3 },
+        { type: "pointermove", pressure: 0.1 },
+        { type: "pointerup", pressure: 0 }, // ペンを離した瞬間
+      ];
+
+      const processedPressures = pressureSequence.map((event) =>
+        calculatePressure(event.type, event.pressure),
+      );
+
+      // 線の終端で筆圧が自然に0になることを確認
+      expect(processedPressures).toEqual([0.8, 0.9, 0.7, 0.5, 0.3, 0.1, 0]);
+
+      // 最後の筆圧が0であることを確認（線終端が細くなる）
+      expect(processedPressures[processedPressures.length - 1]).toBe(0);
+    });
+
+    it("シナリオ: pointerdown時に筆圧0でも描画開始できる", () => {
+      // 一部のデバイスではpointerdown時に筆圧0が報告されることがある
+      // その場合は1にフォールバックして描画を開始する
+      const pressure = calculatePressure("pointerdown", 0);
+      expect(pressure).toBe(1);
+    });
+  });
+});

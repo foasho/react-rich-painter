@@ -12,7 +12,7 @@
     "next": "15.5.7",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "react-rich-painter": "^0.0.9"
+    "react-rich-painter": "^0.1.0"
   },
   "overrides": {
     "react": "19.2.1",
