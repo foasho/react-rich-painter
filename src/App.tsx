@@ -8,9 +8,6 @@ function App() {
         width={800}
         height={600}
         preset="notebook"
-        onUpdate={(state) => {
-          // state更新時の処理
-        }}
       />
     </div>
   );
