@@ -85,12 +85,12 @@ const SelectionOverlay: React.FC<SelectionOverlayProps> = ({
           ctx.beginPath();
           ctx.moveTo(
             selectionPath[0].x + selectionOffset.x,
-            selectionPath[0].y + selectionOffset.y
+            selectionPath[0].y + selectionOffset.y,
           );
           for (let i = 1; i < selectionPath.length; i++) {
             ctx.lineTo(
               selectionPath[i].x + selectionOffset.x,
-              selectionPath[i].y + selectionOffset.y
+              selectionPath[i].y + selectionOffset.y,
             );
           }
           ctx.closePath();
@@ -98,7 +98,7 @@ const SelectionOverlay: React.FC<SelectionOverlayProps> = ({
           ctx.drawImage(
             tempCanvas,
             minX + selectionOffset.x,
-            minY + selectionOffset.y
+            minY + selectionOffset.y,
           );
           ctx.restore();
         }
@@ -111,12 +111,12 @@ const SelectionOverlay: React.FC<SelectionOverlayProps> = ({
         ctx.beginPath();
         ctx.moveTo(
           selectionPath[0].x + selectionOffset.x,
-          selectionPath[0].y + selectionOffset.y
+          selectionPath[0].y + selectionOffset.y,
         );
         for (let i = 1; i < selectionPath.length; i++) {
           ctx.lineTo(
             selectionPath[i].x + selectionOffset.x,
-            selectionPath[i].y + selectionOffset.y
+            selectionPath[i].y + selectionOffset.y,
           );
         }
         ctx.closePath();
