@@ -14,7 +14,7 @@ export type StrokeBrushConfig = {
   flow: number;
   merge: number;
   minimumSize: number;
-  toolType: 'pen' | 'eraser';
+  toolType: "pen" | "eraser";
 };
 
 /**
@@ -83,11 +83,11 @@ export type PainterHandle = {
   applyRemoteStrokeStart: (data: StrokeStartData) => void;
   applyRemoteStrokeMove: (data: StrokeMoveData) => void;
   applyRemoteStrokeEnd: (data: StrokeEndData) => void;
-  
+
   // 状態のエクスポート/インポート
-  exportState: () => import('./PainterState').PainterState | null;
-  importState: (state: import('./PainterState').PainterState) => Promise<void>;
-  
+  exportState: () => import("./PainterState").PainterState | null;
+  importState: (state: import("./PainterState").PainterState) => Promise<void>;
+
   // リモートユーザー管理
   getRemoteUsers: () => RemoteUserState[];
   clearRemoteUser: (userId: string) => void;
@@ -97,10 +97,10 @@ export type PainterHandle = {
  * P2P通信メッセージ型
  */
 export type WhiteboardMessage =
-  | { type: 'stroke_start'; data: StrokeStartData }
-  | { type: 'stroke_move'; data: StrokeMoveData }
-  | { type: 'stroke_end'; data: StrokeEndData }
-  | { type: 'sync_request'; userId: string }
-  | { type: 'sync_response'; data: import('./PainterState').PainterState }
-  | { type: 'user_joined'; userId: string; userName: string }
-  | { type: 'user_left'; userId: string };
+  | { type: "stroke_start"; data: StrokeStartData }
+  | { type: "stroke_move"; data: StrokeMoveData }
+  | { type: "stroke_end"; data: StrokeEndData }
+  | { type: "sync_request"; userId: string }
+  | { type: "sync_response"; data: import("./PainterState").PainterState }
+  | { type: "user_joined"; userId: string; userName: string }
+  | { type: "user_left"; userId: string };

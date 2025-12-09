@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 import { HiMiniPencil } from "react-icons/hi2";
-import { ToolButton } from './ToolButton';
-import { usePainter } from '../../PainterContext';
+import { ToolButton } from "./ToolButton";
+import { usePainter } from "../../PainterContext";
 
 type BrushTypeProps = {
   size?: number;
-}
+};
 
 /**
  * ブラシ（ペン）ツール
@@ -23,18 +23,18 @@ const BrushType: React.FC<BrushTypeProps> = ({ size = 20 }) => {
       // 実際の色はColorPalletの状態と同期するので、
       // ここでは消しゴムの白色から変更するだけでOK
       const currentColor = brush.getColor();
-      if (currentColor === '#FFFFFF' || currentColor === '#ffffff') {
+      if (currentColor === "#FFFFFF" || currentColor === "#ffffff") {
         // 白色（消しゴムの色）の場合は黒に戻す
-        brush.setColor('#000000');
+        brush.setColor("#000000");
       }
     }
     // 通常の描画モードでは knockout を無効化
     painter.setPaintingKnockout(false);
 
     // カーソルをデフォルトに設定
-    const canvasDom = document.getElementById('main_canvas_area');
+    const canvasDom = document.getElementById("main_canvas_area");
     if (canvasDom) {
-      (canvasDom as HTMLElement).style.cursor = 'default';
+      (canvasDom as HTMLElement).style.cursor = "default";
     }
   };
 

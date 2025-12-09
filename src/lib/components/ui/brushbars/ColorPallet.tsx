@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { usePainter } from '../../PainterContext';
+import React, { useState, useRef } from "react";
+import { usePainter } from "../../PainterContext";
 
 type ColorPalletProps = {
   size?: number;
@@ -9,7 +9,7 @@ type ColorPalletProps = {
 
 const ColorPallet: React.FC<ColorPalletProps> = ({
   size = 30,
-  initialColor = '#000000',
+  initialColor = "#000000",
   onColorChange,
 }) => {
   const [color, setColor] = useState<string>(initialColor);
@@ -40,31 +40,31 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
   };
 
   const containerStyle: React.CSSProperties = {
-    position: 'relative',
-    display: 'inline-block',
+    position: "relative",
+    display: "inline-block",
     width: `${size}px`,
     height: `${size}px`,
   };
 
   const circleStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     backgroundColor: color,
-    borderRadius: '50%',
-    cursor: 'pointer',
-    border: '2px solid #fff',
-    boxSizing: "border-box"  
+    borderRadius: "50%",
+    cursor: "pointer",
+    border: "2px solid #fff",
+    boxSizing: "border-box",
   };
 
   const hiddenInputStyle: React.CSSProperties = {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     opacity: 0,
-    cursor: 'pointer',
-    border: 'none',
+    cursor: "pointer",
+    border: "none",
   };
 
   return (
@@ -84,7 +84,7 @@ const ColorPallet: React.FC<ColorPalletProps> = ({
         tabIndex={0}
         onClick={() => inputRef.current?.click()}
         onKeyPress={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             inputRef.current?.click();
           }
         }}

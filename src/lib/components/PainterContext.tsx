@@ -1,5 +1,5 @@
-import React, { createContext, useContext } from 'react';
-import { RichPainter } from '../utils';
+import React, { createContext, useContext } from "react";
+import { RichPainter } from "../utils";
 
 type PainterContextType = {
   painter: RichPainter | null;
@@ -12,7 +12,7 @@ const PainterContext = createContext<PainterContextType>({
 export const usePainter = () => {
   const context = useContext(PainterContext);
   if (!context.painter) {
-    throw new Error('usePainter must be used within PainterProvider');
+    throw new Error("usePainter must be used within PainterProvider");
   }
   return context;
 };
@@ -22,7 +22,10 @@ type PainterProviderProps = {
   children: React.ReactNode;
 };
 
-export const PainterProvider: React.FC<PainterProviderProps> = ({ painter, children }) => {
+export const PainterProvider: React.FC<PainterProviderProps> = ({
+  painter,
+  children,
+}) => {
   return (
     <PainterContext.Provider value={{ painter }}>
       {children}

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import type {
   PainterHandle,
   StrokeStartData,
   StrokeMoveData,
   StrokeEndData,
   PainterState,
-} from 'react-rich-painter';
+} from "react-rich-painter";
 
 // SSRを無効化
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ReactRichPainter = dynamic<any>(
-  () => import('react-rich-painter').then(mod => mod.ReactRichPainter),
-  { ssr: false }
+  () => import("react-rich-painter").then((mod) => mod.ReactRichPainter),
+  { ssr: false },
 );
 
 interface WhiteboardCanvasProps {
@@ -28,11 +28,11 @@ interface WhiteboardCanvasProps {
 }
 
 type WhiteboardMessage =
-  | { type: 'stroke_start'; data: StrokeStartData }
-  | { type: 'stroke_move'; data: StrokeMoveData }
-  | { type: 'stroke_end'; data: StrokeEndData }
-  | { type: 'sync_request'; userId: string }
-  | { type: 'sync_response'; data: PainterState };
+  | { type: "stroke_start"; data: StrokeStartData }
+  | { type: "stroke_move"; data: StrokeMoveData }
+  | { type: "stroke_end"; data: StrokeEndData }
+  | { type: "sync_request"; userId: string }
+  | { type: "sync_response"; data: PainterState };
 
 interface RemoteUser {
   id: string;
@@ -56,7 +56,7 @@ export default function WhiteboardCanvas({
   const [isConnected, setIsConnected] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<RemoteUser[]>([]);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  
+
   // SkyWay関連（any型で保持、動的インポートのため）
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const contextRef = useRef<any>(null);
@@ -68,7 +68,9 @@ export default function WhiteboardCanvas({
   const dataStreamRef = useRef<any>(null);
 
   // メッセージ送信関数をrefで保持
-  const sendMessageRef = useRef<((message: WhiteboardMessage) => void) | null>(null);
+  const sendMessageRef = useRef<((message: WhiteboardMessage) => void) | null>(
+    null,
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -78,48 +80,52 @@ export default function WhiteboardCanvas({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReceivedMessage = useCallback((data: unknown, publisher: any) => {
     if (!publisher) return;
-    
+
     try {
-      const message = (typeof data === 'string' ? JSON.parse(data) : data) as WhiteboardMessage;
-      
+      const message = (
+        typeof data === "string" ? JSON.parse(data) : data
+      ) as WhiteboardMessage;
+
       switch (message.type) {
-        case 'stroke_start':
+        case "stroke_start":
           painterRef.current?.applyRemoteStrokeStart(message.data);
-          setRemoteUsers(prev => prev.map(u => 
-            u.id === message.data.userId 
-              ? { ...u, isDrawing: true, layerIndex: message.data.layerIndex }
-              : u
-          ));
+          setRemoteUsers((prev) =>
+            prev.map((u) =>
+              u.id === message.data.userId
+                ? { ...u, isDrawing: true, layerIndex: message.data.layerIndex }
+                : u,
+            ),
+          );
           break;
-          
-        case 'stroke_move':
+
+        case "stroke_move":
           painterRef.current?.applyRemoteStrokeMove(message.data);
           break;
-          
-        case 'stroke_end':
+
+        case "stroke_end":
           painterRef.current?.applyRemoteStrokeEnd(message.data);
-          setRemoteUsers(prev => prev.map(u => 
-            u.id === message.data.userId 
-              ? { ...u, isDrawing: false }
-              : u
-          ));
+          setRemoteUsers((prev) =>
+            prev.map((u) =>
+              u.id === message.data.userId ? { ...u, isDrawing: false } : u,
+            ),
+          );
           break;
-          
-        case 'sync_request':
+
+        case "sync_request":
           // 同期リクエストに応答
           const state = painterRef.current?.exportState();
           if (state && sendMessageRef.current) {
-            sendMessageRef.current({ type: 'sync_response', data: state });
+            sendMessageRef.current({ type: "sync_response", data: state });
           }
           break;
-          
-        case 'sync_response':
+
+        case "sync_response":
           // 状態を復元
           painterRef.current?.importState(message.data);
           break;
       }
     } catch (error) {
-      console.error('Failed to handle message:', error);
+      console.error("Failed to handle message:", error);
     }
   }, []);
 
@@ -132,7 +138,7 @@ export default function WhiteboardCanvas({
     const connectToSkyWay = async () => {
       try {
         // SkyWay SDKを動的にインポート
-        const { SkyWayContext, SkyWayRoom } = await import('@skyway-sdk/room');
+        const { SkyWayContext, SkyWayRoom } = await import("@skyway-sdk/room");
 
         if (cleanup) return;
 
@@ -147,7 +153,7 @@ export default function WhiteboardCanvas({
 
         // P2Pルームに参加または作成
         const room = await SkyWayRoom.FindOrCreate(context, {
-          type: 'p2p',
+          type: "p2p",
           name: roomId,
         });
         roomRef.current = room;
@@ -159,13 +165,13 @@ export default function WhiteboardCanvas({
 
         // ルームに参加（SkyWayは英数字のみ許可のため、userIdをメンバー名として使用）
         const member = await room.join({
-          name: `member_${userId.replace(/-/g, '').slice(0, 12)}`,
+          name: `member_${userId.replace(/-/g, "").slice(0, 12)}`,
           metadata: JSON.stringify({ color: userColor, displayName: userName }),
         });
         memberRef.current = member;
 
         // SkyWayStreamFactoryを使用してDataStreamを作成
-        const { SkyWayStreamFactory } = await import('@skyway-sdk/core');
+        const { SkyWayStreamFactory } = await import("@skyway-sdk/core");
         const dataStream = await SkyWayStreamFactory.createDataStream();
         dataStreamRef.current = dataStream;
 
@@ -174,7 +180,7 @@ export default function WhiteboardCanvas({
           try {
             dataStream.write(JSON.stringify(message));
           } catch (error) {
-            console.error('Failed to send message:', error);
+            console.error("Failed to send message:", error);
           }
         };
 
@@ -183,16 +189,18 @@ export default function WhiteboardCanvas({
         setIsConnected(true);
 
         // 既存のメンバーをリストに追加
-        const existingMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        const existingMembers = room.members.filter(
+          (m: { id: string }) => m.id !== member.id,
+        );
         if (existingMembers.length > 0) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const existingUsers = existingMembers.map((m: any) => {
             const metadata = m.metadata ? JSON.parse(m.metadata) : {};
-            const displayName = metadata.displayName || 'Unknown';
+            const displayName = metadata.displayName || "Unknown";
             return {
               id: m.id,
               name: displayName,
-              color: metadata.color || '#888888',
+              color: metadata.color || "#888888",
               isDrawing: false,
               layerIndex: 0,
             };
@@ -203,36 +211,44 @@ export default function WhiteboardCanvas({
         // 新しいメンバーの参加を監視
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         room.onMemberJoined.add(({ member: newMember }: any) => {
-          console.log('Member joined:', newMember.name);
-          setRemoteUsers(prev => {
-            if (prev.some(u => u.id === newMember.id)) return prev;
-            const metadata = newMember.metadata ? JSON.parse(newMember.metadata) : {};
+          console.log("Member joined:", newMember.name);
+          setRemoteUsers((prev) => {
+            if (prev.some((u) => u.id === newMember.id)) return prev;
+            const metadata = newMember.metadata
+              ? JSON.parse(newMember.metadata)
+              : {};
             // displayNameがあればそれを使用、なければSkyWayのname（_以前の部分）を使用
-            const displayName = metadata.displayName || (newMember.name?.split('_')[0]) || 'Unknown';
-            return [...prev, {
-              id: newMember.id,
-              name: displayName,
-              color: metadata.color || '#888888',
-              isDrawing: false,
-              layerIndex: 0,
-            }];
+            const displayName =
+              metadata.displayName ||
+              newMember.name?.split("_")[0] ||
+              "Unknown";
+            return [
+              ...prev,
+              {
+                id: newMember.id,
+                name: displayName,
+                color: metadata.color || "#888888",
+                isDrawing: false,
+                layerIndex: 0,
+              },
+            ];
           });
         });
 
         // メンバーの退出を監視
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         room.onMemberLeft.add(({ member: leftMember }: any) => {
-          console.log('Member left:', leftMember.name);
-          setRemoteUsers(prev => prev.filter(u => u.id !== leftMember.id));
+          console.log("Member left:", leftMember.name);
+          setRemoteUsers((prev) => prev.filter((u) => u.id !== leftMember.id));
           painterRef.current?.clearRemoteUser(leftMember.id);
         });
 
         // データストリームの購読ヘルパー関数
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const subscribeToDataStream = async (publication: any) => {
-          if (publication.contentType !== 'data') return;
+          if (publication.contentType !== "data") return;
           if (publication.publisher?.id === member.id) return;
-          
+
           try {
             const { stream } = await member.subscribe(publication.id);
             // RemoteDataStreamのonDataイベントでデータを受信
@@ -242,7 +258,7 @@ export default function WhiteboardCanvas({
             });
           } catch (err) {
             // publisher already left room などのエラーは無視
-            console.warn('Failed to subscribe to publication:', err);
+            console.warn("Failed to subscribe to publication:", err);
           }
         };
 
@@ -250,14 +266,14 @@ export default function WhiteboardCanvas({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         room.onStreamPublished.add(async ({ publication }: any) => {
           await subscribeToDataStream(publication);
-          
+
           // 新しいメンバーのストリームが公開されたら、現在の状態を送信
           // （ホストまたは最初のメンバーとして）
           setTimeout(() => {
             const state = painterRef.current?.exportState();
             if (state && sendMessageRef.current) {
-              console.log('Sending canvas state to new member');
-              sendMessageRef.current({ type: 'sync_response', data: state });
+              console.log("Sending canvas state to new member");
+              sendMessageRef.current({ type: "sync_response", data: state });
             }
           }, 500);
         });
@@ -268,31 +284,38 @@ export default function WhiteboardCanvas({
         }
 
         // 既存メンバーがいる場合、キャンバス状態の同期をリクエスト
-        const otherMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        const otherMembers = room.members.filter(
+          (m: { id: string }) => m.id !== member.id,
+        );
         if (otherMembers.length > 0) {
           // 少し待ってから同期リクエストを送信（ストリーム確立のため）
           setTimeout(() => {
             if (sendMessageRef.current) {
-              console.log('Requesting canvas sync from existing members');
-              sendMessageRef.current({ type: 'sync_request', userId });
+              console.log("Requesting canvas sync from existing members");
+              sendMessageRef.current({ type: "sync_request", userId });
             }
           }, 1000);
         }
-
       } catch (error) {
-        console.error('Failed to connect to SkyWay:', error);
-        
+        console.error("Failed to connect to SkyWay:", error);
+
         // ルームが空または無効な場合、Redisからルームを削除
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        if (errorMessage.includes('left room') || errorMessage.includes('not found')) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        if (
+          errorMessage.includes("left room") ||
+          errorMessage.includes("not found")
+        ) {
           try {
-            await fetch(`/api/rooms/${roomId}`, { method: 'DELETE' });
-            setConnectionError('このルームは終了しました。ホームに戻ってください。');
+            await fetch(`/api/rooms/${roomId}`, { method: "DELETE" });
+            setConnectionError(
+              "このルームは終了しました。ホームに戻ってください。",
+            );
           } catch {
-            setConnectionError('接続に失敗しました。');
+            setConnectionError("接続に失敗しました。");
           }
         } else {
-          setConnectionError('接続に失敗しました。再度お試しください。');
+          setConnectionError("接続に失敗しました。再度お試しください。");
         }
       }
     };
@@ -301,22 +324,31 @@ export default function WhiteboardCanvas({
 
     return () => {
       cleanup = true;
-      
+
       // 退出時に自分が最後のメンバーかチェックしてルームを削除
       const room = roomRef.current;
       const member = memberRef.current;
       if (room && member) {
-        const otherMembers = room.members.filter((m: { id: string }) => m.id !== member.id);
+        const otherMembers = room.members.filter(
+          (m: { id: string }) => m.id !== member.id,
+        );
         if (otherMembers.length === 0) {
           // 最後のメンバーの場合、Redisからルームを削除
-          fetch(`/api/rooms/${roomId}`, { method: 'DELETE' }).catch(() => {});
+          fetch(`/api/rooms/${roomId}`, { method: "DELETE" }).catch(() => {});
         }
       }
-      
+
       memberRef.current?.leave();
       contextRef.current?.dispose();
     };
-  }, [isClient, roomId, userName, userColor, skywayToken, handleReceivedMessage]);
+  }, [
+    isClient,
+    roomId,
+    userName,
+    userColor,
+    skywayToken,
+    handleReceivedMessage,
+  ]);
 
   // メッセージ送信
   const sendMessage = useCallback((message: WhiteboardMessage) => {
@@ -324,22 +356,31 @@ export default function WhiteboardCanvas({
   }, []);
 
   // ストロークイベントハンドラ
-  const handleStrokeStart = useCallback((data: StrokeStartData) => {
-    sendMessage({ type: 'stroke_start', data });
-  }, [sendMessage]);
+  const handleStrokeStart = useCallback(
+    (data: StrokeStartData) => {
+      sendMessage({ type: "stroke_start", data });
+    },
+    [sendMessage],
+  );
 
-  const handleStrokeMove = useCallback((data: StrokeMoveData) => {
-    sendMessage({ type: 'stroke_move', data });
-  }, [sendMessage]);
+  const handleStrokeMove = useCallback(
+    (data: StrokeMoveData) => {
+      sendMessage({ type: "stroke_move", data });
+    },
+    [sendMessage],
+  );
 
-  const handleStrokeEnd = useCallback((data: StrokeEndData) => {
-    sendMessage({ type: 'stroke_end', data });
-  }, [sendMessage]);
+  const handleStrokeEnd = useCallback(
+    (data: StrokeEndData) => {
+      sendMessage({ type: "stroke_end", data });
+    },
+    [sendMessage],
+  );
 
   // 退出処理
   const handleLeave = useCallback(() => {
     memberRef.current?.leave();
-    router.push('/');
+    router.push("/");
   }, [router]);
 
   if (connectionError) {
@@ -348,7 +389,7 @@ export default function WhiteboardCanvas({
         <div className="text-center">
           <p className="text-red-400 mb-4">{connectionError}</p>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="px-4 py-2 bg-zinc-700 text-white rounded-lg hover:bg-zinc-600"
           >
             ホームに戻る
@@ -365,13 +406,17 @@ export default function WhiteboardCanvas({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-medium text-white">{roomName}</h1>
-            <span className={`px-2 py-0.5 rounded text-xs ${
-              isConnected ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-            }`}>
-              {isConnected ? '接続中' : '接続中...'}
+            <span
+              className={`px-2 py-0.5 rounded text-xs ${
+                isConnected
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-yellow-500/20 text-yellow-400"
+              }`}
+            >
+              {isConnected ? "接続中" : "接続中..."}
             </span>
           </div>
-          
+
           <div className="flex items-center gap-4">
             {/* 参加者リスト */}
             <div className="flex items-center gap-2">
@@ -386,21 +431,21 @@ export default function WhiteboardCanvas({
                   {userName.charAt(0).toUpperCase()}
                 </div>
                 {/* リモートユーザー */}
-                {remoteUsers.map(user => (
+                {remoteUsers.map((user) => (
                   <div
                     key={user.id}
                     className={`w-7 h-7 rounded-full border-2 border-zinc-800 flex items-center justify-center text-xs font-medium text-white ${
-                      user.isDrawing ? 'ring-2 ring-white/50' : ''
+                      user.isDrawing ? "ring-2 ring-white/50" : ""
                     }`}
                     style={{ backgroundColor: user.color }}
-                    title={`${user.name}${user.isDrawing ? ' (描画中 - レイヤー' + (user.layerIndex + 1) + ')' : ''}`}
+                    title={`${user.name}${user.isDrawing ? " (描画中 - レイヤー" + (user.layerIndex + 1) + ")" : ""}`}
                   >
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 ))}
               </div>
             </div>
-            
+
             <button
               onClick={handleLeave}
               className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors"

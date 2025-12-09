@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import { LuHand } from "react-icons/lu";
-import { ToolButton } from './ToolButton';
+import { ToolButton } from "./ToolButton";
 
 type HandMoveProps = {
   size?: number;
-}
+};
 
 /**
  * 手のひらツール
@@ -13,9 +13,9 @@ type HandMoveProps = {
 const HandMove: React.FC<HandMoveProps> = ({ size = 20 }) => {
   const handleMoveSelect = () => {
     // カーソルをgrabに設定
-    const canvasDom = document.getElementById('main_canvas_area');
+    const canvasDom = document.getElementById("main_canvas_area");
     if (canvasDom) {
-      (canvasDom as HTMLElement).style.cursor = 'grab';
+      (canvasDom as HTMLElement).style.cursor = "grab";
     }
   };
 

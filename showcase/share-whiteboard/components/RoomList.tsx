@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface Room {
   id: string;
@@ -24,16 +24,16 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // パスワード入力モーダル
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
 
   // 10分以内のルームのみをフィルタリング
-  const recentRooms = rooms.filter(room => {
+  const recentRooms = rooms.filter((room) => {
     const createdAt = new Date(room.createdAt).getTime();
     const now = Date.now();
     const ageMinutes = (now - createdAt) / (1000 * 60);
@@ -49,8 +49,8 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
   // ルーム一覧を取得
   const fetchRooms = async () => {
     try {
-      const res = await fetch('/api/rooms');
-      if (!res.ok) throw new Error('ルーム一覧の取得に失敗しました');
+      const res = await fetch("/api/rooms");
+      if (!res.ok) throw new Error("ルーム一覧の取得に失敗しました");
       const data = await res.json();
       setRooms(data.rooms || []);
       // ページが範囲外になった場合はリセット
@@ -65,7 +65,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
         setCurrentPage(newTotalPages);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +81,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
   // ルームに参加
   const handleJoinRoom = async (room: Room) => {
     if (!userName.trim()) {
-      setJoinError('名前を入力してください');
+      setJoinError("名前を入力してください");
       return;
     }
 
@@ -90,8 +90,8 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
 
     try {
       const joinRes = await fetch(`/api/rooms/${room.id}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userName,
           password: room.hasPassword ? password : undefined,
@@ -100,7 +100,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
 
       if (!joinRes.ok) {
         const errorData = await joinRes.json();
-        throw new Error(errorData.error || 'ルームへの参加に失敗しました');
+        throw new Error(errorData.error || "ルームへの参加に失敗しました");
       }
 
       const joinData = await joinRes.json();
@@ -115,7 +115,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
       });
       router.push(`/room/${room.id}?${params.toString()}`);
     } catch (err) {
-      setJoinError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setJoinError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsJoining(false);
     }
@@ -124,25 +124,25 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
   // ルームカードをクリック
   const handleRoomClick = (room: Room) => {
     setSelectedRoom(room);
-    setPassword('');
+    setPassword("");
     setJoinError(null);
   };
 
   // モーダルを閉じる
   const closeModal = () => {
     setSelectedRoom(null);
-    setPassword('');
+    setPassword("");
     setJoinError(null);
   };
 
   // 日時フォーマット
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleString('ja-JP', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleString("ja-JP", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -164,8 +164,18 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
           className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors"
           title="更新"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </button>
       </div>
@@ -179,12 +189,24 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
       {recentRooms.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
-            <svg className="w-8 h-8 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <svg
+              className="w-8 h-8 text-zinc-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
             </svg>
           </div>
           <p className="text-zinc-400 mb-4">公開中のルームはありません</p>
-          <p className="text-xs text-zinc-500 mb-4">（10分以内に作成されたルームのみ表示）</p>
+          <p className="text-xs text-zinc-500 mb-4">
+            （10分以内に作成されたルームのみ表示）
+          </p>
           <button
             onClick={onCreateClick}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
@@ -194,7 +216,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
         </div>
       ) : (
         <div className="grid gap-3">
-          {currentRooms.map(room => (
+          {currentRooms.map((room) => (
             <button
               key={room.id}
               onClick={() => handleRoomClick(room)}
@@ -207,8 +229,18 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
                       {room.name}
                     </h3>
                     {room.hasPassword && (
-                      <svg className="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      <svg
+                        className="w-4 h-4 text-zinc-500 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
                       </svg>
                     )}
                   </div>
@@ -217,7 +249,9 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
                   </p>
                 </div>
                 <div className="ml-4 shrink-0">
-                  <span className="text-xs text-zinc-500">最大 {room.maxUsers}人</span>
+                  <span className="text-xs text-zinc-500">
+                    最大 {room.maxUsers}人
+                  </span>
                 </div>
               </div>
             </button>
@@ -229,38 +263,58 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6">
           <button
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
             className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
+
           <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                   page === currentPage
-                    ? 'bg-blue-600 text-white'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-700'
+                    ? "bg-blue-600 text-white"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-700"
                 }`}
               >
                 {page}
               </button>
             ))}
           </div>
-          
+
           <button
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
             className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
@@ -283,8 +337,18 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
                 onClick={closeModal}
                 className="p-1 text-zinc-400 hover:text-white rounded"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -342,7 +406,7 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
                   disabled={isJoining || !userName.trim()}
                   className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isJoining ? '参加中...' : '参加する'}
+                  {isJoining ? "参加中..." : "参加する"}
                 </button>
               </div>
             </div>
@@ -352,4 +416,3 @@ export default function RoomList({ onCreateClick }: RoomListProps) {
     </div>
   );
 }
-

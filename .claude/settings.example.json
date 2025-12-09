@@ -1,0 +1,9 @@
+{
+  "env": {
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "ANTHROPIC_MODEL": "global.anthropic.claude-opus-4-5-20251101-v1:0",
+    "AWS_REGION": "ap-northeast-1",
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "200000",
+    "AWS_BEARER_TOKEN_BEDROCK": "<YOUR_AWS_BEARER_TOKEN_BEDROCK>"
+  }
+}

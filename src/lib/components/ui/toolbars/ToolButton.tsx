@@ -1,6 +1,6 @@
-import React from 'react';
-import { useToolStore, ToolType } from '../../store';
-import { usePainter } from '../../PainterContext';
+import React from "react";
+import { useToolStore, ToolType } from "../../store";
+import { usePainter } from "../../PainterContext";
 
 type ToolButtonProps = {
   toolType: ToolType;
@@ -26,7 +26,7 @@ const ToolButton: React.FC<ToolButtonProps> = ({
     setTool(toolType);
     const brush = painter!.getBrush();
     if (brush) {
-      brush.setToolType(toolType === 'lasso' ? 'rect' : toolType);
+      brush.setToolType(toolType === "lasso" ? "rect" : toolType);
     }
 
     // ツール固有の処理を実行
@@ -38,19 +38,19 @@ const ToolButton: React.FC<ToolButtonProps> = ({
   const containerStyle: React.CSSProperties = {
     width: size + 10,
     height: size + 10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    backgroundColor: isActive ? '#4a90e2' : 'transparent',
-    borderRadius: '16px',
-    transition: 'background-color 0.2s',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    backgroundColor: isActive ? "#4a90e2" : "transparent",
+    borderRadius: "16px",
+    transition: "background-color 0.2s",
   };
 
   const iconStyle: React.CSSProperties = {
     width: size,
     height: size,
-    color: 'white',
+    color: "white",
   };
 
   return (

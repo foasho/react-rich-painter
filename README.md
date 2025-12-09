@@ -6,10 +6,7 @@
 React Rich Painterは、
 Reactで統合可能なPainterライブラリです。
 
-
-[Demo on Storybook](https://story-book-react-rich-painter.vercel.app)
-
-
+[Demo on Storybook](https://storybook-react-rich-painter.vercel.app/)
 
 ## ショーケース
 
@@ -18,15 +15,16 @@ Reactで統合可能なPainterライブラリです。
 </div>
 
 ## 特徴🌴
-* ノート利用とペイントツール利用が可能
-* マウス入力 / タッチ入力 / ペン入力🚀
-  * **スマート入力切り替え**: ペン入力を最優先し、使用パターンに応じて自動的に入力タイプを切り替え✨
-* Webでの本格的でなめらかな線👥
-* **レイヤー機能**: 最大30レイヤーのサポート、名前編集、可視化・不透明度調整、順序変更、ドラッグ可能なパネル📱
-* ブラシ機能 / スポイト機能 などの豊富な機能拡張🎨
-* 最適化された軽量なライブラリ💥
-* NextJS / Vite などReactに統合可能なTSの柔軟なライブラリ🤖
-* UI位置の自動保存（localStorage統合）💾
+
+- ノート利用とペイントツール利用が可能
+- マウス入力 / タッチ入力 / ペン入力🚀
+  - **スマート入力切り替え**: ペン入力を最優先し、使用パターンに応じて自動的に入力タイプを切り替え✨
+- Webでの本格的でなめらかな線👥
+- **レイヤー機能**: 最大30レイヤーのサポート、名前編集、可視化・不透明度調整、順序変更、ドラッグ可能なパネル📱
+- ブラシ機能 / スポイト機能 などの豊富な機能拡張🎨
+- 最適化された軽量なライブラリ💥
+- NextJS / Vite などReactに統合可能なTSの柔軟なライブラリ🤖
+- UI位置の自動保存（localStorage統合）💾
 
 ### Usage💡
 
@@ -43,7 +41,7 @@ import { ReactRichPainter } from "react-rich-painter";
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       {/* autoSize=true（デフォルト）の場合、親要素のサイズの0.8倍が自動的に設定されます */}
       <ReactRichPainter />
     </div>
@@ -52,15 +50,13 @@ function App() {
 
 // または固定サイズを指定する場合
 function AppWithFixedSize() {
-  return (
-    <ReactRichPainter autoSize={false} width={800} height={600} />
-  );
+  return <ReactRichPainter autoSize={false} width={800} height={600} />;
 }
 
 // Notebookプリセット：シンプルなメモ・スケッチ向け
 function NotebookApp() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       {/* 親要素いっぱいにキャンバスを配置し、必要最小限の機能のみ表示 */}
       <ReactRichPainter preset="notebook" />
     </div>
@@ -106,13 +102,13 @@ import { useRef } from "react";
 
 function SharedWhiteboard() {
   const painterRef = useRef<PainterHandle>(null);
-  
+
   // リモートからのストロークを適用
   const handleRemoteStroke = (data) => {
     painterRef.current?.applyRemoteStrokeStart(data);
     // applyRemoteStrokeMove, applyRemoteStrokeEnd も同様
   };
-  
+
   return (
     <ReactRichPainter
       ref={painterRef}
@@ -150,7 +146,7 @@ import { ReactRichPainter } from "react-rich-painter";
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       {/* showFileMenu=trueでToolBar/NotebookBarにFileメニューが表示されます */}
       <ReactRichPainter showFileMenu={true} />
     </div>
@@ -159,6 +155,7 @@ function App() {
 ```
 
 FileMenuから以下の操作が可能です：
+
 - **ファイルを開く**: JSONファイルから描画状態を復元
 - **エクスポート**: 現在の描画状態をJSONファイルとして保存
 - **画像を保存**: 統合されたキャンバス画像をPNG形式で保存
@@ -170,7 +167,7 @@ import {
   ReactRichPainter,
   PainterState,
   exportPainterState,
-  serializePainterState
+  serializePainterState,
 } from "react-rich-painter";
 import { useState } from "react";
 
@@ -179,12 +176,12 @@ function App() {
 
   const handleUpdate = (state: PainterState) => {
     // 状態が更新されるたびに呼ばれます（100msでthrottle）
-    console.log('Painter state updated:', state);
+    console.log("Painter state updated:", state);
     setSavedState(state);
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       {/* onUpdateで状態変更を監視 */}
       <ReactRichPainter
         onUpdate={handleUpdate}
@@ -192,16 +189,18 @@ function App() {
       />
 
       {savedState && (
-        <button onClick={() => {
-          // JSONとしてエクスポート
-          const json = serializePainterState(savedState);
-          const blob = new Blob([json], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = 'painting.json';
-          link.click();
-        }}>
+        <button
+          onClick={() => {
+            // JSONとしてエクスポート
+            const json = serializePainterState(savedState);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "painting.json";
+            link.click();
+          }}
+        >
           エクスポート
         </button>
       )}
@@ -240,8 +239,8 @@ type PainterState = {
     level: number;
     weight: number;
   };
-  currentTool: 'pen' | 'eraser' | 'dripper' | 'lasso' | 'move';
-  inputType: 'pen' | 'mouse' | 'touch';
+  currentTool: "pen" | "eraser" | "dripper" | "lasso" | "move";
+  inputType: "pen" | "mouse" | "touch";
 };
 ```
 
@@ -268,7 +267,7 @@ Storybookを使用して、様々なパラメータでReact Rich Painterをイ�
 
 ```bash
 # Storybookの起動
-npm run storybook
+pnpm run storybook
 ```
 
 ブラウザで `http://localhost:6006` を開く
@@ -277,5 +276,5 @@ npm run storybook
 
 ```bash
 # Storybookの静的ファイルを生成
-npm run build-storybook
+pnpm run build-storybook
 ```

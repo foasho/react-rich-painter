@@ -1,6 +1,6 @@
-import { debounce } from 'es-toolkit';
-import { STORAGE_KEYS } from './storage-keys';
-import { DEFAULT_BRUSH_SETTINGS, type BrushSettings } from '../defaults';
+import { debounce } from "es-toolkit";
+import { STORAGE_KEYS } from "./storage-keys";
+import { DEFAULT_BRUSH_SETTINGS, type BrushSettings } from "../defaults";
 
 /**
  * LocalStorageからブラシ設定を読み込む
@@ -13,7 +13,7 @@ export function loadBrushSettings(): Partial<BrushSettings> {
     const parsed = JSON.parse(stored);
     return parsed;
   } catch (error) {
-    console.error('Failed to load brush settings from localStorage:', error);
+    console.error("Failed to load brush settings from localStorage:", error);
     return {};
   }
 }
@@ -28,7 +28,7 @@ function saveBrushSettingsImmediate(settings: Partial<BrushSettings>): void {
     const merged = { ...existing, ...settings };
     localStorage.setItem(STORAGE_KEYS.BRUSH_SETTINGS, JSON.stringify(merged));
   } catch (error) {
-    console.error('Failed to save brush settings to localStorage:', error);
+    console.error("Failed to save brush settings to localStorage:", error);
   }
 }
 
@@ -46,7 +46,7 @@ export function resetBrushSettings(): typeof DEFAULT_BRUSH_SETTINGS {
     localStorage.removeItem(STORAGE_KEYS.BRUSH_SETTINGS);
     return { ...DEFAULT_BRUSH_SETTINGS };
   } catch (error) {
-    console.error('Failed to reset brush settings:', error);
+    console.error("Failed to reset brush settings:", error);
     return { ...DEFAULT_BRUSH_SETTINGS };
   }
 }

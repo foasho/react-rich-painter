@@ -2,7 +2,7 @@ class Tablet {
   static plugin(): any {
     // wacom対応
     let plugin = document.querySelector(
-      'object[type="application/x-wacomtabletplugin"]'
+      'object[type="application/x-wacomtabletplugin"]',
     ) as any;
     if (!plugin) {
       plugin = document.createElement("object");

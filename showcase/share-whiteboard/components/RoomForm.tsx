@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RoomForm() {
   const router = useRouter();
-  const [mode, setMode] = useState<'create' | 'join'>('create');
-  const [roomName, setRoomName] = useState('');
-  const [roomId, setRoomId] = useState('');
-  const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [mode, setMode] = useState<"create" | "join">("create");
+  const [roomName, setRoomName] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomName.trim() || !userName.trim()) {
-      setError('ルーム名とユーザー名を入力してください');
+      setError("ルーム名とユーザー名を入力してください");
       return;
     }
 
@@ -25,9 +25,9 @@ export default function RoomForm() {
 
     try {
       // ルームを作成
-      const createRes = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const createRes = await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: roomName,
           password: password || undefined,
@@ -35,15 +35,15 @@ export default function RoomForm() {
       });
 
       if (!createRes.ok) {
-        throw new Error('ルームの作成に失敗しました');
+        throw new Error("ルームの作成に失敗しました");
       }
 
       const { roomId: newRoomId } = await createRes.json();
 
       // ルームに参加
       const joinRes = await fetch(`/api/rooms/${newRoomId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userName,
           password: password || undefined,
@@ -51,7 +51,7 @@ export default function RoomForm() {
       });
 
       if (!joinRes.ok) {
-        throw new Error('ルームへの参加に失敗しました');
+        throw new Error("ルームへの参加に失敗しました");
       }
 
       const joinData = await joinRes.json();
@@ -66,7 +66,7 @@ export default function RoomForm() {
       });
       router.push(`/room/${newRoomId}?${params.toString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +75,7 @@ export default function RoomForm() {
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomId.trim() || !userName.trim()) {
-      setError('ルームIDとユーザー名を入力してください');
+      setError("ルームIDとユーザー名を入力してください");
       return;
     }
 
@@ -86,14 +86,14 @@ export default function RoomForm() {
       // ルーム情報を取得
       const roomRes = await fetch(`/api/rooms/${roomId}`);
       if (!roomRes.ok) {
-        throw new Error('ルームが見つかりません');
+        throw new Error("ルームが見つかりません");
       }
       const roomData = await roomRes.json();
 
       // ルームに参加
       const joinRes = await fetch(`/api/rooms/${roomId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userName,
           password: password || undefined,
@@ -102,7 +102,7 @@ export default function RoomForm() {
 
       if (!joinRes.ok) {
         const errorData = await joinRes.json();
-        throw new Error(errorData.error || 'ルームへの参加に失敗しました');
+        throw new Error(errorData.error || "ルームへの参加に失敗しました");
       }
 
       const joinData = await joinRes.json();
@@ -117,7 +117,7 @@ export default function RoomForm() {
       });
       router.push(`/room/${roomId}?${params.toString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsLoading(false);
     }
@@ -128,21 +128,27 @@ export default function RoomForm() {
       {/* タブ */}
       <div className="flex mb-6">
         <button
-          onClick={() => { setMode('create'); setError(null); }}
+          onClick={() => {
+            setMode("create");
+            setError(null);
+          }}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            mode === 'create'
-              ? 'border-blue-500 text-blue-400'
-              : 'border-zinc-700 text-zinc-400 hover:text-zinc-300'
+            mode === "create"
+              ? "border-blue-500 text-blue-400"
+              : "border-zinc-700 text-zinc-400 hover:text-zinc-300"
           }`}
         >
           ルームを作成
         </button>
         <button
-          onClick={() => { setMode('join'); setError(null); }}
+          onClick={() => {
+            setMode("join");
+            setError(null);
+          }}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            mode === 'join'
-              ? 'border-blue-500 text-blue-400'
-              : 'border-zinc-700 text-zinc-400 hover:text-zinc-300'
+            mode === "join"
+              ? "border-blue-500 text-blue-400"
+              : "border-zinc-700 text-zinc-400 hover:text-zinc-300"
           }`}
         >
           ルームに参加
@@ -155,8 +161,11 @@ export default function RoomForm() {
         </div>
       )}
 
-      <form onSubmit={mode === 'create' ? handleCreateRoom : handleJoinRoom} className="space-y-4">
-        {mode === 'create' ? (
+      <form
+        onSubmit={mode === "create" ? handleCreateRoom : handleJoinRoom}
+        className="space-y-4"
+      >
+        {mode === "create" ? (
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5">
               ルーム名
@@ -215,10 +224,13 @@ export default function RoomForm() {
           disabled={isLoading}
           className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? '処理中...' : mode === 'create' ? 'ルームを作成' : 'ルームに参加'}
+          {isLoading
+            ? "処理中..."
+            : mode === "create"
+              ? "ルームを作成"
+              : "ルームに参加"}
         </button>
       </form>
     </div>
   );
 }
-

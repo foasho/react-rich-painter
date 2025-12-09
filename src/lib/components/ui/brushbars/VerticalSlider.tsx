@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-const SliderContainer = styled.div<{ sliderWidth: number, sliderLength: number }>`
+const SliderContainer = styled.div<{
+  sliderWidth: number;
+  sliderLength: number;
+}>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,14 +13,17 @@ const SliderContainer = styled.div<{ sliderWidth: number, sliderLength: number }
   position: relative;
 `;
 
-const StyledSlider = styled.input<{ sliderWidth: number, sliderLength: number }>`
+const StyledSlider = styled.input<{
+  sliderWidth: number;
+  sliderLength: number;
+}>`
   -webkit-appearance: none;
   appearance: none;
   width: ${(props) => props.sliderLength}px; /* スライダーの長さ */
   height: ${(props) => props.sliderWidth}px; /* スライダーの厚み */
   transform: rotate(-90deg);
   background: transparent;
-  
+
   /* スライダーを中央に配置 */
   display: flex;
   justify-content: center;
@@ -27,7 +33,11 @@ const StyledSlider = styled.input<{ sliderWidth: number, sliderLength: number }>
   &::-webkit-slider-runnable-track {
     width: 100%;
     height: ${(props) => props.sliderWidth / 2}px;
-    background: linear-gradient(to right, blue var(--value), black var(--value));
+    background: linear-gradient(
+      to right,
+      blue var(--value),
+      black var(--value)
+    );
     border-radius: 3px;
     border: none;
   }
@@ -36,7 +46,11 @@ const StyledSlider = styled.input<{ sliderWidth: number, sliderLength: number }>
   &::-moz-range-track {
     width: 100%;
     height: 6px;
-    background: linear-gradient(to right, blue var(--value), black var(--value));
+    background: linear-gradient(
+      to right,
+      blue var(--value),
+      black var(--value)
+    );
     border-radius: 3px;
     border: none;
   }
@@ -102,14 +116,20 @@ const VerticalSlider: React.FC<VerticalSliderProps> = ({
     // 初期値のスタイル設定
     const slider = document.getElementById(sliderId) as HTMLInputElement;
     if (slider) {
-      slider.style.setProperty("--value", `${(slider.valueAsNumber / Number(slider.max)) * 100}%`);
+      slider.style.setProperty(
+        "--value",
+        `${(slider.valueAsNumber / Number(slider.max)) * 100}%`,
+      );
     }
   }, [sliderId]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const slider = event.target;
     const value = slider.valueAsNumber;
-    slider.style.setProperty("--value", `${(value / Number(slider.max)) * 100}%`);
+    slider.style.setProperty(
+      "--value",
+      `${(value / Number(slider.max)) * 100}%`,
+    );
 
     // コールバックを呼び出す
     if (onChange) {
@@ -132,6 +152,5 @@ const VerticalSlider: React.FC<VerticalSliderProps> = ({
     </SliderContainer>
   );
 };
-
 
 export { VerticalSlider, type VerticalSliderProps };

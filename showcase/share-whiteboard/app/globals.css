@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-geist: 'Geist', sans-serif;
+  --font-geist: "Geist", sans-serif;
 }
 
 @layer base {

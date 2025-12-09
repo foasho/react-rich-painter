@@ -30,7 +30,7 @@ npm run typegen
 # Linting
 npm run lint          # ESLintを実行（エラー時に停止）
 npm run eslint        # ESLintを実行（自動修正）
-npm run eslint:ci     # CI用のESLint実行
+npm run eslint:ci     # CI用のESLint
 
 # Formatting
 npm run prettier      # Prettierでフォーマットをチェック
@@ -51,6 +51,7 @@ npm run preview
 プロジェクトは以下の3つの主要レイヤーで構成されています：
 
 #### 1. **Painter Engine（`src/lib/utils/painter/`）**
+
 描画ロジックのコア実装：
 
 - **`RichPainter.ts`**: メインのペインターエンジン
@@ -149,6 +150,7 @@ npm run preview
   - `VerticalSlider.tsx`: 垂直スライダーコンポーネント
 
 #### 3. **State Management（`src/lib/components/store/`）**
+
 Zustandによる状態管理：
 
 - **`tool.ts`**: ツール状態（現在選択中のツール、ツール切り替え）
@@ -216,6 +218,7 @@ Zustandによる状態管理：
 #### アーキテクチャ
 
 **型定義（`src/lib/types/PainterState.ts`）**:
+
 - `PainterState`: Painterの完全な状態を表す型
 - `LayerState`: レイヤー情報（Base64画像データ含む）
 - `BrushState`: ブラシ設定
@@ -223,12 +226,14 @@ Zustandによる状態管理：
 - `StabilizerState`: 手ぶれ補正設定
 
 **状態管理（`src/lib/utils/stateManager.ts`）**:
+
 - `exportPainterState(painter)`: RichPainterからPainterStateを抽出
 - `importPainterState(painter, state)`: PainterStateからRichPainterを復元
 - `serializePainterState(state)`: PainterStateをJSON文字列に変換
 - `deserializePainterState(json)`: JSON文字列からPainterStateを復元
 
 **UI（`src/lib/components/ui/panels/FileMenu.tsx`）**:
+
 - 右上端に配置されるFileメニュー
 - ファイルを開く: `<input type="file">` + `importPainterState`
 - エクスポート: `exportPainterState` + Blob download
@@ -249,6 +254,53 @@ Zustandによる状態管理：
 - Import時は`painter.lockHistory()`でUndo履歴を無効化
 - Brush/各種Storeの状態も完全に復元
 - 非同期処理（画像読み込み）のため`async/await`を使用
+
+### Share（共有ホワイトボード）機能
+
+リアルタイム共有ホワイトボードを構築するための機能です。
+
+#### アーキテクチャ
+
+**型定義（`src/lib/types/ShareTypes.ts`）**:
+
+- `StrokeStartData`: ストローク開始データ（ユーザーID、座標、筆圧、ブラシ設定）
+- `StrokeMoveData`: ストローク移動データ
+- `StrokeEndData`: ストローク終了データ
+- `RemoteUserState`: リモートユーザーの描画状態
+- `PainterHandle`: `useImperativeHandle`用のハンドル型
+- `WhiteboardMessage`: P2P通信メッセージ型
+
+**Props**:
+
+- `share?: boolean`: 共有モードを有効にするか（デフォルト: `false`）
+- `userId?: string`: 共有モード時のユーザー識別子
+- `userName?: string`: 共有モード時のユーザー表示名
+- `onStrokeStart/Move/End`: ストロークイベントコールバック
+
+**refハンドル（`PainterHandle`）**:
+
+- `applyRemoteStrokeStart/Move/End`: リモートストロークの適用
+- `exportState/importState`: 状態の同期
+- `getRemoteUsers/clearRemoteUser`: リモートユーザー管理
+
+#### 実装パターン
+
+```tsx
+const painterRef = useRef<PainterHandle>(null);
+
+// リモートからのストロークを適用
+painterRef.current?.applyRemoteStrokeStart(data);
+painterRef.current?.applyRemoteStrokeMove(data);
+painterRef.current?.applyRemoteStrokeEnd(data);
+
+// 自分のストロークをサーバーに送信
+<ReactRichPainter
+  ref={painterRef}
+  share={true}
+  userId="user-123"
+  onStrokeStart={(data) => sendToServer(data)}
+/>;
+```
 
 ### 描画フロー
 
@@ -279,29 +331,39 @@ Zustandによる状態管理：
 ## ビルド設定
 
 ### ライブラリとしてのビルド
+
 `vite.config.ts`でライブラリモードを設定：
+
 - エントリーポイント: `src/lib/index.tsx`
 - 外部化: `react`、`react-dom`
 - 出力: UMD形式（`dist/index.umd.cjs`）とESM形式（`dist/index.js`）
 
 ### 型定義
+
 TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として出力。
 
 ## 開発時の注意点
 
 ### Painterインスタンス初期化
+
 - **重要**: `Painter.tsx`でのPainterインスタンス初期化は空の依存配列`[]`を使用
   ```typescript
   useEffect(() => {
-    const painter = new RichPainter({ undoLimit: 30, initSize: { width: 800, height: 600 } });
+    const painter = new RichPainter({
+      undoLimit: 30,
+      initSize: { width: 800, height: 600 },
+    });
     setPainter(painter);
   }, []); // 空の依存配列で1回のみ初期化
   ```
 - キャンバスサイズの変更は別のuseEffectで処理し、Painterインスタンスを再生成しない
   ```typescript
   useEffect(() => {
-    if (painter && (painter.getCanvasSize().width !== canvasSize.width ||
-                    painter.getCanvasSize().height !== canvasSize.height)) {
+    if (
+      painter &&
+      (painter.getCanvasSize().width !== canvasSize.width ||
+        painter.getCanvasSize().height !== canvasSize.height)
+    ) {
       painter.lockHistory();
       painter.setCanvasSize(canvasSize.width, canvasSize.height);
       painter.unlockHistory();
@@ -311,27 +373,31 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 - これにより、ブラシ設定が保持され、不要な再初期化を防止
 
 ### Undo/Redoエラーハンドリング
+
 - Undo/Redo操作は必ずtry-catchで囲む
   ```typescript
   try {
     painter.undo();
   } catch (error) {
-    console.log('Undo not available:', error);
+    console.log("Undo not available:", error);
   }
   ```
 - スタックが空の場合のエラーをユーザーに表示せず、コンソールログのみに記録
 
 ### Canvas操作
+
 - `getContext("2d")`の結果は必ず存在確認してから使用
 - `paintingCanvas`への描画は必ず`drawPaintingCanvas()`で本番レイヤーに転写
 - レイヤー操作時は必ず`lockHistory()`/`unlockHistory()`でUndo記録を制御
 
 ### ブラシ実装
+
 - ブラシのスペーシングは`delta`変数で制御（連続描画の間隔）
 - `transformedImage`はキャッシュされ、`transformedImageIsDirty`フラグで再生成を管理
 - カスタムブラシ画像は`HTMLImageElement`として設定
 
 ### イベント処理
+
 - Pointer Eventsを使用（Touch EventsとMouse Eventsの統一）
 - `touchAction: 'none'`でデフォルトのブラウザ動作を無効化
 - 筆圧は`PointerEvent.pressure`から取得（0〜1の範囲）
@@ -339,6 +405,7 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 - `canvasPointerMove`は描画中（`isDrawing === true`）のみ処理
 
 ### ツール切り替えアーキテクチャ
+
 - **ToolButton共通コンポーネント**: DRY原則に従い、ツールボタンのロジックを共通化
   - ツール選択状態の管理
   - 視覚的フィードバック（選択中は青色でハイライト）
@@ -350,9 +417,11 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
   - `lasso`、`rect`、`move`: 選択・移動ツール（今後実装予定）
 
 ### レイヤーパネル管理
+
 - **UI状態の独立**: レイヤーパネルの開閉状態はツール選択とは独立して`useUiStore`で管理
 - **レイヤー名の永続化**: `useLayerNameStore`でレイヤーインデックスと名前をマッピング
 - **レイヤー順序変更時の選択保持**:
+
   ```typescript
   const currentSelected = painter.getCurrentLayerIndex();
   painter.swapLayer(index, index + 1);
@@ -368,11 +437,13 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 
   painter.selectLayer(newSelectedIndex);
   ```
+
 - **localStorage統合**: 各UIパネル（toolbar、brushbar、layer-panel）の位置を個別に保存
   - キー: `wrapper-position-${draggableId}`
   - 値: `{ x: number, y: number }`のJSON
 
 ### プリセット管理
+
 - **preset prop**: `'painting'` | `'notebook'` でUIモードを切り替え
 - **プリセット別の表示制御**（`Painter.tsx:217-227`）:
   ```typescript
@@ -390,7 +461,7 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
   ```
 - **キャンバスサイズのスケール調整**（`Painter.tsx:81`）:
   ```typescript
-  const scale = preset === 'notebook' ? 1.0 : 0.8;
+  const scale = preset === "notebook" ? 1.0 : 0.8;
   const newWidth = Math.floor(parentWidth * scale);
   const newHeight = Math.floor(parentHeight * scale);
   ```
@@ -400,18 +471,19 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
   - `<ReactRichPainter preset="notebook" />`
 
 ### スタビライザー
+
 - `toolStabilizeLevel`: 補正の強度（0で無効、大きいほど強力）
 - `toolStabilizeWeight`: 追従の重み（0〜0.95）
 - タイマーベースで遅延描画を実現
 
 ### パフォーマンス最適化
+
 - DirtyRect方式でUndo/Redoのメモリ使用量を削減
 - `requestAnimationFrame`ではなく`setInterval`でtick処理
 - knockout（抜き描画）モードでは`beforeKnockout`キャンバスにバックアップ
 
 ## テスト
 
-現在テストは未実装です。テストを追加する場合は、以下の領域をカバーすることを推奨します：
 - ブラシの描画ロジック
 - Undo/Redoスタックの動作
 - レイヤー操作（追加、削除、入れ替え）
@@ -420,9 +492,10 @@ TypeScriptコンパイラで型定義を生成し、`types/index.d.ts`として�
 ## Storybook
 
 UIコンポーネントのデモとドキュメントをStorybookで管理しています。
-デプロイ先: https://react-rich-painter.vercel.app
+デプロイ先: https://storybook-react-rich-painter.vercel.app/
 
 ### 主なストーリー
+
 - **自動サイズ調整**: Default、AutoSizeSmallContainer、AutoSizeLargeContainer
 - **固定サイズ**: FixedSizeDefault、Small、Large、Square、Mobile、Tablet、Widescreen
 - **UI設定**: CanvasOnly、WithToolbarOnly、WithBrushbarOnly

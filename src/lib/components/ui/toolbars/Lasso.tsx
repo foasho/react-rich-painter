@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import { LuLasso } from "react-icons/lu";
-import { ToolButton } from './ToolButton';
-import { usePainter } from '../../PainterContext';
-import { useSelectionStore } from '../../store/selection';
+import { ToolButton } from "./ToolButton";
+import { usePainter } from "../../PainterContext";
+import { useSelectionStore } from "../../store/selection";
 
 type LassoProps = {
   size?: number;
-}
+};
 
 /**
  * 投げ縄選択ツール
@@ -24,9 +24,9 @@ const Lasso: React.FC<LassoProps> = ({ size = 20 }) => {
     painter!.setPaintingKnockout(false);
 
     // カーソルをcrosshairに設定
-    const canvasDom = document.getElementById('main_canvas_area');
+    const canvasDom = document.getElementById("main_canvas_area");
     if (canvasDom) {
-      (canvasDom as HTMLElement).style.cursor = 'crosshair';
+      (canvasDom as HTMLElement).style.cursor = "crosshair";
     }
   };
 

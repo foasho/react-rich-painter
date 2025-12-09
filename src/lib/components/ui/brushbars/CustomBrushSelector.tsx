@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { usePainter } from '../../PainterContext';
-import { useBrushBarStore } from '../../store/brush';
+import React, { useState, useRef, useEffect } from "react";
+import { usePainter } from "../../PainterContext";
+import { useBrushBarStore } from "../../store/brush";
 
 type CustomBrushSelectorProps = {
   size?: number;
@@ -10,22 +10,26 @@ const CustomBrushSelector: React.FC<CustomBrushSelectorProps> = ({
   size = 30,
 }) => {
   const { painter } = usePainter();
-  const { customBrushIndex, customBrushImages, setCustomBrushIndex } = useBrushBarStore();
+  const { customBrushIndex, customBrushImages, setCustomBrushIndex } =
+    useBrushBarStore();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // クリック外しで閉じる
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
     return undefined;
@@ -56,66 +60,66 @@ const CustomBrushSelector: React.FC<CustomBrushSelectorProps> = ({
   };
 
   const containerStyle: React.CSSProperties = {
-    position: 'relative',
-    display: 'inline-block',
+    position: "relative",
+    display: "inline-block",
   };
 
   const activeItemStyle: React.CSSProperties = {
     width: `${size}px`,
     height: `${size}px`,
-    border: '2px solid #007bff',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    backgroundColor: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    transition: 'all 0.2s ease',
+    border: "2px solid #007bff",
+    borderRadius: "4px",
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    transition: "all 0.2s ease",
   };
 
   const dropdownStyle: React.CSSProperties = {
-    position: 'absolute',
+    position: "absolute",
     top: `${size + 8}px`,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#fff',
-    border: '2px solid #ccc',
-    borderRadius: '4px',
-    padding: '8px',
-    display: isOpen ? 'flex' : 'none',
-    flexDirection: 'row',
-    gap: '8px',
-    flexWrap: 'wrap',
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "#fff",
+    border: "2px solid #ccc",
+    borderRadius: "4px",
+    padding: "8px",
+    display: isOpen ? "flex" : "none",
+    flexDirection: "row",
+    gap: "8px",
+    flexWrap: "wrap",
     zIndex: 1000,
-    maxWidth: '200px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    maxWidth: "200px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   };
 
   const brushItemStyle = (isSelected: boolean): React.CSSProperties => ({
     width: `${size}px`,
     height: `${size}px`,
-    border: isSelected ? '2px solid #007bff' : '2px solid #ccc',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    backgroundColor: isSelected ? '#e0f0ff' : '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    transition: 'all 0.2s ease',
+    border: isSelected ? "2px solid #007bff" : "2px solid #ccc",
+    borderRadius: "4px",
+    cursor: "pointer",
+    backgroundColor: isSelected ? "#e0f0ff" : "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    transition: "all 0.2s ease",
   });
 
   const brushImageStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
   };
 
   const noneItemStyle: React.CSSProperties = {
-    fontSize: '12px',
-    fontWeight: 'bold',
-    color: '#666',
+    fontSize: "12px",
+    fontWeight: "bold",
+    color: "#666",
   };
 
   // 現在選択中のブラシを取得
@@ -145,7 +149,7 @@ const CustomBrushSelector: React.FC<CustomBrushSelectorProps> = ({
         aria-label="ブラシを選択"
         tabIndex={0}
         onKeyPress={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             toggleOpen();
           }
         }}
@@ -163,7 +167,7 @@ const CustomBrushSelector: React.FC<CustomBrushSelectorProps> = ({
           aria-label="カスタムブラシなし"
           tabIndex={0}
           onKeyPress={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               handleBrushSelect(null);
             }
           }}
@@ -181,7 +185,7 @@ const CustomBrushSelector: React.FC<CustomBrushSelectorProps> = ({
             aria-label={`カスタムブラシ ${index + 1}`}
             tabIndex={0}
             onKeyPress={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 handleBrushSelect(index);
               }
             }}

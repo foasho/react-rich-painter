@@ -1,7 +1,7 @@
 export const createChecker = (
   cellSize: number = 10,
   colorA: string = "#fff",
-  colorB: string = "#ccc"
+  colorB: string = "#ccc",
 ): HTMLCanvasElement => {
   const size = cellSize * 2;
   const checker = document.createElement("canvas");
@@ -14,13 +14,13 @@ export const createChecker = (
   context.fillRect(0, 0, cellSize, cellSize);
   context.fillRect(cellSize, cellSize, cellSize, cellSize);
   return checker;
-}
+};
 
 export const createAlphaThresholdBorder = (
   image: HTMLCanvasElement,
   threshold: number = 0x80,
   antialias: boolean = false,
-  color: string = "#000"
+  color: string = "#000",
 ): HTMLCanvasElement => {
   const width = image.width;
   const height = image.height;
@@ -43,15 +43,21 @@ export const createAlphaThresholdBorder = (
     d[index * 4] = red;
   }
   function getRedXY(x: number, y: number): number {
-    const red = d[((y * width) + x) * 4];
+    const red = d[(y * width + x) * 4];
     return red ? red : 0;
   }
   function getGreenXY(x: number, y: number): number {
-    const green = d[((y * width) + x) * 4 + 1];
+    const green = d[(y * width + x) * 4 + 1];
     return green;
   }
-  function setColorXY(x: number, y: number, red: number, green: number, alpha: number): void {
-    const i = ((y * width) + x) * 4;
+  function setColorXY(
+    x: number,
+    y: number,
+    red: number,
+    green: number,
+    alpha: number,
+  ): void {
+    const i = (y * width + x) * 4;
     d[i] = red;
     d[i + 1] = green;
     d[i + 2] = 0;
@@ -116,8 +122,7 @@ export const createAlphaThresholdBorder = (
   context.fillStyle = color;
   context.fillRect(0, 0, width, height);
   return canvas;
-}
-
+};
 
 export const createBrushPointer = (
   brushImage: HTMLImageElement | null,
@@ -125,7 +130,7 @@ export const createBrushPointer = (
   brushSize: number,
   _brushAngle: number,
   threshold: number,
-  antialias: boolean
+  antialias: boolean,
 ): HTMLCanvasElement => {
   brushSize = brushSize | 0;
   const pointer = document.createElement("canvas");
@@ -155,7 +160,7 @@ export const createBrushPointer = (
     pointerContext.drawImage(brushImage, 0, 0, width, height);
   }
   return createAlphaThresholdBorder(pointer, threshold, antialias);
-}
+};
 
 export const createFloodFill = (
   canvas: HTMLCanvasElement,
@@ -164,7 +169,7 @@ export const createFloodFill = (
   r: number,
   g: number,
   b: number,
-  a: number
+  a: number,
 ): HTMLCanvasElement => {
   const result = document.createElement("canvas");
   const w = (result.width = canvas.width);
@@ -183,7 +188,10 @@ export const createFloodFill = (
     const index = (y * w + x) * 4;
     return rd[index]
       ? replacementColor
-      : (od[index] << 24) | (od[index + 1] << 16) | (od[index + 2] << 8) | od[index + 3];
+      : (od[index] << 24) |
+          (od[index + 1] << 16) |
+          (od[index + 2] << 8) |
+          od[index + 3];
   }
 
   const targetColor = getColor(x, y);
@@ -193,7 +201,14 @@ export const createFloodFill = (
   while (queue.length) {
     const nx = queue.shift()!;
     const ny = queue.shift()!;
-    if (nx < 0 || nx >= w || ny < 0 || ny >= h || getColor(nx, ny) !== targetColor) continue;
+    if (
+      nx < 0 ||
+      nx >= w ||
+      ny < 0 ||
+      ny >= h ||
+      getColor(nx, ny) !== targetColor
+    )
+      continue;
     let west = nx;
     let east = nx;
     do {
@@ -224,5 +239,4 @@ export const createFloodFill = (
 
   resultContext.putImageData(resultData, 0, 0);
   return result;
-}
-
+};

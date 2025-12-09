@@ -43,7 +43,7 @@ http://localhost:3000 でアクセスできます。
 ## コード例
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 // Notebookプリセットを使用したシンプルな手書きエディタ
 <ReactRichPainter
@@ -51,5 +51,5 @@ import { ReactRichPainter } from 'react-rich-painter';
   preset="notebook"
   toolbar={false}
   brushbar={false}
-/>
+/>;
 ```

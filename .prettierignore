@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+
+# Storybook
+storybook-static/
+
+# Coverage
+coverage/
+
+# Claude Code
+.claude/
+
+# Misc
+.DS_Store
+*.log

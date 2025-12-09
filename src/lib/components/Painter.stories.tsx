@@ -1,145 +1,157 @@
 // @ts-nocheck
-import type { Meta, StoryObj } from '@storybook/react';
-import { ReactRichPainter } from './Painter';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ReactRichPainter } from "./Painter";
 
 const meta: Meta = {
-  title: 'ReactRichPainter',
+  title: "ReactRichPainter",
   component: ReactRichPainter,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
-        component: 'React Rich Painterは、Reactで統合可能な本格的なペイント機能を提供するライブラリです。マウス入力、タッチ入力、ペン入力をサポートし、レイヤー機能、ブラシ機能、スポイト機能などを備えています。',
+        component:
+          "React Rich Painterは、Reactで統合可能な本格的なペイント機能を提供するライブラリです。マウス入力、タッチ入力、ペン入力をサポートし、レイヤー機能、ブラシ機能、スポイト機能などを備えています。",
       },
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Story />
       </div>
     ),
   ],
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     autoSize: {
-      control: 'boolean',
-      description: '親要素のサイズから自動的にキャンバスサイズを決定するかどうか（デフォルト: true）',
+      control: "boolean",
+      description:
+        "親要素のサイズから自動的にキャンバスサイズを決定するかどうか（デフォルト: true）",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: true },
       },
     },
     preset: {
-      control: 'select',
-      options: ['painting', 'notebook'],
-      description: 'プリセット設定（painting: 通常モード、notebook: ノートブックモード）',
+      control: "select",
+      options: ["painting", "notebook"],
+      description:
+        "プリセット設定（painting: 通常モード、notebook: ノートブックモード）",
       table: {
         type: { summary: "'painting' | 'notebook'" },
-        defaultValue: { summary: 'painting' },
+        defaultValue: { summary: "painting" },
       },
     },
     width: {
-      control: { type: 'number', min: 100, max: 2000, step: 50 },
-      description: 'キャンバスの幅（ピクセル）※autoSize=falseの場合に使用',
+      control: { type: "number", min: 100, max: 2000, step: 50 },
+      description: "キャンバスの幅（ピクセル）※autoSize=falseの場合に使用",
       table: {
-        type: { summary: 'number' },
+        type: { summary: "number" },
         defaultValue: { summary: 800 },
       },
     },
     height: {
-      control: { type: 'number', min: 100, max: 2000, step: 50 },
-      description: 'キャンバスの高さ（ピクセル）※autoSize=falseの場合に使用',
+      control: { type: "number", min: 100, max: 2000, step: 50 },
+      description: "キャンバスの高さ（ピクセル）※autoSize=falseの場合に使用",
       table: {
-        type: { summary: 'number' },
+        type: { summary: "number" },
         defaultValue: { summary: 600 },
       },
     },
     toolbar: {
-      control: 'boolean',
-      description: 'ツールバーを表示するかどうか',
+      control: "boolean",
+      description: "ツールバーを表示するかどうか",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: true },
       },
     },
     brushbar: {
-      control: 'boolean',
-      description: 'ブラシバーを表示するかどうか',
+      control: "boolean",
+      description: "ブラシバーを表示するかどうか",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: true },
       },
     },
     defaultCustomBrush: {
-      control: 'boolean',
-      description: 'デフォルトのカスタムブラシ（b0~b4.png）を使用するかどうか',
+      control: "boolean",
+      description: "デフォルトのカスタムブラシ（b0~b4.png）を使用するかどうか",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: true },
       },
     },
     backgroundSize: {
-      control: { type: 'number', min: 5, max: 100, step: 5 },
-      description: '背景タイルの大きさ（ピクセル）',
+      control: { type: "number", min: 5, max: 100, step: 5 },
+      description: "背景タイルの大きさ（ピクセル）",
       table: {
-        type: { summary: 'number' },
+        type: { summary: "number" },
         defaultValue: { summary: 20 },
       },
     },
     showFileMenu: {
-      control: 'boolean',
-      description: 'FileMenuを表示するかどうか（Import/Export機能）',
+      control: "boolean",
+      description: "FileMenuを表示するかどうか（Import/Export機能）",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: false },
       },
     },
     // 共有機能（Share）
     share: {
-      control: 'boolean',
-      description: '共有モードを有効にするか（リアルタイム共有ホワイトボード用）',
+      control: "boolean",
+      description:
+        "共有モードを有効にするか（リアルタイム共有ホワイトボード用）",
       table: {
-        type: { summary: 'boolean' },
+        type: { summary: "boolean" },
         defaultValue: { summary: false },
-        category: 'Share',
+        category: "Share",
       },
     },
     userId: {
-      control: 'text',
-      description: '共有モード時のユーザー識別子',
+      control: "text",
+      description: "共有モード時のユーザー識別子",
       table: {
-        type: { summary: 'string' },
-        category: 'Share',
+        type: { summary: "string" },
+        category: "Share",
       },
     },
     userName: {
-      control: 'text',
-      description: '共有モード時のユーザー表示名',
+      control: "text",
+      description: "共有モード時のユーザー表示名",
       table: {
-        type: { summary: 'string' },
-        category: 'Share',
+        type: { summary: "string" },
+        category: "Share",
       },
     },
     onStrokeStart: {
-      description: 'ストローク開始時のコールバック（share=true時のみ有効）',
+      description: "ストローク開始時のコールバック（share=true時のみ有効）",
       table: {
-        type: { summary: '(data: StrokeStartData) => void' },
-        category: 'Share',
+        type: { summary: "(data: StrokeStartData) => void" },
+        category: "Share",
       },
     },
     onStrokeMove: {
-      description: 'ストローク移動時のコールバック（share=true時のみ有効）',
+      description: "ストローク移動時のコールバック（share=true時のみ有効）",
       table: {
-        type: { summary: '(data: StrokeMoveData) => void' },
-        category: 'Share',
+        type: { summary: "(data: StrokeMoveData) => void" },
+        category: "Share",
       },
     },
     onStrokeEnd: {
-      description: 'ストローク終了時のコールバック（share=true時のみ有効）',
+      description: "ストローク終了時のコールバック（share=true時のみ有効）",
       table: {
-        type: { summary: '(data: StrokeEndData) => void' },
-        category: 'Share',
+        type: { summary: "(data: StrokeEndData) => void" },
+        category: "Share",
       },
     },
   },
@@ -152,21 +164,22 @@ type Story = StoryObj<typeof meta>;
 export const PaintingDefault: Story = {
   args: {
     autoSize: true,
-    preset: 'painting',
+    preset: "painting",
     toolbar: true,
     brushbar: true,
     defaultCustomBrush: true,
     backgroundSize: 20,
   },
   render: (args) => (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter {...args} />
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Paintingプリセットのデフォルト設定です。フル機能（ToolBar、BrushBar、レイヤーパネル）が使用できます。親要素のサイズの0.8倍が自動的にキャンバスサイズとして設定されます。',
+        story:
+          "Paintingプリセットのデフォルト設定です。フル機能（ToolBar、BrushBar、レイヤーパネル）が使用できます。親要素のサイズの0.8倍が自動的にキャンバスサイズとして設定されます。",
       },
     },
   },
@@ -176,32 +189,32 @@ export const PaintingDefault: Story = {
 export const NotebookDefault: Story = {
   args: {
     autoSize: true,
-    preset: 'notebook',
+    preset: "notebook",
     toolbar: false,
     brushbar: false,
     defaultCustomBrush: false,
     backgroundSize: 20,
   },
   render: (args) => (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter {...args} />
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Notebookプリセットの例です。親要素いっぱいにキャンバスが配置され、ペン・消しゴム・ブラシサイズ・色を含むNotebookBarのみが表示されます。シンプルなメモやスケッチに適しています。',
+        story:
+          "Notebookプリセットの例です。親要素いっぱいにキャンバスが配置され、ペン・消しゴム・ブラシサイズ・色を含むNotebookBarのみが表示されます。シンプルなメモやスケッチに適しています。",
       },
     },
   },
 };
 
-
 // Paintingプリセット：固定サイズ
 export const PaintingFixedSize: Story = {
   args: {
     autoSize: false,
-    preset: 'painting',
+    preset: "painting",
     width: 800,
     height: 600,
     toolbar: true,
@@ -217,7 +230,7 @@ export const PaintingFixedSize: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Paintingプリセットで固定サイズ（800x600px）を指定した例です。',
+        story: "Paintingプリセットで固定サイズ（800x600px）を指定した例です。",
       },
     },
   },
@@ -227,7 +240,7 @@ export const PaintingFixedSize: Story = {
 export const PaintingWithFileMenu: Story = {
   args: {
     autoSize: true,
-    preset: 'painting',
+    preset: "painting",
     toolbar: true,
     brushbar: true,
     defaultCustomBrush: true,
@@ -235,14 +248,15 @@ export const PaintingWithFileMenu: Story = {
     showFileMenu: true,
   },
   render: (args) => (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter {...args} />
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'FileMenuを表示してImport/Export機能を使用できます。ToolBarの左側にFileアイコンが表示され、クリックすると「ファイルを開く」「エクスポート」「画像を保存」のメニューが表示されます。描画状態をJSONファイルとして保存・復元できます。',
+        story:
+          "FileMenuを表示してImport/Export機能を使用できます。ToolBarの左側にFileアイコンが表示され、クリックすると「ファイルを開く」「エクスポート」「画像を保存」のメニューが表示されます。描画状態をJSONファイルとして保存・復元できます。",
       },
     },
   },
@@ -252,7 +266,7 @@ export const PaintingWithFileMenu: Story = {
 export const NotebookWithFileMenu: Story = {
   args: {
     autoSize: true,
-    preset: 'notebook',
+    preset: "notebook",
     toolbar: false,
     brushbar: false,
     defaultCustomBrush: false,
@@ -260,16 +274,16 @@ export const NotebookWithFileMenu: Story = {
     showFileMenu: true,
   },
   render: (args) => (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter {...args} />
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'NotebookプリセットでもFileMenuを使用できます。NotebookBarの上部にFileアイコンが表示され、同様にImport/Export機能が利用可能です。シンプルなノート環境でも作業の保存・復元が可能です。',
+        story:
+          "NotebookプリセットでもFileMenuを使用できます。NotebookBarの上部にFileアイコンが表示され、同様にImport/Export機能が利用可能です。シンプルなノート環境でも作業の保存・復元が可能です。",
       },
     },
   },
 };
-

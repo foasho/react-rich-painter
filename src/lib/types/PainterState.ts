@@ -53,11 +53,11 @@ export type PainterState = {
   selectedLayerId: string;
   brush: BrushState;
   stabilizer: StabilizerState;
-  currentTool: 'pen' | 'eraser' | 'dripper' | 'lasso' | 'move';
-  inputType: 'pen' | 'mouse' | 'touch';
+  currentTool: "pen" | "eraser" | "dripper" | "lasso" | "move";
+  inputType: "pen" | "mouse" | "touch";
 };
 
 /**
  * 現在のフォーマットバージョン
  */
-export const PAINTER_STATE_VERSION = '1.0.0';
+export const PAINTER_STATE_VERSION = "1.0.0";

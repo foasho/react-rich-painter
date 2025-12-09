@@ -1,5 +1,5 @@
-import { ReactRichPainter } from 'react-rich-painter'
-import './App.css'
+import { ReactRichPainter } from "react-rich-painter";
+import "./App.css";
 
 function App() {
   return (
@@ -19,24 +19,24 @@ function App() {
         />
       </main>
       <footer className="app-footer">
-        <a 
-          href="https://github.com/foasho/react-rich-painter" 
-          target="_blank" 
+        <a
+          href="https://github.com/foasho/react-rich-painter"
+          target="_blank"
           rel="noopener noreferrer"
         >
           GitHub
         </a>
         <span className="separator">•</span>
-        <a 
-          href="https://www.npmjs.com/package/react-rich-painter" 
-          target="_blank" 
+        <a
+          href="https://www.npmjs.com/package/react-rich-painter"
+          target="_blank"
           rel="noopener noreferrer"
         >
           npm
         </a>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
