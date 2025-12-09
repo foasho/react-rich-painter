@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { Wrapper } from './Wrapper';
+import React, { useState } from "react";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { Wrapper } from "./Wrapper";
 
 type WrapperContextStyleProps = {
   style?: React.CSSProperties;
@@ -22,27 +22,26 @@ type WrapperStyleProps = {
 type WrapperContextProps = {
   children: React.ReactNode;
   initialPosition?: { x: number; y: number };
-} & WrapperStyleProps & WrapperContextStyleProps;
+} & WrapperStyleProps &
+  WrapperContextStyleProps;
 
-const WrapperContext = (
-  {
-    children,
-    initialPosition = { x: 0, y: 0 },
-    withHandle = true,
-    draggableId = "rich_painter",
-    vertical = false,
-    between = false,
-    width = '50%',
-    height = '50%',
-    linePx = 40,
-    backgroundColor = '#121212',
-    wrapperBgColor = '#FFFFFF88',
-    style = {},
-  }: WrapperContextProps
-) => {
+const WrapperContext = ({
+  children,
+  initialPosition = { x: 0, y: 0 },
+  withHandle = true,
+  draggableId = "rich_painter",
+  vertical = false,
+  between = false,
+  width = "50%",
+  height = "50%",
+  linePx = 40,
+  backgroundColor = "#121212",
+  wrapperBgColor = "#FFFFFF88",
+  style = {},
+}: WrapperContextProps) => {
   // localStorageから位置を読み込む
   const getInitialPosition = () => {
-    if (typeof window === 'undefined') return initialPosition;
+    if (typeof window === "undefined") return initialPosition;
 
     try {
       const storageKey = `wrapper-position-${draggableId}`;
@@ -51,7 +50,7 @@ const WrapperContext = (
         return JSON.parse(savedPosition);
       }
     } catch (error) {
-      console.error('Failed to load position from localStorage:', error);
+      console.error("Failed to load position from localStorage:", error);
     }
     return initialPosition;
   };
@@ -60,19 +59,19 @@ const WrapperContext = (
 
   // positionが変更されたらlocalStorageに保存
   React.useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       const storageKey = `wrapper-position-${draggableId}`;
       localStorage.setItem(storageKey, JSON.stringify(position));
     } catch (error) {
-      console.error('Failed to save position to localStorage:', error);
+      console.error("Failed to save position to localStorage:", error);
     }
   }, [position, draggableId]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { delta } = event;
-    setPosition((prev: { x: number, y: number }) => ({
+    setPosition((prev: { x: number; y: number }) => ({
       x: prev.x + (delta?.x || 0),
       y: prev.y + (delta?.y || 0),
     }));
@@ -84,19 +83,19 @@ const WrapperContext = (
   let fixedHeight = height;
   if (vertical) {
     fixedWidth = `${linePx}px`;
-    fixedHeight = 'auto'; // 子要素のサイズに応じて自動調整
+    fixedHeight = "auto"; // 子要素のサイズに応じて自動調整
   } else {
     fixedHeight = `${linePx}px`;
-    fixedWidth = 'auto'; // 子要素のサイズに応じて自動調整
+    fixedWidth = "auto"; // 子要素のサイズに応じて自動調整
   }
 
   return (
-    <DndContext 
+    <DndContext
       onDragEnd={handleDragEnd}
       // modifiers={[restrictToParentElement]} // モディファイアを追加// NOTE: うまく動作しないのでコメントアウト
     >
-      <div style={{ position: 'relative', ...style }}>
-        <Wrapper 
+      <div style={{ position: "relative", ...style }}>
+        <Wrapper
           withHandle={withHandle}
           position={position}
           draggableId={draggableId}

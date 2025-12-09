@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface CreateRoomFormProps {
   onCancel: () => void;
@@ -9,16 +9,16 @@ interface CreateRoomFormProps {
 
 export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
   const router = useRouter();
-  const [roomName, setRoomName] = useState('');
-  const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [roomName, setRoomName] = useState("");
+  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomName.trim() || !userName.trim()) {
-      setError('ルーム名とあなたの名前を入力してください');
+      setError("ルーム名とあなたの名前を入力してください");
       return;
     }
 
@@ -27,9 +27,9 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
 
     try {
       // ルームを作成
-      const createRes = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const createRes = await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: roomName,
           password: password || undefined,
@@ -37,15 +37,15 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
       });
 
       if (!createRes.ok) {
-        throw new Error('ルームの作成に失敗しました');
+        throw new Error("ルームの作成に失敗しました");
       }
 
       const { roomId: newRoomId } = await createRes.json();
 
       // ルームに参加
       const joinRes = await fetch(`/api/rooms/${newRoomId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userName,
           password: password || undefined,
@@ -53,7 +53,7 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
       });
 
       if (!joinRes.ok) {
-        throw new Error('ルームへの参加に失敗しました');
+        throw new Error("ルームへの参加に失敗しました");
       }
 
       const joinData = await joinRes.json();
@@ -68,7 +68,7 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
       });
       router.push(`/room/${newRoomId}?${params.toString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      setError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsLoading(false);
     }
@@ -82,8 +82,18 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
           onClick={onCancel}
           className="p-1 text-zinc-400 hover:text-white rounded"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -151,11 +161,10 @@ export default function CreateRoomForm({ onCancel }: CreateRoomFormProps) {
             disabled={isLoading}
             className="flex-1 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? '作成中...' : 'ルームを作成'}
+            {isLoading ? "作成中..." : "ルームを作成"}
           </button>
         </div>
       </form>
     </div>
   );
 }
-

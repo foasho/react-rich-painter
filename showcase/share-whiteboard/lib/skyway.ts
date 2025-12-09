@@ -1,14 +1,17 @@
-import { SkyWayAuthToken, uuidV4, nowInSec } from '@skyway-sdk/token';
+import { SkyWayAuthToken, uuidV4, nowInSec } from "@skyway-sdk/token";
 
 /**
  * SkyWay認証トークンを生成
  */
-export function generateSkyWayToken(roomName: string, memberId: string): string {
+export function generateSkyWayToken(
+  roomName: string,
+  memberId: string,
+): string {
   const appId = process.env.SKYWAY_APP_ID;
   const secretKey = process.env.SKYWAY_SECRET_KEY;
 
   if (!appId || !secretKey) {
-    throw new Error('SkyWay credentials are not configured');
+    throw new Error("SkyWay credentials are not configured");
   }
 
   const token = new SkyWayAuthToken({
@@ -19,31 +22,31 @@ export function generateSkyWayToken(roomName: string, memberId: string): string 
       app: {
         id: appId,
         turn: true,
-        actions: ['read'],
+        actions: ["read"],
         channels: [
           {
-            id: '*',
-            name: '*', // ワイルドカードで任意のルーム名を許可
-            actions: ['write'],
+            id: "*",
+            name: "*", // ワイルドカードで任意のルーム名を許可
+            actions: ["write"],
             members: [
               {
-                id: '*', // ワイルドカードで任意のメンバーIDを許可
-                name: '*',
-                actions: ['write'],
+                id: "*", // ワイルドカードで任意のメンバーIDを許可
+                name: "*",
+                actions: ["write"],
                 publication: {
-                  actions: ['write'],
+                  actions: ["write"],
                 },
                 subscription: {
-                  actions: ['write'],
+                  actions: ["write"],
                 },
               },
             ],
             sfuBots: [
               {
-                actions: ['write'],
+                actions: ["write"],
                 forwardings: [
                   {
-                    actions: ['write'],
+                    actions: ["write"],
                   },
                 ],
               },
@@ -62,15 +65,14 @@ export function generateSkyWayToken(roomName: string, memberId: string): string 
  */
 export function generateUserColor(): string {
   const colors = [
-    '#EF4444', // red
-    '#F97316', // orange
-    '#EAB308', // yellow
-    '#22C55E', // green
-    '#14B8A6', // teal
-    '#3B82F6', // blue
-    '#8B5CF6', // violet
-    '#EC4899', // pink
+    "#EF4444", // red
+    "#F97316", // orange
+    "#EAB308", // yellow
+    "#22C55E", // green
+    "#14B8A6", // teal
+    "#3B82F6", // blue
+    "#8B5CF6", // violet
+    "#EC4899", // pink
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 }
-

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-import { 
-  DiaryEntry, 
-  saveDiaryEntry, 
-  generateId, 
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import {
+  DiaryEntry,
+  saveDiaryEntry,
+  generateId,
   generatePreviewFromState,
-  PainterState
-} from '@/lib/storage';
+  PainterState,
+} from "@/lib/storage";
 
 // SSRを無効化してreact-rich-painterをインポート
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ReactRichPainter = dynamic<any>(
-  () => import('react-rich-painter').then(mod => mod.ReactRichPainter),
-  { ssr: false }
+  () => import("react-rich-painter").then((mod) => mod.ReactRichPainter),
+  { ssr: false },
 );
 
 interface DiaryEditorProps {
@@ -24,8 +24,10 @@ interface DiaryEditorProps {
 
 export default function DiaryEditor({ entry }: DiaryEditorProps) {
   const router = useRouter();
-  const [title, setTitle] = useState(entry?.title || '');
-  const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0]);
+  const [title, setTitle] = useState(entry?.title || "");
+  const [date, setDate] = useState(
+    entry?.date || new Date().toISOString().split("T")[0],
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const painterStateRef = useRef<PainterState | null>(null);
@@ -43,7 +45,7 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
         painterStateRef.current = parsed;
         return parsed;
       } catch (error) {
-        console.error('Failed to parse painterState:', error);
+        console.error("Failed to parse painterState:", error);
         return undefined;
       }
     }
@@ -59,8 +61,8 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
     setIsSaving(true);
 
     try {
-      let imageData = '';
-      let painterStateJson = '';
+      let imageData = "";
+      let painterStateJson = "";
 
       // PainterStateから画像データとJSON状態を取得
       if (painterStateRef.current) {
@@ -81,18 +83,18 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
       };
 
       saveDiaryEntry(diaryEntry);
-      router.push('/');
+      router.push("/");
     } catch (error) {
-      console.error('保存に失敗しました:', error);
-      alert('保存に失敗しました');
+      console.error("保存に失敗しました:", error);
+      alert("保存に失敗しました");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleBack = () => {
-    if (confirm('変更を破棄してもよろしいですか？')) {
-      router.push('/');
+    if (confirm("変更を破棄してもよろしいですか？")) {
+      router.push("/");
     }
   };
 
@@ -105,8 +107,18 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
             onClick={handleBack}
             className="p-2 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
@@ -133,14 +145,29 @@ export default function DiaryEditor({ entry }: DiaryEditorProps) {
           >
             {isSaving ? (
               <>
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
                 保存中
               </>
             ) : (
-              '保存'
+              "保存"
             )}
           </button>
         </div>

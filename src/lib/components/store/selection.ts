@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type Point = { x: number; y: number };
 
@@ -54,30 +54,34 @@ export const useSelectionStore = create<SelectionState>((set) => ({
   selectionOffset: { x: 0, y: 0 },
   isMovingSelection: false,
 
-  startSelection: () => set({
-    isSelecting: true,
-    hasSelection: false,
-    selectionPath: [],
-    selectedImageData: null,
-  }),
+  startSelection: () =>
+    set({
+      isSelecting: true,
+      hasSelection: false,
+      selectionPath: [],
+      selectedImageData: null,
+    }),
 
-  addPoint: (point) => set((state) => ({
-    selectionPath: [...state.selectionPath, point],
-  })),
+  addPoint: (point) =>
+    set((state) => ({
+      selectionPath: [...state.selectionPath, point],
+    })),
 
-  finishSelection: () => set({
-    isSelecting: false,
-    hasSelection: true,
-  }),
+  finishSelection: () =>
+    set({
+      isSelecting: false,
+      hasSelection: true,
+    }),
 
-  clearSelection: () => set({
-    selectionPath: [],
-    isSelecting: false,
-    hasSelection: false,
-    selectedImageData: null,
-    selectionOffset: { x: 0, y: 0 },
-    isMovingSelection: false,
-  }),
+  clearSelection: () =>
+    set({
+      selectionPath: [],
+      isSelecting: false,
+      hasSelection: false,
+      selectedImageData: null,
+      selectionOffset: { x: 0, y: 0 },
+      isMovingSelection: false,
+    }),
 
   startMoving: () => set({ isMovingSelection: true }),
 

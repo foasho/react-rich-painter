@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { WrapperContext } from '../WrapperContext';
-import { LayerItem } from './LayerItem';
-import { usePainter } from '../../PainterContext';
-import { useLayerNameStore } from '../../store/layer';
-import { FaPlus } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { WrapperContext } from "../WrapperContext";
+import { LayerItem } from "./LayerItem";
+import { usePainter } from "../../PainterContext";
+import { useLayerNameStore } from "../../store/layer";
+import { FaPlus } from "react-icons/fa";
 
 type LayerPanelProps = {};
 
 const LayerPanel: React.FC<LayerPanelProps> = () => {
   const { painter } = usePainter();
-  const { addLayerName, swapLayerNames, shiftLayerNamesAfterRemove } = useLayerNameStore();
+  const { addLayerName, swapLayerNames, shiftLayerNamesAfterRemove } =
+    useLayerNameStore();
   const [layers, setLayers] = useState<number[]>([]);
   const [selectedLayerIndex, setSelectedLayerIndex] = useState(0);
   const maxLayers = 30;
@@ -115,57 +116,57 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
   if (!painter) return null;
 
   const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    width: "100%",
   };
 
   const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '6px 8px',
-    borderBottom: '1px solid #333',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "6px 8px",
+    borderBottom: "1px solid #333",
   };
 
   const titleStyle: React.CSSProperties = {
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontSize: "13px",
+    fontWeight: "bold",
+    color: "#ffffff",
   };
 
   const addButtonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '3px',
-    padding: '4px 8px',
-    backgroundColor: '#4a90e2',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '11px',
-    transition: 'background-color 0.2s',
+    display: "flex",
+    alignItems: "center",
+    gap: "3px",
+    padding: "4px 8px",
+    backgroundColor: "#4a90e2",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "11px",
+    transition: "background-color 0.2s",
   };
 
   const layerListStyle: React.CSSProperties = {
     flex: 1,
-    overflowY: 'auto',
-    padding: '4px',
-    maxHeight: '400px',
+    overflowY: "auto",
+    padding: "4px",
+    maxHeight: "400px",
   };
 
   const layerCountStyle: React.CSSProperties = {
-    padding: '4px 8px',
-    fontSize: '10px',
-    color: '#aaaaaa',
-    borderTop: '1px solid #333',
-    textAlign: 'center',
+    padding: "4px 8px",
+    fontSize: "10px",
+    color: "#aaaaaa",
+    borderTop: "1px solid #333",
+    textAlign: "center",
   };
 
   // 右側の初期位置を計算（幅240px + 右マージン10px）
-  const initialX = typeof window !== 'undefined' ? window.innerWidth - 250 : 0;
+  const initialX = typeof window !== "undefined" ? window.innerWidth - 250 : 0;
   const initialY = 60;
 
   return (
@@ -185,10 +186,10 @@ const LayerPanel: React.FC<LayerPanelProps> = () => {
             style={addButtonStyle}
             onClick={handleAddLayer}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#357abd';
+              e.currentTarget.style.backgroundColor = "#357abd";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#4a90e2';
+              e.currentTarget.style.backgroundColor = "#4a90e2";
             }}
           >
             <FaPlus size={10} />

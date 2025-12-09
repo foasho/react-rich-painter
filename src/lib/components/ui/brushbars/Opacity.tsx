@@ -12,7 +12,10 @@ type OpacityProps = {
  * 線全体（1ストローク）に対して透明度を適用
  * paintingOpacityのみを変更し、brushのflowは変更しない
  */
-const Opacity: React.FC<OpacityProps> = ({ width = 30, sliderLength = 150 }) => {
+const Opacity: React.FC<OpacityProps> = ({
+  width = 30,
+  sliderLength = 150,
+}) => {
   const { painter } = usePainter();
 
   const handleOpacityChange = (value: number) => {

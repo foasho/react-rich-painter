@@ -1,9 +1,13 @@
-import { RichPainter } from './painter/RichPainter';
-import { PainterState, PAINTER_STATE_VERSION, LayerState } from '../types/PainterState';
-import { useLayerNameStore } from '../components/store/layer';
-import { useToolStore } from '../components/store/tool';
-import { useUiStore } from '../components/store/ui';
-import { useBrushBarStore } from '../components/store/brush';
+import { RichPainter } from "./painter/RichPainter";
+import {
+  PainterState,
+  PAINTER_STATE_VERSION,
+  LayerState,
+} from "../types/PainterState";
+import { useLayerNameStore } from "../components/store/layer";
+import { useToolStore } from "../components/store/tool";
+import { useUiStore } from "../components/store/ui";
+import { useBrushBarStore } from "../components/store/brush";
 
 /**
  * RichPainterインスタンスから現在の状態を抽出してPainterStateオブジェクトを生成
@@ -23,7 +27,7 @@ export const exportPainterState = (painter: RichPainter): PainterState => {
 
   for (let i = 0; i < layerCount; i++) {
     const layerCanvas = painter.getLayerCanvas(i);
-    const imageData = layerCanvas.toDataURL('image/png'); // Base64エンコード
+    const imageData = layerCanvas.toDataURL("image/png"); // Base64エンコード
 
     layers.push({
       id: `layer-${i}`,
@@ -36,7 +40,7 @@ export const exportPainterState = (painter: RichPainter): PainterState => {
 
   // ブラシ設定を抽出
   if (!brush) {
-    throw new Error('Brush is not initialized');
+    throw new Error("Brush is not initialized");
   }
 
   const brushState = {
@@ -78,9 +82,9 @@ export const exportPainterState = (painter: RichPainter): PainterState => {
  */
 export const importPainterState = async (
   painter: RichPainter,
-  state: PainterState
+  state: PainterState,
 ): Promise<void> => {
-  console.log('Starting import with state:', state);
+  console.log("Starting import with state:", state);
 
   const layerNameStore = useLayerNameStore.getState();
   const toolStore = useToolStore.getState();
@@ -133,14 +137,19 @@ export const importPainterState = async (
     painter.removeLayer(dummyLayerIndex, false); // すぐ削除（この時にsortLayersが呼ばれる）
 
     // 選択中のレイヤーを復元
-    const selectedLayerIndex = parseInt(state.selectedLayerId.replace('layer-', ''));
-    if (!isNaN(selectedLayerIndex) && selectedLayerIndex < state.layers.length) {
+    const selectedLayerIndex = parseInt(
+      state.selectedLayerId.replace("layer-", ""),
+    );
+    if (
+      !isNaN(selectedLayerIndex) &&
+      selectedLayerIndex < state.layers.length
+    ) {
       painter.selectLayer(selectedLayerIndex);
     }
 
     // ブラシ設定を復元
     if (!brush) {
-      throw new Error('Brush is not initialized');
+      throw new Error("Brush is not initialized");
     }
 
     brush.setColor(state.brush.color);
@@ -168,9 +177,9 @@ export const importPainterState = async (
     toolStore.setTool(state.currentTool);
     uiStore.setInputType(state.inputType);
 
-    console.log('Import completed successfully');
+    console.log("Import completed successfully");
   } catch (error) {
-    console.error('Error during import:', error);
+    console.error("Error during import:", error);
     throw error; // エラーを再スローして呼び出し側で処理
   } finally {
     // History unlockを必ず実行
@@ -184,11 +193,11 @@ export const importPainterState = async (
 const loadImageDataToLayer = (
   painter: RichPainter,
   layerIndex: number,
-  imageDataUrl: string
+  imageDataUrl: string,
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     // 空の画像データの場合はスキップ
-    if (!imageDataUrl || imageDataUrl === '') {
+    if (!imageDataUrl || imageDataUrl === "") {
       console.warn(`Layer ${layerIndex} has no image data, skipping...`);
       resolve();
       return;
@@ -235,7 +244,7 @@ export const deserializePainterState = (json: string): PainterState => {
 
     // バージョンチェック（将来的な互換性のため）
     if (!state.version) {
-      throw new Error('Invalid painter state: missing version');
+      throw new Error("Invalid painter state: missing version");
     }
 
     return state;

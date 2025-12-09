@@ -1,20 +1,20 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // ImageData モック（jsdomには含まれていないため）
 class MockImageData {
   readonly data: Uint8ClampedArray;
   readonly width: number;
   readonly height: number;
-  readonly colorSpace: PredefinedColorSpace = 'srgb';
+  readonly colorSpace: PredefinedColorSpace = "srgb";
 
   constructor(sw: number, sh: number);
   constructor(data: Uint8ClampedArray, sw: number, sh?: number);
   constructor(
     swOrData: number | Uint8ClampedArray,
     shOrSw: number,
-    sh?: number
+    sh?: number,
   ) {
-    if (typeof swOrData === 'number') {
+    if (typeof swOrData === "number") {
       this.width = swOrData;
       this.height = shOrSw;
       this.data = new Uint8ClampedArray(swOrData * shOrSw * 4);
@@ -31,21 +31,21 @@ global.ImageData = MockImageData as unknown as typeof ImageData;
 // Canvas モック
 class MockCanvasRenderingContext2D {
   canvas: HTMLCanvasElement;
-  fillStyle: string = '#000000';
-  strokeStyle: string = '#000000';
+  fillStyle: string = "#000000";
+  strokeStyle: string = "#000000";
   lineWidth: number = 1;
-  lineCap: CanvasLineCap = 'butt';
-  lineJoin: CanvasLineJoin = 'miter';
+  lineCap: CanvasLineCap = "butt";
+  lineJoin: CanvasLineJoin = "miter";
   globalAlpha: number = 1;
-  globalCompositeOperation: GlobalCompositeOperation = 'source-over';
+  globalCompositeOperation: GlobalCompositeOperation = "source-over";
   imageSmoothingEnabled: boolean = true;
   shadowBlur: number = 0;
-  shadowColor: string = 'rgba(0, 0, 0, 0)';
+  shadowColor: string = "rgba(0, 0, 0, 0)";
   shadowOffsetX: number = 0;
   shadowOffsetY: number = 0;
-  font: string = '10px sans-serif';
-  textAlign: CanvasTextAlign = 'start';
-  textBaseline: CanvasTextBaseline = 'alphabetic';
+  font: string = "10px sans-serif";
+  textAlign: CanvasTextAlign = "start";
+  textBaseline: CanvasTextBaseline = "alphabetic";
 
   private _imageData: ImageData | null = null;
 
@@ -69,28 +69,23 @@ class MockCanvasRenderingContext2D {
     _radius: number,
     _startAngle: number,
     _endAngle: number,
-    _anticlockwise?: boolean
+    _anticlockwise?: boolean,
   ): void {}
   arcTo(
     _x1: number,
     _y1: number,
     _x2: number,
     _y2: number,
-    _radius: number
+    _radius: number,
   ): void {}
-  quadraticCurveTo(
-    _cpx: number,
-    _cpy: number,
-    _x: number,
-    _y: number
-  ): void {}
+  quadraticCurveTo(_cpx: number, _cpy: number, _x: number, _y: number): void {}
   bezierCurveTo(
     _cp1x: number,
     _cp1y: number,
     _cp2x: number,
     _cp2y: number,
     _x: number,
-    _y: number
+    _y: number,
   ): void {}
   rect(_x: number, _y: number, _w: number, _h: number): void {}
   clip(): void {}
@@ -105,7 +100,7 @@ class MockCanvasRenderingContext2D {
     _c: number,
     _d: number,
     _e: number,
-    _f: number
+    _f: number,
   ): void {}
   setTransform(
     _a: number,
@@ -113,7 +108,7 @@ class MockCanvasRenderingContext2D {
     _c: number,
     _d: number,
     _e: number,
-    _f: number
+    _f: number,
   ): void {}
   resetTransform(): void {}
 
@@ -127,7 +122,7 @@ class MockCanvasRenderingContext2D {
     _sx?: number,
     _sy?: number,
     _sw?: number,
-    _sh?: number
+    _sh?: number,
   ): void {}
 
   createImageData(sw: number, sh: number): ImageData {
@@ -148,7 +143,7 @@ class MockCanvasRenderingContext2D {
     _dirtyX?: number,
     _dirtyY?: number,
     _dirtyWidth?: number,
-    _dirtyHeight?: number
+    _dirtyHeight?: number,
   ): void {
     this._imageData = _imageData;
   }
@@ -158,7 +153,7 @@ class MockCanvasRenderingContext2D {
     _x0: number,
     _y0: number,
     _x1: number,
-    _y1: number
+    _y1: number,
   ): CanvasGradient {
     return {
       addColorStop: () => {},
@@ -171,7 +166,7 @@ class MockCanvasRenderingContext2D {
     _r0: number,
     _x1: number,
     _y1: number,
-    _r1: number
+    _r1: number,
   ): CanvasGradient {
     return {
       addColorStop: () => {},
@@ -180,7 +175,7 @@ class MockCanvasRenderingContext2D {
 
   createPattern(
     _image: CanvasImageSource,
-    _repetition: string | null
+    _repetition: string | null,
   ): CanvasPattern | null {
     return {} as CanvasPattern;
   }
@@ -227,11 +222,11 @@ class MockCanvasRenderingContext2D {
 const originalGetContext = HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.getContext = function (
   contextId: string,
-  _options?: unknown
+  _options?: unknown,
 ): RenderingContext | null {
-  if (contextId === '2d') {
+  if (contextId === "2d") {
     return new MockCanvasRenderingContext2D(
-      this
+      this,
     ) as unknown as CanvasRenderingContext2D;
   }
   return originalGetContext.call(this, contextId, _options);
@@ -239,16 +234,16 @@ HTMLCanvasElement.prototype.getContext = function (
 
 // toDataURL のモック
 HTMLCanvasElement.prototype.toDataURL = function (_type?: string): string {
-  return 'data:image/png;base64,mockImageData';
+  return "data:image/png;base64,mockImageData";
 };
 
 // toBlob のモック
 HTMLCanvasElement.prototype.toBlob = function (
   callback: BlobCallback,
   _type?: string,
-  _quality?: number
+  _quality?: number,
 ): void {
-  const blob = new Blob(['mock'], { type: _type || 'image/png' });
+  const blob = new Blob(["mock"], { type: _type || "image/png" });
   callback(blob);
 };
 
@@ -270,7 +265,7 @@ class MockPointerEvent extends MouseEvent {
     super(type, init);
     this.pointerId = init?.pointerId ?? 0;
     this.pressure = init?.pressure ?? 0;
-    this.pointerType = init?.pointerType ?? 'mouse';
+    this.pointerType = init?.pointerType ?? "mouse";
     this.isPrimary = init?.isPrimary ?? true;
   }
 }
@@ -294,6 +289,6 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });

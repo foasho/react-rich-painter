@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { Stabilizer } from '../utils/painter/Stabilizer';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { Stabilizer } from "../utils/painter/Stabilizer";
 
-describe('Stabilizer', () => {
+describe("Stabilizer", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -10,8 +10,8 @@ describe('Stabilizer', () => {
     vi.useRealTimers();
   });
 
-  describe('初期化', () => {
-    it('パラメータテーブルがlevelに応じて作成される', () => {
+  describe("初期化", () => {
+    it("パラメータテーブルがlevelに応じて作成される", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -21,14 +21,14 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       const table = stabilizer.getParamTable();
       expect(table.length).toBe(5);
     });
 
-    it('level=0でも最低1つのエントリが作成される', () => {
+    it("level=0でも最低1つのエントリが作成される", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -38,27 +38,27 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       const table = stabilizer.getParamTable();
       expect(table.length).toBe(1);
     });
 
-    it('onDownコールバックが初期化時に呼ばれる', () => {
+    it("onDownコールバックが初期化時に呼ばれる", () => {
       const onDown = vi.fn();
       new Stabilizer(onDown, vi.fn(), vi.fn(), 3, 0.5, 50, 60, 0.7, 10);
 
       expect(onDown).toHaveBeenCalledWith(50, 60, 0.7);
     });
 
-    it('onDownがnullでもエラーにならない', () => {
+    it("onDownがnullでもエラーにならない", () => {
       expect(() => {
         new Stabilizer(null, vi.fn(), vi.fn(), 3, 0.5, 50, 60, 0.7, 10);
       }).not.toThrow();
     });
 
-    it('初期座標がパラメータテーブルに設定される', () => {
+    it("初期座標がパラメータテーブルに設定される", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -68,7 +68,7 @@ describe('Stabilizer', () => {
         100,
         200,
         0.8,
-        10
+        10,
       );
 
       const table = stabilizer.getParamTable();
@@ -78,8 +78,8 @@ describe('Stabilizer', () => {
     });
   });
 
-  describe('move', () => {
-    it('座標を更新できる', () => {
+  describe("move", () => {
+    it("座標を更新できる", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -89,7 +89,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.move(150, 150, 0.8);
@@ -97,7 +97,7 @@ describe('Stabilizer', () => {
       // タイマーの実行で反映される
     });
 
-    it('連続でmoveを呼び出せる', () => {
+    it("連続でmoveを呼び出せる", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -107,7 +107,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       expect(() => {
@@ -118,8 +118,8 @@ describe('Stabilizer', () => {
     });
   });
 
-  describe('up', () => {
-    it('upを呼び出せる', () => {
+  describe("up", () => {
+    it("upを呼び出せる", () => {
       const onUp = vi.fn();
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -130,7 +130,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.up(150, 150, 0.8);
@@ -140,10 +140,10 @@ describe('Stabilizer', () => {
       expect(onUp).toHaveBeenCalled();
     });
 
-    it('up後にonMoveとonUpが正しい順序で呼ばれる', () => {
+    it("up後にonMoveとonUpが正しい順序で呼ばれる", () => {
       const callOrder: string[] = [];
-      const onMove = vi.fn(() => callOrder.push('move'));
-      const onUp = vi.fn(() => callOrder.push('up'));
+      const onMove = vi.fn(() => callOrder.push("move"));
+      const onUp = vi.fn(() => callOrder.push("up"));
 
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -154,7 +154,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.move(150, 150, 0.5);
@@ -163,12 +163,12 @@ describe('Stabilizer', () => {
       vi.runAllTimers();
 
       // 最後のコールがup
-      expect(callOrder[callOrder.length - 1]).toBe('up');
+      expect(callOrder[callOrder.length - 1]).toBe("up");
     });
   });
 
-  describe('cancel', () => {
-    it('タイマーをキャンセルできる', () => {
+  describe("cancel", () => {
+    it("タイマーをキャンセルできる", () => {
       const onMove = vi.fn();
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -179,7 +179,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.cancel();
@@ -190,8 +190,8 @@ describe('Stabilizer', () => {
     });
   });
 
-  describe('getLast', () => {
-    it('最後の座標を取得できる', () => {
+  describe("getLast", () => {
+    it("最後の座標を取得できる", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -201,18 +201,18 @@ describe('Stabilizer', () => {
         100,
         200,
         0.8,
-        10
+        10,
       );
 
       const last = stabilizer.getLast();
-      expect(last).toHaveProperty('x');
-      expect(last).toHaveProperty('y');
-      expect(last).toHaveProperty('pressure');
+      expect(last).toHaveProperty("x");
+      expect(last).toHaveProperty("y");
+      expect(last).toHaveProperty("pressure");
     });
   });
 
-  describe('weight（追従の強さ）', () => {
-    it('weight=0で即座に追従', () => {
+  describe("weight（追従の強さ）", () => {
+    it("weight=0で即座に追従", () => {
       const onMove = vi.fn();
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -223,7 +223,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.move(200, 200, 0.5);
@@ -233,7 +233,7 @@ describe('Stabilizer', () => {
       expect(onMove).toHaveBeenCalled();
     });
 
-    it('weight=0.95で遅く追従', () => {
+    it("weight=0.95で遅く追従", () => {
       const onMove = vi.fn();
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -244,7 +244,7 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       stabilizer.move(200, 200, 0.5);
@@ -253,7 +253,7 @@ describe('Stabilizer', () => {
       expect(onMove).toHaveBeenCalled();
     });
 
-    it('weightが0.95を超えても0.95に制限される', () => {
+    it("weightが0.95を超えても0.95に制限される", () => {
       // 内部でMath.min(0.95, weight)が適用される
       const stabilizer = new Stabilizer(
         vi.fn(),
@@ -264,14 +264,14 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       // エラーなく動作することを確認
       expect(stabilizer.getParamTable()).toBeDefined();
     });
 
-    it('weightが負でも0に制限される', () => {
+    it("weightが負でも0に制限される", () => {
       const stabilizer = new Stabilizer(
         vi.fn(),
         vi.fn(),
@@ -281,15 +281,15 @@ describe('Stabilizer', () => {
         100,
         100,
         0.5,
-        10
+        10,
       );
 
       expect(stabilizer.getParamTable()).toBeDefined();
     });
   });
 
-  describe('座標の平滑化', () => {
-    it('複数回のタイマー実行で座標が平滑化される', () => {
+  describe("座標の平滑化", () => {
+    it("複数回のタイマー実行で座標が平滑化される", () => {
       const moves: Array<{ x: number; y: number }> = [];
       const onMove = vi.fn((x, y) => moves.push({ x, y }));
 
@@ -302,7 +302,7 @@ describe('Stabilizer', () => {
         0,
         0,
         0.5,
-        10
+        10,
       );
 
       // 急激な座標変化
@@ -319,8 +319,8 @@ describe('Stabilizer', () => {
     });
   });
 
-  describe('interval', () => {
-    it('指定したintervalでタイマーが実行される', () => {
+  describe("interval", () => {
+    it("指定したintervalでタイマーが実行される", () => {
       const onMove = vi.fn();
       new Stabilizer(vi.fn(), onMove, vi.fn(), 3, 0.5, 100, 100, 0.5, 20);
 

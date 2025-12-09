@@ -11,7 +11,11 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['Getting Started', ['Introduction', 'Installation'], 'ReactRichPainter'],
+        order: [
+          "Getting Started",
+          ["Introduction", "Installation"],
+          "ReactRichPainter",
+        ],
       },
     },
   },

@@ -3,5 +3,5 @@
  */
 
 export const STORAGE_KEYS = {
-  BRUSH_SETTINGS: 'react-rich-painter:brush-settings',
+  BRUSH_SETTINGS: "react-rich-painter:brush-settings",
 } as const;

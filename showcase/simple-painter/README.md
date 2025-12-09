@@ -30,11 +30,11 @@ pnpm dev
 ## コード例
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter'
+import { ReactRichPainter } from "react-rich-painter";
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter
         autoSize={true}
         preset="painting"
@@ -43,6 +43,6 @@ function App() {
         defaultCustomBrush={true}
       />
     </div>
-  )
+  );
 }
 ```

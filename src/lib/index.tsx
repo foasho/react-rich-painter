@@ -1,4 +1,3 @@
-
 export { ReactRichPainter } from "./components";
 
 // Import/Export機能の型とユーティリティをエクスポート

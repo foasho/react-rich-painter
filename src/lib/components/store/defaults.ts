@@ -4,7 +4,7 @@
  */
 
 // 型定義
-export type BrushShape = 'round' | 'square' | 'custom';
+export type BrushShape = "round" | "square" | "custom";
 
 export type BrushSettings = {
   // 基本設定
@@ -29,8 +29,8 @@ export type BrushSettings = {
 export const DEFAULT_BRUSH_SETTINGS: BrushSettings = {
   // 基本設定
   size: 10,
-  color: '#474747ff',
-  shape: 'round',
+  color: "#474747ff",
+  shape: "round",
 
   // カスタムブラシ
   customBrushIndex: null,

@@ -1,10 +1,14 @@
-import { create } from 'zustand';
-import { getInitialBrushSettings, saveBrushSettings, resetBrushSettings } from './local-storage';
+import { create } from "zustand";
+import {
+  getInitialBrushSettings,
+  saveBrushSettings,
+  resetBrushSettings,
+} from "./local-storage";
 
 type BrushBarState = {
   size: number;
   color: string;
-  shape: 'round' | 'square' | 'custom';
+  shape: "round" | "square" | "custom";
   customBrushIndex: number | null; // null: なし, 0-4: b0.png~b4.png
   customBrushImages: HTMLImageElement[];
   spacing: number; // ブラシの離散具合 (0.01 ~ 1.0)
@@ -15,7 +19,7 @@ type BrushBarState = {
   stabilizeWeight: number; // スタビライザーウェイト (0 ~ 0.95)
   setSize: (size: number) => void;
   setColor: (color: string) => void;
-  setShape: (shape: 'round' | 'square' | 'custom') => void;
+  setShape: (shape: "round" | "square" | "custom") => void;
   setCustomBrushIndex: (index: number | null) => void;
   setCustomBrushImages: (images: HTMLImageElement[]) => void;
   setSpacing: (spacing: number) => void;

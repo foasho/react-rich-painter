@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type LayerNameState = {
   layerNames: { [index: number]: string };
@@ -28,7 +28,7 @@ export const useLayerNameStore = create<LayerNameState>((set, get) => ({
     set((state) => ({
       layerNames: {
         ...state.layerNames,
-        [index]: name || `レイヤー ${index + 1}`
+        [index]: name || `レイヤー ${index + 1}`,
       },
     }));
   },

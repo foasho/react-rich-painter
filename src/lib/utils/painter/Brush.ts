@@ -1,6 +1,5 @@
 import { InputType } from "../../components/store/ui";
 
-
 // pen: 描画, eraser: 消しゴム, dripper: スポイト, rect: 選択, move: キャンバス移動
 type BrushToolType = "pen" | "eraser" | "dripper" | "rect" | "move";
 
@@ -14,7 +13,7 @@ class Brush {
   private userDevice: string = "pc";
   private userSelectInputType: InputType = "mouse";
   private toolType: BrushToolType = "pen";
-  private isDrawTool: boolean = false;//描画系のツールかどうか
+  private isDrawTool: boolean = false; //描画系のツールかどうか
   private isFinger: boolean = false;
   private merge: number = 0.2;
   private image: HTMLImageElement | null = null;
@@ -27,8 +26,16 @@ class Brush {
   private lastX: number = 0;
   private lastY: number = 0;
   private prevScale: number = 0;
-  private drawFunction: (context: CanvasRenderingContext2D, size: number) => void = this.drawCircle.bind(this);
-  private dirtyRect: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
+  private drawFunction: (
+    context: CanvasRenderingContext2D,
+    size: number,
+  ) => void = this.drawCircle.bind(this);
+  private dirtyRect: { x: number; y: number; width: number; height: number } = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  };
 
   constructor() {}
 
@@ -163,7 +170,12 @@ class Brush {
     }
   }
 
-  private appendDirtyRect(x: number, y: number, width: number, height: number): void {
+  private appendDirtyRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ): void {
     if (!(width && height)) return;
     const dxw = this.dirtyRect.x + this.dirtyRect.width;
     const dyh = this.dirtyRect.y + this.dirtyRect.height;
@@ -177,7 +189,10 @@ class Brush {
     this.dirtyRect.height = Math.max(dyh, yh) - minY;
   }
 
-  private hexToRGB(hex: string, alpha: number): [number, number, number, number] {
+  private hexToRGB(
+    hex: string,
+    alpha: number,
+  ): [number, number, number, number] {
     alpha = this.ratioTo255(alpha);
     if (alpha === 0) {
       return [255, 255, 255, alpha];
@@ -204,7 +219,11 @@ class Brush {
    * mergeAmount = 0: 完全にブラシの色
    * mergeAmount = 1: 既存色とブラシ色を均等に混ぜる（水彩風）
    */
-  private mergeBrushColor(base: number[], brushColor: string, mergeAmount: number): string {
+  private mergeBrushColor(
+    base: number[],
+    brushColor: string,
+    mergeAmount: number,
+  ): string {
     // ブラシの色をRGBAに変換
     const brushRGB = this.hexToRGB(brushColor, 1);
 
@@ -244,7 +263,11 @@ class Brush {
   // 以下の関数は、外部のコンテキストや変数（例えば、getNowLayerContext、width、heightなど）に依存しています。
   // これらの関数や変数は、実際の環境に合わせて適切に実装または渡す必要があります。
 
-  private getDripperColor(context: CanvasRenderingContext2D, _x: number, _y: number): [number, number, number, number] {
+  private getDripperColor(
+    context: CanvasRenderingContext2D,
+    _x: number,
+    _y: number,
+  ): [number, number, number, number] {
     try {
       // const imageData = getNowLayerContext().getImageData(_x, _y, 1, 1);
       // 上記のような外部関数が必要です。ここでは仮の実装をします。
@@ -267,7 +290,12 @@ class Brush {
     return sum / data.length;
   }
 
-  private getRectAveColor(context: CanvasRenderingContext2D, _x: number, _y: number, size: number): [number, number, number, number] {
+  private getRectAveColor(
+    context: CanvasRenderingContext2D,
+    _x: number,
+    _y: number,
+    size: number,
+  ): [number, number, number, number] {
     // widthとheightはキャンバスのサイズとして仮定します
     const width = context!.canvas.width;
     const height = context!.canvas.height;
@@ -314,7 +342,11 @@ class Brush {
     }
   }
 
-  private getRadGradColor(ctx: CanvasRenderingContext2D, color: string, psize: number): void {
+  private getRadGradColor(
+    ctx: CanvasRenderingContext2D,
+    color: string,
+    psize: number,
+  ): void {
     const x = psize / 2;
     const y = psize / 2;
     let radgrad = ctx.createRadialGradient(x, y, 0, x, y, psize);
@@ -332,16 +364,41 @@ class Brush {
       this.transformedImage.width = this.size;
       this.transformedImage.height = this.size * this.imageRatio;
       const brushContext = this.transformedImage.getContext("2d")!;
-      brushContext.clearRect(0, 0, this.transformedImage.width, this.transformedImage.height);
-      brushContext.drawImage(this.image, 0, 0, this.transformedImage.width, this.transformedImage.height);
+      brushContext.clearRect(
+        0,
+        0,
+        this.transformedImage.width,
+        this.transformedImage.height,
+      );
+      brushContext.drawImage(
+        this.image,
+        0,
+        0,
+        this.transformedImage.width,
+        this.transformedImage.height,
+      );
       brushContext.globalCompositeOperation = "source-in";
 
-      const base_color = this.getRectAveColor(brushContext, this.lastX, this.lastY, this.size);
-      const merge_color = this.mergeBrushColor(base_color, this.color, this.merge);
+      const base_color = this.getRectAveColor(
+        brushContext,
+        this.lastX,
+        this.lastY,
+        this.size,
+      );
+      const merge_color = this.mergeBrushColor(
+        base_color,
+        this.color,
+        this.merge,
+      );
       this.getRadGradColor(brushContext, merge_color, this.size);
 
       brushContext.globalAlpha = this.flow;
-      brushContext.fillRect(0, 0, this.transformedImage.width, this.transformedImage.height);
+      brushContext.fillRect(
+        0,
+        0,
+        this.transformedImage.width,
+        this.transformedImage.height,
+      );
     }
   }
 
@@ -350,8 +407,17 @@ class Brush {
       this.drawFinger(context, size);
     } else {
       const halfSize = size * 0.5;
-      const base_color = this.getRectAveColor(context, this.lastX, this.lastY, size);
-      const merge_color = this.mergeBrushColor(base_color, this.color, this.merge);
+      const base_color = this.getRectAveColor(
+        context,
+        this.lastX,
+        this.lastY,
+        size,
+      );
+      const merge_color = this.mergeBrushColor(
+        base_color,
+        this.color,
+        this.merge,
+      );
       this.getRadGradColor(context, merge_color, size);
 
       context.globalAlpha = this.flow;
@@ -371,7 +437,13 @@ class Brush {
       }
       try {
         if (this.transformedImage) {
-          context.drawImage(this.transformedImage, 0, 0, size, size * this.imageRatio);
+          context.drawImage(
+            this.transformedImage,
+            0,
+            0,
+            size,
+            size * this.imageRatio,
+          );
         }
       } catch (e) {
         this.drawCircle(context, size);
@@ -381,7 +453,12 @@ class Brush {
 
   private drawFinger(context: CanvasRenderingContext2D, size: number): void {
     const halfSize = size * 0.5;
-    const base_color = this.getRectAveColor(context, this.lastX, this.lastY, size);
+    const base_color = this.getRectAveColor(
+      context,
+      this.lastX,
+      this.lastY,
+      size,
+    );
     const finger_color = `rgba(${base_color[0]},${base_color[1]},${base_color[2]},${this.c255ToRatio(base_color[3])})`;
     this.getRadGradColor(context, finger_color, size);
     context.globalAlpha = this.flow;
@@ -391,7 +468,12 @@ class Brush {
     context.fill();
   }
 
-  private drawTo(context: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  private drawTo(
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+  ): void {
     const halfSize = size * 0.5;
     const left = x - halfSize;
     const top = y - halfSize * this.imageRatio;
@@ -402,7 +484,12 @@ class Brush {
     this.appendDirtyRect(left, top, size, size * this.imageRatio);
   }
 
-  public down(context: CanvasRenderingContext2D, x: number, y: number, scale: number): void {
+  public down(
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    scale: number,
+  ): void {
     if (context == null) throw "brush needs the context";
     this.dirtyRect = { x: 0, y: 0, width: 0, height: 0 };
     if (scale > 0) {
@@ -415,7 +502,12 @@ class Brush {
     this.prevScale = scale;
   }
 
-  public move(context: CanvasRenderingContext2D, x: number, y: number, scale: number): void {
+  public move(
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    scale: number,
+  ): void {
     if (context == null) throw "brush needs the context";
     if (scale > 0) {
       const dx = x - this.prevX;
@@ -441,7 +533,8 @@ class Brush {
         this.lastX = x;
         this.lastY = y;
         this.prevScale = scale;
-        const s = this.prevScale < this.minimumSize ? this.minimumSize : this.prevScale;
+        const s =
+          this.prevScale < this.minimumSize ? this.minimumSize : this.prevScale;
         this.drawTo(context, this.lastX, this.lastY, this.size * s);
         this.delta -= drawSpacing;
       } else {
@@ -454,7 +547,10 @@ class Brush {
           this.lastX += tx * drawSpacing;
           this.lastY += ty * drawSpacing;
           this.prevScale += scaleSpacing;
-          const s = this.prevScale < this.minimumSize ? this.minimumSize : this.prevScale;
+          const s =
+            this.prevScale < this.minimumSize
+              ? this.minimumSize
+              : this.prevScale;
           this.drawTo(context, this.lastX, this.lastY, this.size * s);
           this.delta -= drawSpacing;
         }
@@ -469,7 +565,12 @@ class Brush {
     }
   }
 
-  public up(_context: CanvasRenderingContext2D, _x: number, _y: number, _scale: number): { x: number; y: number; width: number; height: number } {
+  public up(
+    _context: CanvasRenderingContext2D,
+    _x: number,
+    _y: number,
+    _scale: number,
+  ): { x: number; y: number; width: number; height: number } {
     return this.dirtyRect;
   }
 }

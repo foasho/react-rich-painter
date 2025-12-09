@@ -1,4 +1,4 @@
-import { Meta, Source } from '@storybook/blocks';
+import { Meta, Source } from "@storybook/blocks";
 
 <Meta title="Getting Started/Installation" />
 
@@ -41,11 +41,11 @@ npm install react react-dom
 ## シンプルな例
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter />
     </div>
   );
@@ -59,11 +59,11 @@ export default App;
 フル機能のペイントツールを使用する場合：
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 function PaintingApp() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter
         autoSize={true}
         preset="painting"
@@ -81,11 +81,11 @@ function PaintingApp() {
 シンプルなメモ・スケッチ用途の場合：
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 function NotebookApp() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <ReactRichPainter
         autoSize={true}
         preset="notebook"
@@ -100,11 +100,11 @@ function NotebookApp() {
 ## 固定サイズで使用
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 function FixedSizeApp() {
   return (
-    <div style={{ width: '800px', height: '600px' }}>
+    <div style={{ width: "800px", height: "600px" }}>
       <ReactRichPainter
         autoSize={false}
         width={800}
@@ -131,57 +131,111 @@ function FixedSizeApp() {
   </thead>
   <tbody>
     <tr>
-      <td><code>autoSize</code></td>
-      <td><code>boolean</code></td>
-      <td><code>true</code></td>
+      <td>
+        <code>autoSize</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>true</code>
+      </td>
       <td>親要素のサイズから自動的にキャンバスサイズを決定</td>
     </tr>
     <tr>
-      <td><code>preset</code></td>
-      <td><code>'painting' | 'notebook'</code></td>
-      <td><code>'painting'</code></td>
+      <td>
+        <code>preset</code>
+      </td>
+      <td>
+        <code>'painting' | 'notebook'</code>
+      </td>
+      <td>
+        <code>'painting'</code>
+      </td>
       <td>プリセット設定</td>
     </tr>
     <tr>
-      <td><code>width</code></td>
-      <td><code>number</code></td>
-      <td><code>800</code></td>
+      <td>
+        <code>width</code>
+      </td>
+      <td>
+        <code>number</code>
+      </td>
+      <td>
+        <code>800</code>
+      </td>
       <td>キャンバスの幅（autoSize=falseの場合）</td>
     </tr>
     <tr>
-      <td><code>height</code></td>
-      <td><code>number</code></td>
-      <td><code>600</code></td>
+      <td>
+        <code>height</code>
+      </td>
+      <td>
+        <code>number</code>
+      </td>
+      <td>
+        <code>600</code>
+      </td>
       <td>キャンバスの高さ（autoSize=falseの場合）</td>
     </tr>
     <tr>
-      <td><code>toolbar</code></td>
-      <td><code>boolean</code></td>
-      <td><code>true</code></td>
+      <td>
+        <code>toolbar</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>true</code>
+      </td>
       <td>ツールバーを表示するかどうか</td>
     </tr>
     <tr>
-      <td><code>brushbar</code></td>
-      <td><code>boolean</code></td>
-      <td><code>true</code></td>
+      <td>
+        <code>brushbar</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>true</code>
+      </td>
       <td>ブラシバーを表示するかどうか</td>
     </tr>
     <tr>
-      <td><code>defaultCustomBrush</code></td>
-      <td><code>boolean</code></td>
-      <td><code>true</code></td>
+      <td>
+        <code>defaultCustomBrush</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>true</code>
+      </td>
       <td>デフォルトのカスタムブラシを使用</td>
     </tr>
     <tr>
-      <td><code>backgroundSize</code></td>
-      <td><code>number</code></td>
-      <td><code>20</code></td>
+      <td>
+        <code>backgroundSize</code>
+      </td>
+      <td>
+        <code>number</code>
+      </td>
+      <td>
+        <code>20</code>
+      </td>
       <td>背景タイルの大きさ（ピクセル）</td>
     </tr>
     <tr>
-      <td><code>showFileMenu</code></td>
-      <td><code>boolean</code></td>
-      <td><code>false</code></td>
+      <td>
+        <code>showFileMenu</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>false</code>
+      </td>
       <td>FileMenuを表示（Import/Export機能）</td>
     </tr>
   </tbody>
@@ -202,39 +256,75 @@ function FixedSizeApp() {
   </thead>
   <tbody>
     <tr>
-      <td><code>share</code></td>
-      <td><code>boolean</code></td>
-      <td><code>false</code></td>
+      <td>
+        <code>share</code>
+      </td>
+      <td>
+        <code>boolean</code>
+      </td>
+      <td>
+        <code>false</code>
+      </td>
       <td>共有モードを有効にするか</td>
     </tr>
     <tr>
-      <td><code>userId</code></td>
-      <td><code>string</code></td>
-      <td><code>undefined</code></td>
+      <td>
+        <code>userId</code>
+      </td>
+      <td>
+        <code>string</code>
+      </td>
+      <td>
+        <code>undefined</code>
+      </td>
       <td>共有モード時のユーザー識別子</td>
     </tr>
     <tr>
-      <td><code>userName</code></td>
-      <td><code>string</code></td>
-      <td><code>undefined</code></td>
+      <td>
+        <code>userName</code>
+      </td>
+      <td>
+        <code>string</code>
+      </td>
+      <td>
+        <code>undefined</code>
+      </td>
       <td>共有モード時のユーザー表示名</td>
     </tr>
     <tr>
-      <td><code>onStrokeStart</code></td>
-      <td><code>(data: StrokeStartData) =&gt; void</code></td>
-      <td><code>undefined</code></td>
+      <td>
+        <code>onStrokeStart</code>
+      </td>
+      <td>
+        <code>(data: StrokeStartData) =&gt; void</code>
+      </td>
+      <td>
+        <code>undefined</code>
+      </td>
       <td>ストローク開始時のコールバック</td>
     </tr>
     <tr>
-      <td><code>onStrokeMove</code></td>
-      <td><code>(data: StrokeMoveData) =&gt; void</code></td>
-      <td><code>undefined</code></td>
+      <td>
+        <code>onStrokeMove</code>
+      </td>
+      <td>
+        <code>(data: StrokeMoveData) =&gt; void</code>
+      </td>
+      <td>
+        <code>undefined</code>
+      </td>
       <td>ストローク移動時のコールバック</td>
     </tr>
     <tr>
-      <td><code>onStrokeEnd</code></td>
-      <td><code>(data: StrokeEndData) =&gt; void</code></td>
-      <td><code>undefined</code></td>
+      <td>
+        <code>onStrokeEnd</code>
+      </td>
+      <td>
+        <code>(data: StrokeEndData) =&gt; void</code>
+      </td>
+      <td>
+        <code>undefined</code>
+      </td>
       <td>ストローク終了時のコールバック</td>
     </tr>
   </tbody>
@@ -247,16 +337,12 @@ function FixedSizeApp() {
 `showFileMenu={true}` を設定すると、描画状態の保存・復元機能が使用できます。
 
 ```tsx
-import { ReactRichPainter } from 'react-rich-painter';
+import { ReactRichPainter } from "react-rich-painter";
 
 function AppWithFileMenu() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactRichPainter
-        autoSize={true}
-        preset="painting"
-        showFileMenu={true}
-      />
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <ReactRichPainter autoSize={true} preset="painting" showFileMenu={true} />
     </div>
   );
 }
@@ -276,20 +362,20 @@ FileMenuからは以下の操作が可能です：
 WebRTC（SkyWay等）やWebSocketと組み合わせて使用します。
 
 ```tsx
-import { ReactRichPainter, PainterHandle } from 'react-rich-painter';
-import { useRef } from 'react';
+import { ReactRichPainter, PainterHandle } from "react-rich-painter";
+import { useRef } from "react";
 
 function SharedWhiteboard() {
   const painterRef = useRef<PainterHandle>(null);
 
   // 自分の描画をリモートに送信
   const handleStrokeStart = (data) => {
-    websocket.send({ type: 'stroke_start', data });
+    websocket.send({ type: "stroke_start", data });
   };
 
   // リモートからの描画を適用
   const handleRemoteMessage = (message) => {
-    if (message.type === 'stroke_start') {
+    if (message.type === "stroke_start") {
       painterRef.current?.applyRemoteStrokeStart(message.data);
     }
     // applyRemoteStrokeMove, applyRemoteStrokeEnd も同様
@@ -302,8 +388,8 @@ function SharedWhiteboard() {
       userId="user-123"
       userName="田中"
       onStrokeStart={handleStrokeStart}
-      onStrokeMove={(data) => websocket.send({ type: 'stroke_move', data })}
-      onStrokeEnd={(data) => websocket.send({ type: 'stroke_end', data })}
+      onStrokeMove={(data) => websocket.send({ type: "stroke_move", data })}
+      onStrokeEnd={(data) => websocket.send({ type: "stroke_end", data })}
     />
   );
 }
@@ -318,4 +404,3 @@ function SharedWhiteboard() {
 - `clearRemoteUser(userId)` - 特定のリモートユーザーの描画状態をクリア
 - `exportState()` - 現在のキャンバス状態をエクスポート
 - `importState(state)` - キャンバス状態をインポート
-

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import RoomList from '@/components/RoomList';
-import CreateRoomForm from '@/components/CreateRoomForm';
+import { useState } from "react";
+import RoomList from "@/components/RoomList";
+import CreateRoomForm from "@/components/CreateRoomForm";
 
 export default function Home() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -33,13 +33,23 @@ export default function Home() {
                   onClick={() => setShowCreateForm(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                   新しいルームを作成
                 </button>
               </div>
-              
+
               {/* ルーム一覧 */}
               <RoomList onCreateClick={() => setShowCreateForm(true)} />
             </>
@@ -49,7 +59,7 @@ export default function Home() {
         {/* フッター */}
         <footer className="mt-16 text-center">
           <p className="text-xs text-zinc-500">
-            Powered by{' '}
+            Powered by{" "}
             <a
               href="https://www.npmjs.com/package/react-rich-painter"
               target="_blank"
@@ -57,8 +67,8 @@ export default function Home() {
               className="text-zinc-400 hover:text-white"
             >
               react-rich-painter
-            </a>
-            {' '}+{' '}
+            </a>{" "}
+            +{" "}
             <a
               href="https://skyway.ntt.com/"
               target="_blank"

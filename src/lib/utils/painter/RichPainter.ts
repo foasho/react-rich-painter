@@ -26,7 +26,8 @@ class RichPainter {
   private paintingContext = this.paintingCanvas.getContext("2d");
   private renderDirtyRect = false;
   private domElement: HTMLElement = document.createElement("div");
-  private dirtyRectDisplay: HTMLCanvasElement = document.createElement("canvas");
+  private dirtyRectDisplay: HTMLCanvasElement =
+    document.createElement("canvas");
   private dirtyRectDisplayContext = this.dirtyRectDisplay.getContext("2d")!;
 
   // 指先ツールで使うゴーストキャンバス
@@ -35,7 +36,7 @@ class RichPainter {
   // 指先ツール用の「前回の位置」を保持
   private fingerLastPos: { x: number | null; y: number | null } = {
     x: null,
-    y: null
+    y: null,
   };
 
   /**
@@ -51,7 +52,7 @@ class RichPainter {
     x: number,
     y: number,
     pressure: number,
-    dirtyRect: { x: number; y: number; width: number; height: number }
+    dirtyRect: { x: number; y: number; width: number; height: number },
   ) => void;
   public onTicked?: () => void;
 
@@ -84,10 +85,7 @@ class RichPainter {
       for (let i = 0; i < imageDataList.length; i++) {
         const current = imageDataList[i];
         // サイズチェック
-        if (
-          current.width !== first.width ||
-          current.height !== first.height
-        ) {
+        if (current.width !== first.width || current.height !== first.height) {
           throw new Error("all image data must have the same size");
         }
         this.addLayer(); // 新規レイヤー作成
@@ -149,7 +147,7 @@ class RichPainter {
     this.redoStack = [];
   }
 
-  public pushUndo(undoFunction: (() => any)) {
+  public pushUndo(undoFunction: () => any) {
     if (this.onChanged) {
       this.onChanged();
     }
@@ -259,7 +257,7 @@ class RichPainter {
   public setLayerOpacity(
     opacity: number,
     index: number | null = null,
-    pushUndoFlg = true
+    pushUndoFlg = true,
   ): void {
     const _index = index == null ? this.layerIndex : index;
     if (pushUndoFlg) {
@@ -277,7 +275,7 @@ class RichPainter {
   public setLayerVisible(
     visible: boolean,
     index: number | null = null,
-    pushUndoFlg = true
+    pushUndoFlg = true,
   ): void {
     const _index = index == null ? this.layerIndex : index;
     if (pushUndoFlg) {
@@ -372,11 +370,7 @@ class RichPainter {
     this.pushUndo(swapFn);
   }
 
-  public swapLayer(
-    layerA: number,
-    layerB: number,
-    pushUndoFlg = true
-  ): void {
+  public swapLayer(layerA: number, layerB: number, pushUndoFlg = true): void {
     if (pushUndoFlg) {
       this.pushSwapLayerUndo(layerA, layerB);
     }
@@ -433,7 +427,13 @@ class RichPainter {
     }
   }
 
-  private pushDirtyRectUndo(x: number, y: number, width: number, height: number, index?: number) {
+  private pushDirtyRectUndo(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    index?: number,
+  ) {
     const _index = index == null ? this.layerIndex : index;
     const { width: w, height: h } = this.size;
     let right = x + width;
@@ -485,7 +485,12 @@ class RichPainter {
   // ------------------------------------------------------------------------
   // Canvasサイズ変更
   // ------------------------------------------------------------------------
-  private pushCanvasSizeUndo(width: number, height: number, offsetX: number, offsetY: number) {
+  private pushCanvasSizeUndo(
+    width: number,
+    height: number,
+    offsetX: number,
+    offsetY: number,
+  ) {
     let snapshotSize = { ...this.size };
     let snapshotDatas: ImageData[] = [];
     let w = snapshotSize.width;
@@ -495,7 +500,12 @@ class RichPainter {
       let layerContext = this.getLayerContext(i);
       snapshotDatas[i] = layerContext.getImageData(0, 0, w, h);
     }
-    function setSize(width: number, height: number, offsetX: number = 0, offsetY: number = 0) {
+    function setSize(
+      width: number,
+      height: number,
+      offsetX: number = 0,
+      offsetY: number = 0,
+    ) {
       self.lockHistory();
       self._setCanvasSizeCore(width, height, offsetX, offsetY);
       self.unlockHistory();
@@ -516,13 +526,23 @@ class RichPainter {
     this.pushUndo(rollback);
   }
 
-  public setCanvasSize(width: number, height: number, offsetX: number = 0, offsetY: number = 0): void {
+  public setCanvasSize(
+    width: number,
+    height: number,
+    offsetX: number = 0,
+    offsetY: number = 0,
+  ): void {
     this.pushCanvasSizeUndo(width, height, offsetX, offsetY);
     // 実際の変更はここではなく _setCanvasSizeCore に回す
     this._setCanvasSizeCore(width, height, offsetX, offsetY);
   }
 
-  private _setCanvasSizeCore(width: number, height: number, offsetX: number, offsetY: number) {
+  private _setCanvasSizeCore(
+    width: number,
+    height: number,
+    offsetX: number,
+    offsetY: number,
+  ) {
     width = Math.floor(width);
     height = Math.floor(height);
     this.size.width = width;
@@ -568,7 +588,7 @@ class RichPainter {
   // ------------------------------------------------------------------------
   public getLayerCanvas(index: number): HTMLCanvasElement {
     return this.layers[index].getElementsByClassName(
-      "croquis-layer-canvas"
+      "croquis-layer-canvas",
     )[0] as HTMLCanvasElement;
   }
 
@@ -614,7 +634,7 @@ class RichPainter {
     y: number,
     width: number,
     height: number,
-    index: number | null = null
+    index: number | null = null,
   ): void {
     const _index = index == null ? this.layerIndex : index;
     this.pushDirtyRectUndo(x, y, width, height, _index);
@@ -628,7 +648,7 @@ class RichPainter {
     x: number,
     y: number,
     w: number,
-    d: Uint8ClampedArray
+    d: Uint8ClampedArray,
   ): number {
     var index = (y * w + x) * 4;
     return (
@@ -639,7 +659,6 @@ class RichPainter {
     );
   }
 
-
   public floodFill(
     x: number,
     y: number,
@@ -647,7 +666,7 @@ class RichPainter {
     g: number,
     b: number,
     a: number,
-    index: number | null = null
+    index: number | null = null,
   ) {
     const _index = index == null ? this.layerIndex : index;
     this.pushContextUndo(_index);
@@ -701,14 +720,24 @@ class RichPainter {
 
   private rgb2hex(rgb: string): string {
     const mat = rgb.match(/\d+/g);
-    return "#" + mat!.map(function (a) {
-      return ("0" + parseInt(a).toString(16)).slice(-2)
-  }).join("");
+    return (
+      "#" +
+      mat!
+        .map(function (a) {
+          return ("0" + parseInt(a).toString(16)).slice(-2);
+        })
+        .join("")
+    );
   }
 
   public dripperColor(x: number, y: number): string | null {
     try {
-      const imageData = this.getLayerContext(this.layerIndex).getImageData(x, y, 1, 1);
+      const imageData = this.getLayerContext(this.layerIndex).getImageData(
+        x,
+        y,
+        1,
+        1,
+      );
       // RGB
       const r = imageData.data[0];
       const g = imageData.data[1];
@@ -738,7 +767,7 @@ class RichPainter {
     y: number,
     pressure: number,
     brushSize: number,
-    brushOpacity: number
+    brushOpacity: number,
   ): boolean {
     // 前回の座標がなければ初期化 (最初の呼び出し時)
     const lastx = this.fingerLastPos.x !== null ? this.fingerLastPos.x : x;
@@ -770,7 +799,7 @@ class RichPainter {
       x - center,
       y - center,
       paintWidth,
-      paintWidth
+      paintWidth,
     );
 
     // 近傍の色の平均を取得
@@ -810,7 +839,7 @@ class RichPainter {
         paintWidth / 2,
         xx,
         yy,
-        paintWidth
+        paintWidth,
       );
 
       // color = "#rrggbb" 形式を想定, alpha=0.5などで重ね塗り
@@ -828,7 +857,7 @@ class RichPainter {
         xx - paintWidth,
         yy - paintWidth,
         paintWidth * 2,
-        paintWidth * 2
+        paintWidth * 2,
       );
     }
 
@@ -845,13 +874,23 @@ class RichPainter {
   // 以下、指先ツール用のユーティリティメソッド例
   //==========================================================
 
-  private _distanceBetween(x1: number, y1: number, x2: number, y2: number): number {
+  private _distanceBetween(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ): number {
     const dx = x2 - x1;
     const dy = y2 - y1;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  private _angleBetween(x1: number, y1: number, x2: number, y2: number): number {
+  private _angleBetween(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ): number {
     const dx = x2 - x1;
     const dy = y2 - y1;
     // 元コードでは (Math.cos(angle), Math.sin(angle)) で進んでいたようなので、
@@ -949,14 +988,13 @@ class RichPainter {
     return [colorHex, aVal];
   }
 
-
   // ------------------------------------------------------------------------
   // サムネイル系
   // ------------------------------------------------------------------------
   public createLayerThumbnail(
     index: number | null = null,
     width?: number,
-    height?: number
+    height?: number,
   ): HTMLCanvasElement {
     const _index = index == null ? this.layerIndex : index;
     width = width == null ? this.size.width : width;
@@ -970,7 +1008,10 @@ class RichPainter {
     return thumbnail;
   }
 
-  public createFlattenThumbnail(width?: number, height?: number): HTMLCanvasElement {
+  public createFlattenThumbnail(
+    width?: number,
+    height?: number,
+  ): HTMLCanvasElement {
     width = width == null ? this.size.width : width;
     height = height == null ? this.size.height : height;
     const thumbnail = document.createElement("canvas");
@@ -1151,7 +1192,7 @@ class RichPainter {
       throw "still drawing";
     }
     this.isDrawing = true;
-  
+
     // knockout時のバックアップ
     if (this.paintingKnockout) {
       const w = this.size.width;
@@ -1163,7 +1204,7 @@ class RichPainter {
       beforeKnockoutContext.clearRect(0, 0, w, h);
       beforeKnockoutContext.drawImage(canvas, 0, 0, w, h);
     }
-  
+
     // 安定化レベル > 0 の場合、Stabilizerを使う
     if (this.toolStabilizeLevel > 0) {
       this.stabilizer = new Stabilizer(
@@ -1190,7 +1231,7 @@ class RichPainter {
         x,
         y,
         pressure,
-        this.stabilizerInterval
+        this.stabilizerInterval,
       );
       this.isStabilizing = true;
     } else {
@@ -1202,7 +1243,7 @@ class RichPainter {
         this.onDowned(x, y, pressure);
       }
     }
-  
+
     // knockout の再描画
     // 描画中にレイヤーに転写すると、何度も消しゴム効果が適用されてちかちかする
     // 描画中はpaintingCanvasのプレビューのみを表示し、
@@ -1213,7 +1254,7 @@ class RichPainter {
     //     this.drawPaintingCanvas();
     //   }
     // }, this.knockoutInterval);
-  
+
     // tick 処理
     this.tick = setInterval(() => {
       // if (this.brush?.tick) { this.brush.tick(); }
@@ -1222,7 +1263,7 @@ class RichPainter {
       }
     }, this.tickInterval);
   }
-  
+
   // move() の処理
   public move(x: number, y: number, pressure: number): void {
     if (!this.isDrawing) return;
@@ -1233,7 +1274,7 @@ class RichPainter {
       this._move(x, y, pressure);
     }
   }
-  
+
   // up() の処理
   public up(x: number, y: number, pressure: number): void {
     if (!this.isDrawing) throw "you need to call 'down' first";
@@ -1249,7 +1290,10 @@ class RichPainter {
   // ------------------------------------------------------------------------
   // 追加: DOM座標→キャンバス相対座標
   // ------------------------------------------------------------------------
-  public getRelativePosition(absoluteX: number, absoluteY: number): { x: number; y: number } {
+  public getRelativePosition(
+    absoluteX: number,
+    absoluteY: number,
+  ): { x: number; y: number } {
     const rect = this.domElement.getBoundingClientRect();
     return {
       x: absoluteX - rect.left,
@@ -1270,12 +1314,15 @@ class RichPainter {
   // ------------------------------------------------------------------------
 
   /** リモートユーザーのブラシ状態を一時的に保持 */
-  private remoteUserBrushes: Map<string, {
-    brush: Brush;
-    layerIndex: number;
-    userName?: string;
-    lastActivity: number;
-  }> = new Map();
+  private remoteUserBrushes: Map<
+    string,
+    {
+      brush: Brush;
+      layerIndex: number;
+      userName?: string;
+      lastActivity: number;
+    }
+  > = new Map();
 
   /**
    * リモートユーザーのストローク開始を適用
@@ -1294,9 +1341,9 @@ class RichPainter {
       flow: number;
       merge: number;
       minimumSize: number;
-      toolType: 'pen' | 'eraser';
+      toolType: "pen" | "eraser";
     },
-    userName?: string
+    userName?: string,
   ): void {
     // リモートユーザー用の一時的なBrushインスタンスを作成
     const remoteBrush = new Brush();
@@ -1324,7 +1371,12 @@ class RichPainter {
   /**
    * リモートユーザーのストローク移動を適用
    */
-  public remoteMove(userId: string, x: number, y: number, pressure: number): void {
+  public remoteMove(
+    userId: string,
+    x: number,
+    y: number,
+    pressure: number,
+  ): void {
     const remote = this.remoteUserBrushes.get(userId);
     if (!remote) return;
 
@@ -1339,7 +1391,12 @@ class RichPainter {
   /**
    * リモートユーザーのストローク終了を適用
    */
-  public remoteUp(userId: string, x: number, y: number, pressure: number): void {
+  public remoteUp(
+    userId: string,
+    x: number,
+    y: number,
+    pressure: number,
+  ): void {
     const remote = this.remoteUserBrushes.get(userId);
     if (!remote) return;
 

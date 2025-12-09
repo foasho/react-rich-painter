@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { DiaryEntry, getDiaryEntry } from '@/lib/storage';
-import DiaryEditor from '@/components/DiaryEditor';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { DiaryEntry, getDiaryEntry } from "@/lib/storage";
+import DiaryEditor from "@/components/DiaryEditor";
 
 export default function DiaryDetailPage() {
   const params = useParams();
@@ -30,7 +30,9 @@ export default function DiaryDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white/70 mb-4">日記が見つかりません</h1>
+          <h1 className="text-2xl font-bold text-white/70 mb-4">
+            日記が見つかりません
+          </h1>
           <a href="/" className="text-amber-400 hover:text-amber-300">
             ホームに戻る
           </a>
@@ -41,4 +43,3 @@ export default function DiaryDetailPage() {
 
   return <DiaryEditor entry={entry} />;
 }
-

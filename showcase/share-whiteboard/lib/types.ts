@@ -85,5 +85,4 @@ export type {
   StrokeMoveData,
   StrokeEndData,
   PainterState,
-} from 'react-rich-painter';
-
+} from "react-rich-painter";

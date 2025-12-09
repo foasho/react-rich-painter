@@ -9,7 +9,8 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "Share Whiteboard",
-  description: "Real-time collaborative whiteboard powered by react-rich-painter and SkyWay",
+  description:
+    "Real-time collaborative whiteboard powered by react-rich-painter and SkyWay",
 };
 
 export default function RootLayout({

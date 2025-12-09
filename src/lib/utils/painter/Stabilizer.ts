@@ -33,7 +33,7 @@ class Stabilizer {
     x: number,
     y: number,
     pressure: number,
-    private interval: number = 5
+    private interval: number = 5,
   ) {
     // Croquis.Stabilizer 内のロジックを踏襲
     this.interval = interval || 5;

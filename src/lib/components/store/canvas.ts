@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type CanvasState = {
   width: number;
@@ -19,7 +19,7 @@ type CanvasState = {
 export const useCanvasStore = create<CanvasState>((set) => ({
   width: 800,
   height: 600,
-  backgroundColor: '#ffffff',
+  backgroundColor: "#ffffff",
   offsetX: 0,
   offsetY: 0,
   scale: 1,
