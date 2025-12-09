@@ -343,9 +343,10 @@ describe("ペン入力の筆圧処理", () => {
   // 筆圧計算ロジックを再現（events.tsのsetPointerEvent内のロジック）
   const calculatePressure = (
     eventType: string,
-    rawPressure: number,
+    rawPressure: number
   ): number => {
-    const isUpOrCancel = eventType === "pointerup" || eventType === "pointercancel";
+    const isUpOrCancel =
+      eventType === "pointerup" || eventType === "pointercancel";
     return isUpOrCancel ? rawPressure : rawPressure > 0 ? rawPressure : 1;
   };
 
@@ -419,7 +420,7 @@ describe("ペン入力の筆圧処理", () => {
       ];
 
       const processedPressures = pressureSequence.map((event) =>
-        calculatePressure(event.type, event.pressure),
+        calculatePressure(event.type, event.pressure)
       );
 
       // 線の終端で筆圧が自然に0になることを確認
