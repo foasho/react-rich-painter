@@ -5,7 +5,7 @@ import {
   deserializePainterState,
 } from "../utils/stateManager";
 import { RichPainter } from "../utils/painter/RichPainter";
-import { PainterState, PAINTER_STATE_VERSION } from "../types/PainterState";
+import { PAINTER_STATE_VERSION } from "../types/PainterState";
 import { useToolStore } from "../components/store/tool";
 import { useUiStore } from "../components/store/ui";
 import { useLayerNameStore } from "../components/store/layer";

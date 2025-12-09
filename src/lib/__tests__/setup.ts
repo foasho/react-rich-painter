@@ -26,7 +26,7 @@ class MockImageData {
   }
 }
 
-global.ImageData = MockImageData as unknown as typeof ImageData;
+globalThis.ImageData = MockImageData as unknown as typeof ImageData;
 
 // Canvas モック
 class MockCanvasRenderingContext2D {
@@ -129,7 +129,7 @@ class MockCanvasRenderingContext2D {
     return new ImageData(sw, sh);
   }
 
-  getImageData(sx: number, sy: number, sw: number, sh: number): ImageData {
+  getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
     if (this._imageData) {
       return this._imageData;
     }
@@ -221,6 +221,7 @@ class MockCanvasRenderingContext2D {
 // HTMLCanvasElement.getContext のモック
 const originalGetContext = HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.getContext = function (
+  this: HTMLCanvasElement,
   contextId: string,
   _options?: unknown,
 ): RenderingContext | null {
@@ -229,8 +230,8 @@ HTMLCanvasElement.prototype.getContext = function (
       this,
     ) as unknown as CanvasRenderingContext2D;
   }
-  return originalGetContext.call(this, contextId, _options);
-};
+  return originalGetContext.call(this, contextId as "2d", _options);
+} as typeof HTMLCanvasElement.prototype.getContext;
 
 // toDataURL のモック
 HTMLCanvasElement.prototype.toDataURL = function (_type?: string): string {
@@ -248,7 +249,7 @@ HTMLCanvasElement.prototype.toBlob = function (
 };
 
 // ResizeObserver モック
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
@@ -270,7 +271,7 @@ class MockPointerEvent extends MouseEvent {
   }
 }
 
-global.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
+globalThis.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
 
 // localStorage モック
 const localStorageMock = (() => {

@@ -23,6 +23,9 @@ storybook-static/
 # Coverage
 coverage/
 
+# Claude Code
+.claude/
+
 # Misc
 .DS_Store
 *.log

@@ -14,6 +14,7 @@ export default [
       "vite.config.js",
       "dist/**",
       ".vscode/**",
+      ".claude/**",
       "public/**",
       "node_modules/**",
       "*.config.js",

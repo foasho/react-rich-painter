@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { useUiStore } from "../components/store/ui";
 
 // 自動入力切り替えのロジックをテスト
@@ -167,7 +167,7 @@ describe("自動入力切り替えシステム", () => {
   describe("入力タイプの変換", () => {
     it('pointerType "pen" → InputType "pen"', () => {
       // events.tsでは: detectedType === 'pen' → 'pen'
-      const pointerType = "pen";
+      const pointerType: string = "pen";
       const inputType =
         pointerType === "touch"
           ? "touch"
@@ -178,7 +178,7 @@ describe("自動入力切り替えシステム", () => {
     });
 
     it('pointerType "mouse" → InputType "mouse"', () => {
-      const pointerType = "mouse";
+      const pointerType: string = "mouse";
       const inputType =
         pointerType === "touch"
           ? "touch"
@@ -189,7 +189,7 @@ describe("自動入力切り替えシステム", () => {
     });
 
     it('pointerType "touch" → InputType "touch"', () => {
-      const pointerType = "touch";
+      const pointerType: string = "touch";
       const inputType =
         pointerType === "touch"
           ? "touch"
@@ -200,7 +200,7 @@ describe("自動入力切り替えシステム", () => {
     });
 
     it('不明なpointerType → InputType "pen" (デフォルト)', () => {
-      const pointerType = "unknown";
+      const pointerType: string = "unknown";
       const inputType =
         pointerType === "touch"
           ? "touch"
