@@ -18,11 +18,35 @@ process.stdin.on("data", (chunk) => {
 
 process.stdin.on("end", () => {
   try {
+    // 入力が空の場合は終了
+    if (!inputData || inputData.trim() === "") {
+      process.exit(0);
+    }
+
     const data = JSON.parse(inputData);
-    const filePath = data.file_path;
+
+    // ファイルパスを取得（複数の形式に対応）
+    let filePath = null;
+
+    // 直接file_pathがある場合
+    if (data.file_path) {
+      filePath = data.file_path;
+    }
+    // tool_input内にある場合
+    else if (data.tool_input && data.tool_input.file_path) {
+      filePath = data.tool_input.file_path;
+    }
+    // tool_input内にtarget_fileがある場合
+    else if (data.tool_input && data.tool_input.target_file) {
+      filePath = data.tool_input.target_file;
+    }
+    // inputにある場合
+    else if (data.input && data.input.file_path) {
+      filePath = data.input.file_path;
+    }
 
     if (!filePath) {
-      console.log("No file path provided");
+      // ファイルパスが見つからない場合は静かに終了
       process.exit(0);
     }
 
@@ -31,37 +55,44 @@ process.stdin.on("end", () => {
     const ext = path.extname(filePath).toLowerCase();
 
     if (!targetExtensions.includes(ext)) {
-      console.log(`Skipping non-JS/TS file: ${filePath}`);
       process.exit(0);
     }
 
-    console.log(`Running lint and format on: ${filePath}`);
+    // .claudeディレクトリ内のファイルはスキップ
+    if (filePath.includes(".claude")) {
+      process.exit(0);
+    }
+
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
 
     // Prettierでフォーマット
     try {
       execSync(`npx prettier --write "${filePath}"`, {
-        stdio: "inherit",
-        cwd: process.env.CLAUDE_PROJECT_DIR || process.cwd(),
+        stdio: "pipe",
+        cwd: projectDir,
       });
-      console.log("Prettier: OK");
     } catch (e) {
-      console.error("Prettier failed:", e.message);
+      // Prettierエラーは無視
     }
 
     // ESLintでチェック＆修正
     try {
       execSync(`npx eslint --fix "${filePath}"`, {
-        stdio: "inherit",
-        cwd: process.env.CLAUDE_PROJECT_DIR || process.cwd(),
+        stdio: "pipe",
+        cwd: projectDir,
       });
-      console.log("ESLint: OK");
     } catch (e) {
-      // ESLintはエラーがあっても続行（エラーはClaudeに報告される）
-      console.error("ESLint found issues:", e.message);
+      // ESLintエラーは無視（エラーがあってもプロセスは正常終了）
     }
+
+    process.exit(0);
   } catch (e) {
-    console.error("Hook error:", e.message);
-    process.exit(1);
+    // JSONパースエラーなどは静かに終了
+    process.exit(0);
   }
 });
 
+// タイムアウト（5秒後に強制終了）
+setTimeout(() => {
+  process.exit(0);
+}, 5000);

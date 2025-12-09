@@ -9,7 +9,7 @@ function App() {
         height={600}
         preset="notebook"
         onUpdate={(state) => {
-          console.log(state.version);
+          // state更新時の処理
         }}
       />
     </div>
