@@ -87,7 +87,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
       onStrokeMove,
       onStrokeEnd,
     },
-    ref,
+    ref
   ) => {
     const [painter, setPainter] = useState<RichPainter>();
     const canvasContainerRef = useRef<HTMLDivElement | null>(null);
@@ -104,7 +104,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
           onUpdate(state);
         }
       }, 200),
-      [onUpdate],
+      [onUpdate]
     );
 
     const {
@@ -132,7 +132,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
             data.pressure,
             data.layerIndex,
             data.brush,
-            data.userName,
+            data.userName
           );
         },
         applyRemoteStrokeMove: (data: StrokeMoveData) => {
@@ -160,7 +160,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
           painter.removeRemoteUser(userId);
         },
       }),
-      [painter, share],
+      [painter, share]
     );
 
     // 共有モード用: ストロークイベントをコールバックに通知
@@ -242,7 +242,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
     useEffect(() => {
       if (!autoSize && (propWidth === undefined || propHeight === undefined)) {
         console.error(
-          "ReactRichPainter: autoSize=false の場合、width と height の指定が必要です。",
+          "ReactRichPainter: autoSize=false の場合、width と height の指定が必要です。"
         );
       }
     }, [autoSize, propWidth, propHeight]);
@@ -403,7 +403,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
           loadedCount++;
           if (loadedCount === brushPaths.length) {
             setCustomBrushImages(
-              loadedImages.filter((img) => img !== undefined),
+              loadedImages.filter((img) => img !== undefined)
             );
           }
         };
@@ -451,7 +451,7 @@ const ReactRichPainterInner = forwardRef<PainterHandle, ReactRichPainterProps>(
         ) : null}
       </div>
     );
-  },
+  }
 );
 
 // 表示名を設定
@@ -572,7 +572,7 @@ const PaintCanvas = ({
               const isInside = (
                 px: number,
                 py: number,
-                polygon: { x: number; y: number }[],
+                polygon: { x: number; y: number }[]
               ) => {
                 let inside = false;
                 for (
@@ -643,7 +643,7 @@ const PaintCanvas = ({
               const dy = e.clientY - dragStart.current.y;
               selectionStore.updateOffset(
                 dragOffset.current.x + dx,
-                dragOffset.current.y + dy,
+                dragOffset.current.y + dy
               );
               return;
             }
@@ -668,7 +668,7 @@ const PaintCanvas = ({
               const isInside = (
                 px: number,
                 py: number,
-                polygon: { x: number; y: number }[],
+                polygon: { x: number; y: number }[]
               ) => {
                 let inside = false;
                 for (
@@ -745,7 +745,7 @@ const PaintCanvas = ({
 
               if (imageData && path.length > 2) {
                 const currentLayerCanvas = painter.getLayerCanvas(
-                  painter.getCurrentLayerIndex(),
+                  painter.getCurrentLayerIndex()
                 );
                 const ctx = currentLayerCanvas.getContext("2d");
 
@@ -822,7 +822,7 @@ const PaintCanvas = ({
 
               // 現在のレイヤーから画像データを取得
               const currentLayerCanvas = painter.getLayerCanvas(
-                painter.getCurrentLayerIndex(),
+                painter.getCurrentLayerIndex()
               );
               if (currentLayerCanvas) {
                 const ctx = currentLayerCanvas.getContext("2d");
@@ -832,7 +832,7 @@ const PaintCanvas = ({
                     minX,
                     minY,
                     selectionWidth,
-                    selectionHeight,
+                    selectionHeight
                   );
 
                   // クリッピングパスを使用して選択範囲外をマスク
@@ -859,7 +859,7 @@ const PaintCanvas = ({
                       0,
                       0,
                       selectionWidth,
-                      selectionHeight,
+                      selectionHeight
                     );
                     selectionStore.setImageData(maskedImageData);
                   }
