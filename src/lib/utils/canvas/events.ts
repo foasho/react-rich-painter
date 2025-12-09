@@ -210,7 +210,14 @@ const setPointerEvent = (e: PointerEvent): PaintPointerEvent => {
     return newEvent as PaintPointerEvent;
   } else if (e.pointerType === "pen") {
     // 通常のペン入力（筆圧サポート）
-    const pressure = e.pressure > 0 ? e.pressure : 1;
+    // pointerup/pointercancel時は筆圧0を許可（自然な線終端のため）
+    // pointerdown/pointermove時は筆圧0の場合のみ1にフォールバック
+    const isUpOrCancel = e.type === "pointerup" || e.type === "pointercancel";
+    const pressure = isUpOrCancel
+      ? e.pressure
+      : e.pressure > 0
+        ? e.pressure
+        : 1;
     const newEvent = new PaintPointerEvent(
       e,
       pressure,
